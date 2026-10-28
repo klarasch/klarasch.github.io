@@ -30,6 +30,11 @@
     S.stageTop = top('stage');
     S.tops = { before: top('before'), how: top('how'), hello: top('hello') };
     S.docH = Math.max(1, root.scrollHeight - innerHeight);
+    // scaled iframes: cover the screen box (wider of the two fits)
+    document.querySelectorAll('iframe.scaled').forEach(f => {
+      const r = f.parentElement.getBoundingClientRect();
+      f.style.setProperty('--fit', Math.max(r.width / 1280, r.height / 800).toFixed(4));
+    });
   }
 
   /* ---------- notes ---------- */
@@ -96,18 +101,16 @@
     scenes[idx].el.querySelector('.vis').style.setProperty('--par', (cl(sub, 0, 1) * -24).toFixed(1) + 'px');
     const stageScreenTop = S.stageTop - y;
 
-    // td: 0 = big staff across the page, 1 = docked.
-    // Desktop docks into the nav after the scenes. Phones dock below the header
-    // as soon as the hero scrolls away, so the staff never sits on top of the work.
-    const td = mobile
-      ? ease(cl((y - H * 0.12) / (H * 0.45), 0, 1))
-      : ease(cl((local - stageLen + H * 0.15) / (H * 0.5), 0, 1));
+    // td: 0 = big staff across the bottom, 1 = docked (after the scenes).
+    // Desktop docks into the nav; phones dock in a strip below the header,
+    // because between the name and the key there is no room.
+    const td = ease(cl((local - stageLen + H * 0.15) / (H * 0.5), 0, 1));
 
     const navH = mobile ? lerp(64, 52, td) : lerp(84, 64, td);
     let top, gap, nL, nR, lineL, lineR;
     if (mobile) {
       const dGap = 4.5, dTop = navH + 6;
-      top = lerp(H * 0.8, dTop, td); gap = lerp(H * 0.03, dGap, td);
+      top = lerp(H * 0.84, dTop, td); gap = lerp(H * 0.026, dGap, td);
       nL = lerp(pad + 6, pad + 10, td); nR = lerp(W - pad - 6, W - pad - 10, td);
       lineL = lerp(0, pad, td); lineR = lerp(W, W - pad, td);
     } else {

@@ -18,7 +18,7 @@
   --pix: 'Geist Pixel Square', ui-monospace, monospace;
   --ease: cubic-bezier(.2, .8, .2, 1);
 }
-@media (max-width: 719px) { :root { --pad: 20px; --hdr: 112px; } }
+@media (max-width: 719px) { :root { --pad: 20px; --hdr: 60px; } }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
@@ -137,6 +137,9 @@ main { position: relative; z-index: 1; }
 .scene h2 { margin: 18px 0 0; font-size: clamp(30px, 3.4vw, 54px); line-height: 1.04; letter-spacing: -.03em; font-weight: 600; }
 .scene p { margin: 18px 0 0; font-size: clamp(16px, 1.25vw, 19px); line-height: 1.5; opacity: .82; max-width: 520px; }
 .scene .eyebrow { opacity: .75; }
+.scene .eyebrow:has(.num) { opacity: 1; }
+.num { display: inline-block; margin-left: 6px; padding: 1px 6px 2px; border-radius: 4px; font-family: var(--pix); font-size: .85em; line-height: 1.2; vertical-align: 1px; background: var(--ink); color: var(--lime); }
+.num.b { background: var(--blue); color: #fff; }
 .tags { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 8px; }
 .tag { font-family: var(--pix); font-size: 14px; padding: 4px 9px 5px; border-radius: 4px; border: 1px solid rgba(11, 11, 11, .3); }
 .dark .tag { border-color: rgba(255, 255, 255, .4); }
@@ -154,14 +157,8 @@ main { position: relative; z-index: 1; }
 .sk .cols > div { flex: 1; }
 .media-note { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 13px; opacity: .55; }
 .screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; background: #08080a; }
-
-/* Stavy: one prototype, several states fanned like a canvas */
-.states { position: absolute; inset: 0; }
-.states img { position: absolute; width: 74%; height: auto; border-radius: 10px; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .4); border: 1px solid rgba(11, 11, 11, .08); background: #fff; }
-.states img:nth-child(1) { left: 0; top: 0; }
-.states img:nth-child(2) { left: 13%; top: 16%; }
-.states img:nth-child(3) { left: 26%; top: 32%; }
-.states .chip { position: absolute; font-family: var(--pix); font-size: 13px; background: var(--ink); color: var(--lime); padding: 3px 7px 4px; border-radius: 4px; z-index: 2; }
+/* rendered at desktop size, then scaled to fit, so the app shows its desktop layout */
+.screen iframe.scaled { inset: auto; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; transform: scale(var(--fit, .5)); }
 
 @media (max-width: 719px) {
   .scene { display: flex; flex-direction: column; gap: 22px; padding: calc(var(--hdr) + 14px) 20px 24px; }
@@ -175,8 +172,15 @@ main { position: relative; z-index: 1; }
   .tag { font-size: 12px; }
   .media-note { font-size: 11px; bottom: 8px; }
 }
-@media (max-width: 719px) and (max-height: 700px) {
-  .scene p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+@media (max-width: 719px) {
+  /* keep the bottom fifth free for the big staff */
+  .scene { gap: 18px; padding-bottom: calc(var(--H) * .2); }
+  .scene p { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+}
+@media (max-width: 719px) and (max-height: 760px) {
+  .scene .tags { display: none; }
+  .scene p { -webkit-line-clamp: 3; }
+  .scene h2 { font-size: 24px; }
 }
 
 /* ---------- reveal ---------- */
