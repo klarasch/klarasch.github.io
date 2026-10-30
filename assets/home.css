@@ -178,12 +178,11 @@ main { position: relative; z-index: 1; }
 @media (max-width: 719px) {
   /* keep the bottom fifth free for the big staff */
   .scene { gap: 18px; padding-bottom: calc(var(--H) * .2); }
-  .scene p { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
 }
 @media (max-width: 719px) and (max-height: 760px) {
   .scene .tags { display: none; }
-  .scene p { -webkit-line-clamp: 3; }
   .scene h2 { font-size: 24px; }
+  .scene p { font-size: 14.5px; line-height: 1.45; }
 }
 
 /* ---------- reveal ---------- */
