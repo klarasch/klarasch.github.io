@@ -80,9 +80,12 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--blue);outline-offse
   border-bottom:1px solid rgba(11,11,11,.06);opacity:0;transition:opacity .3s;
 }
 .hdr.solid::before{opacity:1}
-.hdr .name{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;text-decoration:none}
-.hdr .name span{font-family:var(--pix);font-weight:400;color:var(--grey-2);margin-left:8px}
-.hdr .name:hover{background:none;opacity:.6}
+.hdr .name{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.hdr .name a{text-decoration:none}
+.hdr .name a:hover{background:none;opacity:.6}
+.hdr .name .me{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.hdr .name .t{font-family:var(--pix);font-size:15px;color:var(--grey-2)}
+.hdr .name .t::before{content:"/ "}
 .hdr .key{white-space:nowrap}
 
 /* osnova: pět linek, jedna nota na kapitolu, playhead = kde zrovna jste */
@@ -277,7 +280,9 @@ code{font-family:var(--pix);font-size:.95em;background:var(--lime);color:var(--i
   .pill.key{display:inline-flex}
   .hdr{grid-template-columns:auto 1fr;gap:16px}
   .hdr .key{display:none}
-  .hdr .name span{display:none}
+  .hdr .name .me{display:none}
+  .hdr .name .t{font-family:var(--sans);font-weight:600;color:var(--ink);letter-spacing:-.01em}
+  .hdr .name .t::before{content:none}
   .staff .nt{pointer-events:none}
   .sheet.blue,.sheet.outro{border-radius:20px 20px 0 0}
   .block{padding:18px 18px}
@@ -295,7 +300,7 @@ code{font-family:var(--pix);font-size:.95em;background:var(--lime);color:var(--i
 <body>
 
 <header class="hdr" id="hdr">
-  <a class="name" href="#top">Jak do UX</a>
+  <div class="name"><a class="me" href="/">Klára Scholleová</a><a class="t" href="#top">Jak do UX</a></div>
   <div class="staff" id="staff" role="navigation" aria-label="Kapitoly"></div>
   <a class="key sm" href="#s8">Napiš mi ↵</a>
 </header>
