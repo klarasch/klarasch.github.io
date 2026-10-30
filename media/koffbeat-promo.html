@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>koffbeat promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Silkscreen&display=swap">
+<style>
+  :root {
+    --void: #f6f4f0; --ink: #2a1e34; --dim: #635a6b; --grey: #a49dab; --line: rgba(42, 30, 52, .14);
+    --accent: #6b3fa0; --good: #a466c8; --ok: #f09a3e; --miss: #d23b3b;
+    --ui: "Inter", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace; --pixel: "Silkscreen", var(--mono);
+  }
+  html, body { margin: 0; height: 100%; background: var(--void); overflow: hidden; }
+  /* the frame keeps 16:9 and letterboxes inside whatever holds it */
+  .fit { position: absolute; inset: 0; display: grid; place-items: center; }
+  .frame { position: relative; width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; overflow: hidden; }
+  .stage {
+    position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden;
+    background: var(--void) radial-gradient(110% 34% at 50% 52%, rgba(255, 254, 252, .7), rgba(255, 254, 252, 0)) no-repeat;
+    color: var(--ink); font-family: var(--ui);
+  }
+  canvas { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
+  .layer { position: absolute; inset: 0; }
+  .layer > * { position: absolute; }
+
+  /* chrome shared by the screens */
+  .mono { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+  .kbd {
+    display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 6px; box-sizing: border-box;
+    border: 1px solid #cfc9d3; border-bottom-width: 2px; border-radius: 4px; background: #fbfaf8;
+    font: 500 11px/1 var(--mono); color: var(--ink);
+  }
+
+  /* home */
+  .logo { left: 56px; top: 40px; display: flex; align-items: flex-end; gap: 10px; font: 400 15px/1 var(--pixel); letter-spacing: .32em; }
+  .logo svg { width: 14px; height: 26px; }
+  .menu { right: 56px; top: 48px; display: flex; gap: 36px; }
+  .panel {
+    left: 56px; right: 56px; top: 384px; height: 196px; box-sizing: border-box;
+    border: 1px solid var(--line); border-radius: 4px; background: rgba(250, 249, 246, .72);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
+  .panel > * { position: absolute; }
+  .seg { display: flex; border: 2px solid var(--ink); }
+  .seg span { display: grid; place-items: center; height: 36px; padding: 0 18px; font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+  .seg span + span { border-left: 2px solid var(--ink); }
+  .seg .on { background: var(--ink); color: #fbfaf8; }
+  .tabs { left: 24px; top: 16px; }
+  .tabs span { width: 176px; }
+  .fields { left: 0; right: 0; top: 70px; height: 92px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); }
+  .fields > div { position: relative; padding: 18px 22px 0; border-left: 1px solid var(--line); }
+  .fields > div:first-child { border-left: 0; }
+  .fields .mono { font-size: 10px; display: block; margin-bottom: 12px; }
+  .fields .seg span { flex: 1; padding: 0 6px; }
+  .sel { height: 36px; border: 2px solid var(--ink); box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font: 400 15px/1 var(--ui); }
+  .panel .note { left: 22px; bottom: 9px; font: 400 12px/1 var(--ui); color: var(--dim); }
+  .go { right: 60px; top: 600px; display: grid; justify-items: end; gap: 8px; }
+  .go .mono { font-size: 11px; letter-spacing: .06em; text-transform: none; }
+  .go .row { display: flex; align-items: center; gap: 22px; }
+  .go b { font: 600 74px/.9 var(--ui); letter-spacing: -.045em; }
+  .go .kbd { min-width: 34px; height: 30px; font-size: 15px; transition: none; }
+  .go svg { width: 42px; height: 30px; }
+
+  /* play */
+  .hd { left: 40px; top: 30px; }
+  .hd .t { font: 500 17px/1.2 var(--ui); }
+  .hd .mono { margin-top: 6px; font-size: 11px; }
+  .ctl { right: 50px; top: 34px; display: flex; align-items: center; gap: 10px; color: var(--dim); }
+  .ctl svg { width: 16px; height: 16px; }
+  .ctl .gap { width: 22px; }
+  .prog { left: 430px; width: 420px; top: 92px; height: 20px; }
+  .prog i { position: absolute; top: 6px; height: 3px; background: #d8d3dc; }
+  .prog .dot { position: absolute; top: 18px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--ink); }
+  .prog .bar { position: absolute; left: -84px; top: 4px; font-size: 10px; }
+  .staff { left: 0; top: 0; width: 1280px; height: 720px; overflow: visible; }
+  .keys { left: 0; right: 0; top: 590px; display: flex; justify-content: center; gap: 28px; }
+  .key { display: grid; justify-items: center; gap: 10px; }
+  .key .cap {
+    display: grid; place-items: center; width: 64px; height: 60px; box-sizing: border-box;
+    border: 1.5px solid #c9c2ce; border-bottom-width: 5px; border-radius: 8px; background: #fbfaf8;
+    font: 500 24px/1 var(--mono); color: var(--ink);
+  }
+  .key .mono { font-size: 10px; }
+
+  /* results */
+  .res { left: 0; right: 0; top: 0; bottom: 0; display: grid; place-content: center; justify-items: center; gap: 6px; text-align: center; }
+  .res .mono { font-size: 12px; }
+  .res .score { font: 600 210px/.9 var(--ui); letter-spacing: -.06em; margin: 8px 0 6px; font-variant-numeric: tabular-nums; }
+  .res .squares { display: flex; gap: 6px; margin: 10px 0 18px; }
+  .res .squares i { width: 12px; height: 12px; }
+  .res .next { font: 500 17px/1 var(--ui); color: var(--dim); }
+  .res .next b { color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="fit"><div class="frame" id="frame">
+<div class="stage" id="stage">
+  <canvas id="sand"></canvas>
+
+  <!-- home: the lesson picker over the idle sand -->
+  <div class="layer" id="home">
+    <div class="logo"><svg viewBox="0 0 7 13" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M5 0h1v1h-1zM5 1h1v1h-1zM5 2h1v1h-1zM5 3h1v1h-1zM5 4h1v1h-1zM5 5h1v1h-1zM5 6h1v1h-1zM6 1h1v1h-1zM6 2h1v1h-1zM1 7h4v1h-4zM0 8h5v1h-5zM0 9h4v1h-4z"/></svg>Koffbeat</div>
+    <div class="menu"><span class="mono">How to play</span><span class="mono">Settings</span></div>
+    <div class="panel" id="panel">
+      <div class="seg tabs"><span class="on">Lessons</span><span>Free practice</span></div>
+      <div class="fields">
+        <div><span class="mono">Lesson</span><div class="sel">9. Three against two <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+        <div><span class="mono">Exercise</span><div class="seg"><span class="on">A</span><span>B</span><span>C</span></div></div>
+        <div><span class="mono">Step</span><div class="seg"><span class="on">Learn</span><span>Prac…</span><span>Coun…</span></div></div>
+        <div><span class="mono">Tempo</span><div class="seg"><span>−</span><span style="flex:3;letter-spacing:.02em;text-transform:none">72 bpm</span><span>+</span></div></div>
+      </div>
+      <div class="note">Warm up on quarter notes, then three against two: one hand plays three while the other plays two.</div>
+    </div>
+    <div class="go">
+      <span class="mono">Quarter notes, exercise A, learn</span>
+      <div class="row"><b>Play</b><span class="kbd" id="enter">↵</span><svg viewBox="0 0 42 30" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 15h37M26 2l13 13-13 13"/></svg></div>
+    </div>
+  </div>
+
+  <!-- play: the header, the staff and the two keys -->
+  <div class="layer" id="play">
+    <div class="hd"><div class="t" id="hdT">Quarter notes, exercise A: learn</div><div class="mono" id="hdS">72 bpm, one hand</div></div>
+    <div class="ctl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"/></svg><span class="kbd">R</span><span class="gap"></span><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" fill="currentColor"/></svg><span class="kbd">Esc</span></div>
+    <div class="prog" id="prog"><span class="mono bar" id="barN">Bar 1 / 2</span><div class="dot" id="pdot"></div></div>
+    <svg class="staff" id="staff" viewBox="0 0 1280 720" aria-hidden="true"></svg>
+    <div class="keys">
+      <div class="key"><div class="cap" id="kF">F</div><span class="mono" id="lF">Tap on the beat</span></div>
+      <div class="key"><div class="cap" id="kJ">J</div><span class="mono" id="lJ">&nbsp;</span></div>
+    </div>
+  </div>
+
+  <!-- results -->
+  <div class="layer" id="res">
+    <div class="res">
+      <span class="mono">Three against two, exercise A</span>
+      <div class="score" id="score">0</div>
+      <div class="squares" id="squares"></div>
+      <div class="next">Every bar in time. <b>Practice step unlocked →</b></div>
+    </div>
+  </div>
+</div>
+</div></div>
+
+<script>
+(() => {
+  /* ======================= timeline helpers (same engine as the slaydy promo) ======================= */
+  // everything sits on a 72 bpm grid: b(n) is the time of beat n
+  const BEAT = 60 / 72, b = (n) => n * BEAT;
+  const T = b(28);
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const io3 = (x) => x < .5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2;
+  const out = (x) => 1 - (1 - x) ** 4;
+  const lerp = (a, c, f) => a + (c - a) * f;
+  const track = (keys, ease = io3) => {
+    keys = keys.map(([n, v]) => [b(n), v]);
+    return (t) => {
+      if (t <= keys[0][0]) return keys[0][1];
+      for (let i = 1; i < keys.length; i++) {
+        if (t <= keys[i][0]) {
+          const [t0, v0] = keys[i - 1], [t1, v1] = keys[i];
+          return lerp(v0, v1, ease((t - t0) / (t1 - t0)));
+        }
+      }
+      return keys[keys.length - 1][1];
+    };
+  };
+  const pulse = (t, at, len = .3) => { const x = (t - at) / len; return x < 0 || x > 1 ? 0 : Math.sin(Math.PI * x); };
+
+  /* ======================= the choreography (in beats) ======================= */
+  //  0 home, sand drifting      3 press ↵                 5–12 two bars of quarter notes, F
+  // 13 level change           14–21 three against two, F left + J right, a new figure each clean bar
+  // 22.5 results, score counts up                         27 back home      28 loop
+  const ENTER = b(3);
+  const GC = { perfect: "#6b3fa0", good: "#a466c8", ok: "#f09a3e" };
+
+  // notes: [beat, hand, grade, x, staff line]
+  const NOTES = [];
+  // part 1: 2 bars of 4/4 quarters on one line
+  const P1Y = 196;
+  for (let i = 0; i < 8; i++) NOTES.push({ at: 5 + i, hand: "F", g: i === 6 ? "good" : "perfect", x: 170 + i * 128 + (i > 3 ? 44 : 0), y: P1Y, part: 1 });
+  // part 2: 4 bars of 2/4, J plays three (quarter-note triplets) against F's two
+  const P2Y = [170, 282], BAR2 = 262, X2 = 128;
+  for (let k = 0; k < 4; k++) {
+    for (let j = 0; j < 3; j++) NOTES.push({ at: 14 + 2 * k + j * 2 / 3, hand: "J", g: k === 2 && j === 1 ? "ok" : (k === 1 && j === 2 ? "good" : "perfect"), x: X2 + k * BAR2 + 40 + j * BAR2 * 0.86 / 3, y: P2Y[0], part: 2 });
+    for (let j = 0; j < 2; j++) NOTES.push({ at: 14 + 2 * k + j, hand: "F", g: "perfect", x: X2 + k * BAR2 + 40 + j * BAR2 * 0.86 / 2, y: P2Y[1], part: 2 });
+  }
+  NOTES.forEach(n => { n.t = b(n.at); });
+  const TAPS = NOTES.map(n => n.t);
+
+  // which part is on screen
+  const homeO = track([[0, 1], [3.2, 1], [4, 0], [27, 0], [27.8, 1]]);
+  const homeY = track([[0, 0], [3.2, 0], [4, -24], [27, 24], [27.8, 0]]);
+  const playO = track([[0, 0], [3.6, 0], [4.4, 1], [22.4, 1], [23, 0]]);
+  const p1O = track([[0, 1], [13, 1], [13.4, 0]]);
+  const p2O = track([[0, 0], [13.4, 0], [13.8, 1]]);
+  const resO = track([[0, 0], [22.8, 0], [23.6, 1], [26.6, 1], [27.2, 0]]);
+  const scoreV = track([[0, 0], [23.2, 0], [25, 96]], out);
+
+  /* ======================= the sand: grains settle onto the nodal lines of a Chladni figure ======================= */
+  // modes (n, m, s) for f = cos(nπx)cos(mπz) + s·cos(mπx)cos(nπz), x, z in [-1, 1] (from the app)
+  const MODES = [[2, 3, 1], [1, 4, -1], [3, 4, -1], [2, 5, 1], [1, 5, -1], [3, 5, 1], [4, 5, -1]];
+  // figure keys: [beat, mode]; each clean bar moves the sand on to a new figure
+  const FIG = [[0, 0], [9, 1], [13, 2], [16, 3], [18, 4], [20, 5], [22, 6], [27.2, 0]].map(([n, m]) => [b(n), m]);
+  const figAt = (t) => {
+    let i = 0;
+    while (i + 1 < FIG.length && t >= FIG[i + 1][0]) i++;
+    const prev = i > 0 ? FIG[i - 1][1] : FIG[FIG.length - 1][1];
+    return { a: MODES[prev], b: MODES[FIG[i][1]], w: io3(clamp((t - FIG[i][0]) / .7)) };
+  };
+  // energy: the idle home drift, plus a kick for every tap (a close tap jolts it more)
+  const baseE = track([[0, .55], [3, .55], [4.5, .06], [22.5, .06], [24, .02], [26.8, .02], [27.8, .55]]);
+  const energy = (t) => {
+    let e = baseE(t);
+    for (const n of NOTES) { const d = t - n.t; if (d >= 0 && d < 2) e += (n.g === "ok" ? .55 : .16) * Math.exp(-d * 4); }
+    return e;
+  };
+  // plate placement: centre y, radius, tilt (steeper on results to frame the finished figure)
+  const plY = track([[0, 300], [3.2, 300], [4.6, 492], [22.5, 492], [24, 380], [26.8, 380], [27.8, 300]]);
+  const plK = track([[0, .36], [22.5, .36], [24, .58], [26.8, .58], [27.8, .36]]);
+  const plR = track([[0, 660], [22.5, 660], [24, 560], [26.8, 560], [27.8, 660]]);
+
+  const PAL = ["#c7382b", "#e06629", "#ed8f3d", "#853d99", "#5e368f", "#b8365f"];
+  const N = 4000;
+  const gx = new Float32Array(N), gz = new Float32Array(N), gc = new Uint8Array(N), gs = new Float32Array(N);
+  // a fixed seed, so every visit starts from the same scatter
+  let seed = 7;
+  const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+  for (let i = 0; i < N; i++) { gx[i] = rnd() * 2 - 1; gz[i] = rnd() * 2 - 1; gc[i] = (rnd() * PAL.length) | 0; gs[i] = .7 + rnd() * .7; }
+
+  const PI = Math.PI;
+  const field = (m, x, z, o) => {
+    const a = m[0] * PI, c = m[1] * PI, s = m[2];
+    const cax = Math.cos(a * x), sax = Math.sin(a * x), ccz = Math.cos(c * z), scz = Math.sin(c * z);
+    const ccx = Math.cos(c * x), scx = Math.sin(c * x), caz = Math.cos(a * z), saz = Math.sin(a * z);
+    o[0] = cax * ccz + s * ccx * caz;
+    o[1] = -a * sax * ccz - s * c * scx * caz;
+    o[2] = -c * cax * scz - s * a * ccx * saz;
+  };
+  const fa = [0, 0, 0], fb = [0, 0, 0];
+  function step(t, dt) {
+    const F = figAt(t), E = energy(t), jit = (.0016 + .03 * E) * dt * 60, pull = Math.min(1, 6 * dt);
+    for (let i = 0; i < N; i++) {
+      const x = gx[i], z = gz[i];
+      field(F.a, x, z, fa); field(F.b, x, z, fb);
+      const w = F.w, f = fa[0] * (1 - w) + fb[0] * w, dx = fa[1] * (1 - w) + fb[1] * w, dz = fa[2] * (1 - w) + fb[2] * w;
+      // a Newton step toward f = 0 (the nodal line), capped so grains glide
+      const g2 = dx * dx + dz * dz + 1e-3;
+      let mx = -f * dx / g2 * pull, mz = -f * dz / g2 * pull;
+      const ml = Math.hypot(mx, mz), cap = .02 * dt * 60;
+      if (ml > cap) { mx *= cap / ml; mz *= cap / ml; }
+      gx[i] = x + mx + (rnd() - .5) * jit;
+      gz[i] = z + mz + (rnd() - .5) * jit;
+      if (gx[i] < -1.02 || gx[i] > 1.02 || gz[i] < -1.02 || gz[i] > 1.02) { gx[i] = rnd() * 2 - 1; gz[i] = rnd() * 2 - 1; }
+    }
+  }
+
+  /* ======================= DOM ======================= */
+  const $ = (id) => document.getElementById(id);
+  const stage = $("stage"), frame = $("frame"), cv = $("sand"), ctx = cv.getContext("2d");
+  const staff = $("staff");
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = (tag, attrs, parent = staff) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+
+  // part 1: one line, 4/4, two bars
+  const g1 = svg("g", {}), g2 = svg("g", {});
+  const timeSig = (g, x, y, top, bot) => {
+    svg("text", { x, y: y - 4, "font-family": "Georgia, serif", "font-weight": 700, "font-size": 30, "text-anchor": "middle", fill: "#2a1e34" }, g).textContent = top;
+    svg("text", { x, y: y + 22, "font-family": "Georgia, serif", "font-weight": 700, "font-size": 30, "text-anchor": "middle", fill: "#2a1e34" }, g).textContent = bot;
+  };
+  const hl1 = svg("rect", { y: P1Y - 40, height: 58, rx: 2, fill: "rgba(107,63,160,.09)" }, g1);
+  svg("rect", { x: 40, y: P1Y - 12, width: 6, height: 24, fill: "#2a1e34" }, g1); svg("rect", { x: 50, y: P1Y - 12, width: 6, height: 24, fill: "#2a1e34" }, g1);
+  timeSig(g1, 84, P1Y, "4", "4");
+  svg("line", { x1: 40, x2: 1240, y1: P1Y, y2: P1Y, stroke: "#2a1e34", "stroke-width": 1.2 }, g1);
+  svg("line", { x1: 680, x2: 680, y1: P1Y - 12, y2: P1Y + 12, stroke: "#2a1e34", "stroke-width": 1.2 }, g1);
+  svg("rect", { x: 1234, y: P1Y - 12, width: 4, height: 24, fill: "#2a1e34" }, g1);
+  svg("line", { x1: 1226, x2: 1226, y1: P1Y - 12, y2: P1Y + 12, stroke: "#2a1e34", "stroke-width": 1.2 }, g1);
+  const BARS1 = [[110, 670], [690, 1220]];
+
+  // part 2: two lines, J (right hand) above, F (left hand) below, 2/4, four bars
+  const hl2 = svg("rect", { y: P2Y[0] - 46, height: P2Y[1] - P2Y[0] + 72, rx: 2, fill: "rgba(107,63,160,.09)" }, g2);
+  P2Y.forEach((y, li) => {
+    svg("line", { x1: 62, x2: 1240, y1: y, y2: y, stroke: "#2a1e34", "stroke-width": 1.2 }, g2);
+    timeSig(g2, 92, y, "2", "4");
+    const tag = svg("text", { x: 34, y: y + 5, "font-family": "IBM Plex Mono, monospace", "font-weight": 500, "font-size": 15, fill: "#635a6b" }, g2);
+    tag.textContent = li ? "F" : "J";
+    for (let k = 1; k <= 4; k++) {
+      const x = X2 + k * BAR2 - 8;
+      if (k < 4) svg("line", { x1: x, x2: x, y1: y - 12, y2: y + 12, stroke: "#2a1e34", "stroke-width": 1.2 }, g2);
+    }
+    svg("rect", { x: 1234, y: y - 12, width: 4, height: 24, fill: "#2a1e34" }, g2);
+    svg("line", { x1: 1226, x2: 1226, y1: y - 12, y2: y + 12, stroke: "#2a1e34", "stroke-width": 1.2 }, g2);
+  });
+  const BARS2 = [0, 1, 2, 3].map(k => [X2 + k * BAR2 + 6, X2 + (k + 1) * BAR2 - 18]);
+  // triplet brackets over each group of three
+  for (let k = 0; k < 4; k++) {
+    const xs = NOTES.filter(n => n.part === 2 && n.hand === "J").slice(k * 3, k * 3 + 3).map(n => n.x);
+    const y = P2Y[0] - 56, x0 = xs[0] - 2, x1 = xs[2] + 14, xm = (x0 + x1) / 2;
+    svg("path", { d: `M${x0} ${y + 6}V${y}H${xm - 10}M${xm + 10} ${y}H${x1}V${y + 6}`, fill: "none", stroke: "#635a6b", "stroke-width": 1.2 }, g2);
+    svg("text", { x: xm, y: y + 5, "font-family": "Georgia, serif", "font-style": "italic", "font-weight": 700, "font-size": 15, "text-anchor": "middle", fill: "#635a6b" }, g2).textContent = "3";
+  }
+
+  // note glyphs: a tilted head and a stem, grey until played, the grade colour for a moment, then ink
+  NOTES.forEach(n => {
+    const g = svg("g", { transform: `translate(${n.x} ${n.y})` }, n.part === 1 ? g1 : g2);
+    n.head = svg("ellipse", { cx: 0, cy: 0, rx: 9, ry: 6.6, transform: "rotate(-22)", fill: "#a49dab" }, g);
+    n.stem = svg("rect", { x: 7.4, y: -44, width: 1.8, height: 43, fill: "#a49dab" }, g);
+    n.g_ = g;
+  });
+
+  // results squares: one per note of part 2, in its grade colour
+  const sq = $("squares");
+  NOTES.filter(n => n.part === 2).sort((a, c) => a.at - c.at).forEach(n => { const i = document.createElement("i"); i.style.background = GC[n.g]; sq.appendChild(i); n.sq = i; });
+
+  // progress segments
+  const prog = $("prog");
+  const segs = [0, 1, 2, 3].map(i => { const e = document.createElement("i"); prog.appendChild(e); return e; });
+
+  /* ======================= render ======================= */
+  let K = 1, Q = 1;
+  const fit = () => {
+    K = frame.clientWidth / 1280; stage.style.transform = `scale(${K})`;
+    Q = Math.min(2, K * (devicePixelRatio || 1));
+    cv.width = Math.round(1280 * Q); cv.height = Math.round(720 * Q);
+  };
+  const set = (el, prop, v) => { if (el.style[prop] !== v) el.style[prop] = v; };
+  const hex = (c) => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+  const mix = (c1, c2, f) => { const a = hex(c1), z = hex(c2); return `rgb(${a.map((v, i) => Math.round(v + (z[i] - v) * f)).join(",")})`; };
+
+  function drawSand(t) {
+    ctx.setTransform(Q, 0, 0, Q, 0, 0);
+    ctx.clearRect(0, 0, 1280, 720);
+    const cy = plY(t), k = plK(t), R = plR(t);
+    // ripples: a soft ring under every tap
+    for (const n of NOTES) {
+      const age = (t - n.t) / 1.5;
+      if (age < 0 || age > 1) continue;
+      const rr = R * (.08 + 1.1 * out(age));
+      ctx.strokeStyle = n.g === "ok" ? "rgba(240,154,62,1)" : "rgba(107,63,160,1)";
+      for (let j = 0; j < 3; j++) {
+        ctx.globalAlpha = (1 - age) * [.05, .07, .12][j];
+        ctx.lineWidth = [22, 12, 4][j] * (1 - age * .5);
+        ctx.beginPath(); ctx.ellipse(640, cy, rr, rr * k, 0, 0, PI * 2); ctx.stroke();
+      }
+    }
+    // grains, drawn colour by colour; nearer grains are bigger, the plate's rim fades out
+    for (let c = 0; c < PAL.length; c++) {
+      ctx.fillStyle = PAL[c];
+      for (let i = 0; i < N; i++) {
+        if (gc[i] !== c) continue;
+        const x = gx[i], z = gz[i];
+        const p = 1 / (1 - .3 * z);
+        const rim = clamp((1.02 - Math.max(Math.abs(x), Math.abs(z))) / .25);
+        if (rim <= 0) continue;
+        ctx.globalAlpha = .88 * rim;
+        const sz = 2.3 * gs[i] * p;
+        ctx.fillRect(640 + x * R * p - sz / 2, cy + z * R * k * p - sz / 2, sz, sz);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function render(t) {
+    drawSand(t);
+
+    // home
+    const ho = homeO(t);
+    set($("home"), "opacity", ho.toFixed(3));
+    set($("home"), "transform", `translateY(${homeY(t).toFixed(1)}px)`);
+    set($("home"), "visibility", ho < .01 ? "hidden" : "visible");
+    const ep = pulse(t, ENTER - .05, .3);
+    $("enter").style.transform = `translateY(${(ep * 2).toFixed(2)}px)`;
+    set($("enter"), "borderBottomWidth", ep > .3 ? "1px" : "2px");
+    set($("enter"), "background", ep > .3 ? "#e9e1f2" : "#fbfaf8");
+
+    // play
+    const po = playO(t), o1 = p1O(t), o2 = p2O(t);
+    set($("play"), "opacity", po.toFixed(3));
+    set($("play"), "visibility", po < .01 ? "hidden" : "visible");
+    g1.style.opacity = o1; g2.style.opacity = o2;
+    g1.style.transform = `translateY(${((1 - o1) * -12).toFixed(1)}px)`; g2.style.transform = `translateY(${((1 - o2) * 12).toFixed(1)}px)`;
+    const part = t < b(13.4) ? 1 : 2;
+    const hdT = part === 1 ? "Quarter notes, exercise A: learn" : "Three against two, exercise A: learn";
+    if ($("hdT").textContent !== hdT) $("hdT").textContent = hdT;
+    const hdS = part === 1 ? "72 bpm, one hand" : "72 bpm, both hands";
+    if ($("hdS").textContent !== hdS) $("hdS").textContent = hdS;
+    $("lF").textContent = part === 1 ? "Tap on the beat" : "Left hand";
+    $("lJ").innerHTML = part === 1 ? "&nbsp;" : "Right hand";
+    set($("kJ"), "opacity", part === 1 ? ".45" : "1");
+
+    // current bar: highlight, progress segments
+    const bars = part === 1 ? BARS1 : BARS2, len = part === 1 ? 4 : 2, start = part === 1 ? 5 : 14;
+    const cur = Math.floor((t / BEAT - start) / len);
+    const hl = part === 1 ? hl1 : hl2;
+    if (cur >= 0 && cur < bars.length) { hl.setAttribute("x", bars[cur][0]); hl.setAttribute("width", bars[cur][1] - bars[cur][0]); hl.style.opacity = 1; }
+    else hl.style.opacity = 0;
+    const nb = bars.length, sw = (420 - (nb - 1) * 16) / nb;
+    segs.forEach((e, i) => {
+      if (i >= nb) { e.style.display = "none"; return; }
+      e.style.display = "block"; e.style.left = i * (sw + 16) + "px"; e.style.width = sw + "px";
+      const done = i < cur, now = i === cur;
+      e.style.background = done ? "#6b3fa0" : now ? "#2a1e34" : "#d8d3dc";
+      e.style.top = done || now ? "2px" : "6px"; e.style.height = done || now ? "10px" : "3px";
+    });
+    const bt = clamp((t / BEAT - start) / (len * nb));
+    $("pdot").style.left = (bt * 420).toFixed(1) + "px";
+    const bn = `Bar ${Math.min(nb, Math.max(1, cur + 1))} / ${nb}`;
+    if ($("barN").textContent !== bn) $("barN").textContent = bn;
+
+    // notes
+    for (const n of NOTES) {
+      const d = t - n.t;
+      const col = d < 0 ? "#a49dab" : d < .45 ? GC[n.g] : mix(GC[n.g], "#2a1e34", clamp((d - .45) / .35));
+      n.head.setAttribute("fill", col); n.stem.setAttribute("fill", col);
+      const pop = pulse(t, n.t, .28);
+      n.g_.setAttribute("transform", `translate(${n.x} ${n.y}) scale(${(1 + .35 * pop).toFixed(3)})`);
+    }
+
+    // keys
+    for (const h of ["F", "J"]) {
+      let pr = 0, g = null;
+      for (const n of NOTES) { if (n.hand !== h) continue; const p = pulse(t, n.t - .05, .24); if (p > pr) { pr = p; g = n.g; } }
+      const cap = $("k" + h);
+      cap.style.transform = `translateY(${(pr * 4).toFixed(2)}px)`;
+      cap.style.borderBottomWidth = (5 - pr * 3.5).toFixed(2) + "px";
+      cap.style.background = pr > .05 ? mix("#fbfaf8", GC[g], pr * .35) : "#fbfaf8";
+    }
+
+    // results
+    const ro = resO(t);
+    set($("res"), "opacity", ro.toFixed(3));
+    set($("res"), "visibility", ro < .01 ? "hidden" : "visible");
+    $("res").style.transform = `translateY(${((1 - ro) * 16).toFixed(1)}px)`;
+    const sc = String(Math.round(scoreV(t)));
+    if ($("score").textContent !== sc) $("score").textContent = sc;
+    NOTES.forEach((n, i) => { if (n.sq) n.sq.style.opacity = clamp((t - b(23) - i * .03) / .2); });
+  }
+
+  /* ======================= clock ======================= */
+  const still = matchMedia("(prefers-reduced-motion: reduce)");
+  let playing = true, last = performance.now(), t = 0, visible = true;
+  // the sand is a simulation: catch it up to a time without drawing
+  const settle = (to, secs = 3) => { for (let s = Math.max(0, to - secs); s < to; s += 1 / 60) step(s, 1 / 60); };
+  const tick = (now) => {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (playing && visible && !document.hidden && !still.matches) { t = (t + dt) % T; step(t, dt); }
+    render(t);
+    requestAnimationFrame(tick);
+  };
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(frame);
+  // ?t=7.9 freezes a frame (handy for a poster image)
+  const fixed = parseFloat(new URLSearchParams(location.search).get("t"));
+  if (!isNaN(fixed)) { t = fixed; playing = false; }
+  if (still.matches) { t = b(17.2); playing = false; }
+  window.promo = { seek: (x) => { t = x; settle(x); playing = false; }, play: () => { playing = true; }, render };
+
+  const start = () => { fit(); settle(t, playing ? 2 : 4); requestAnimationFrame(tick); };
+  addEventListener("resize", fit);
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(start);
+})();
+</script>
+</body>
+</html>
