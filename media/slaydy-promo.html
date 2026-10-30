@@ -6,7 +6,8 @@
 <title>slaydy promo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500&family=Instrument+Serif:ital@1&family=Inter:wght@400;500&family=Inter+Tight:wght@600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500&family=Instrument+Serif:ital@1&family=Inter:wght@400;500&family=Inter+Tight:wght@600;700&family=JetBrains+Mono:wght@500;600&family=Schibsted+Grotesk:wght@400;500;600&display=swap">
+<style>@font-face { font-family: "Geist Pixel Square"; src: url("../assets/fonts/geist-pixel-square.woff2") format("woff2"); font-display: block; }</style>
 <style>
   html, body { margin: 0; height: 100%; background: #e9e6df; overflow: hidden; }
   /* the frame keeps 16:9 and letterboxes inside whatever holds it */
@@ -30,10 +31,16 @@
   /* brand type, as in themes/*.css: slaydy = Bricolage + vermilion serif italic emphasis */
   .slide[data-f="sl"]   { --fd: "Bricolage Grotesque", "Inter Tight", sans-serif; --fw: 800; --ls: -.035em; --fb: "IBM Plex Sans", "Inter", sans-serif; --fm: "IBM Plex Mono", monospace; }
   .slide[data-f="mid"]  { --fd: "Inter Tight", "Inter", sans-serif; --fw: 600; --ls: -.028em; --fb: "Inter", sans-serif; --fm: "JetBrains Mono", monospace; }
-  .slide[data-f="acme"] { --fd: "Inter Tight", "Inter", sans-serif; --fw: 700; --ls: -.03em;  --fb: "Inter", sans-serif; --fm: "JetBrains Mono", monospace; }
+  .slide[data-f="ks"]   { --fd: "Schibsted Grotesk", sans-serif; --fw: 600; --ls: -.04em; --fb: "Schibsted Grotesk", sans-serif; --fm: "Geist Pixel Square", monospace; }
   .s > * { position: absolute; }
   .t { margin: 0; font-family: var(--fd); font-weight: var(--fw); letter-spacing: var(--ls); line-height: 1.04; color: var(--fg); text-wrap: balance; }
   .t strong { font-weight: inherit; color: var(--em); }
+  /* Klára's brand: emphasis is a pixel-type marker highlight, as on her homepage */
+  .slide[data-f="ks"] .t strong { font-family: "Geist Pixel Square", monospace; font-weight: 400; font-size: .9em; letter-spacing: -.04em; color: var(--fg); background: var(--accent-2); padding: 0 .14em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .slide[data-f="ks"] .section-t strong { background: var(--accent-2); color: #0b0b0b; }
+  .ft .k { display: none; }
+  .slide[data-f="ks"] .ft .k { display: inline; }
+  .slide[data-f="ks"] .ft .s { display: none; }
   .slide[data-f="sl"] .t strong { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -.01em; font-size: 1.08em; }
   .ey { font: 500 15px/1 var(--fm); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
   .ey b { font-weight: 500; color: var(--accent); margin-left: .5em; }
@@ -51,9 +58,9 @@
   .section { background: var(--accent); }
 
   /* hero: the site's cover slide (edit-mode chrome rides inside it) */
-  .title-grp { left: 8%; top: 31%; }
+  .title-grp { left: 8%; top: 35%; }
   .sel { position: absolute; inset: -12px -18px; border: 2px dashed var(--accent); border-radius: 10px; opacity: 0; }
-  .ttl { position: relative; margin: 0; font-size: 80px; line-height: 1; }
+  .ttl { position: relative; margin: 0; font-size: 88px; line-height: 1.02; }
   .ttl .ln { display: block; white-space: nowrap; }
   .ttl .w { border-radius: 6px; background: color-mix(in srgb, var(--accent) var(--sel, 0%), transparent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) var(--sel, 0%), transparent); }
   .caret { display: inline-block; width: 4px; height: .8em; margin: 0 -2px; vertical-align: -.04em; border-radius: 2px; background: var(--accent); opacity: 0; }
@@ -147,7 +154,7 @@
   const THEMES = [
     { f: "sl",   app: "#e9e6df", bg: "#fbfaf7", fg: "#131318", muted: "rgba(19,19,24,.6)",     faint: "rgba(19,19,24,.14)",    surface: "#f2efe8", accent: "#3a2fd6", accent2: "#d93a1f", accentFg: "#fbfaf7", em: "#d93a1f" }, // slaydy (the site)
     { f: "mid",  app: "#08080a", bg: "#0b0b0f", fg: "#f6f5f3", muted: "rgba(246,245,243,.56)", faint: "rgba(246,245,243,.13)", surface: "#14141b", accent: "#ff5b2e", accent2: "#7c5cff", accentFg: "#0b0b0f", em: "#ff5b2e" }, // stock midnight
-    { f: "acme", app: "#e6ebf3", bg: "#ffffff", fg: "#1b2b4b", muted: "rgba(27,43,75,.6)",     faint: "rgba(27,43,75,.13)",    surface: "#f1f4fa", accent: "#0a66ff", accent2: "#ffb000", accentFg: "#ffffff", em: "#0a66ff" }, // acme
+    { f: "ks",   app: "#e3e6eb", bg: "#f6f7f9", fg: "#0b0b0b", muted: "rgba(11,11,11,.58)",    faint: "rgba(11,11,11,.12)",    surface: "#ffffff", accent: "#2b3bff", accent2: "#dcff3d", accentFg: "#ffffff", em: "#0b0b0b" }, // Klára's own brand
   ];
   THEMES.push(THEMES[0]); // midnight again, so the loop closes
   const parse = (c) => {
@@ -179,7 +186,7 @@
   const r = (cls, x, y, w, h, extra = "") => `<div class="${cls}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;${extra}"></div>`;
   // a title in the brand's display face; <strong> is the brand's emphasis
   const h = (html, x, y, size, w = 76, extra = "") => `<h2 class="t" style="left:${x}%;top:${y}%;width:${w}%;font-size:${size}px;${extra}">${html}</h2>`;
-  const chrome = (n) => `<div class="ft">slaydy</div><div class="pn">${String(n).padStart(2, "0")}</div>`;
+  const chrome = (n) => `<div class="ft"><span class="s">slaydy</span><span class="k">Klára Scholleová</span></div><div class="pn">${String(n).padStart(2, "0")}</div>`;
   const SLIDES = [
     // statement
     h("A generated deck nobody can touch is <strong>dead on arrival.</strong>", 8, 26, 76, 80) + chrome(1),
@@ -195,15 +202,15 @@
       [0, 1, 2].map(i => r("sf", 8 + i * 28.7, 34, 26, 50) + r(i === 0 ? "a" : "f", 11 + i * 28.7, 40, 4.4, 7.8, "border-radius:10px") + r("b", 11 + i * 28.7, 60, 16, 3.4) + r("m", 11 + i * 28.7, 68, 19, 2.6) + r("m", 11 + i * 28.7, 74, 13, 2.6)).join("") + chrome(4),
     // section
     `<div style="inset:0" class="section"></div>` + `<div class="ey" style="left:8%;top:30%;color:var(--accent-fg);opacity:.7">03 · Themes</div>` +
-      h("Now press <strong style=\"color:inherit\">T.</strong>", 8, 40, 124, 86, "color:var(--accent-fg)") + `<div class="ft" style="color:var(--accent-fg)">slaydy</div><div class="pn" style="color:var(--accent-fg)">05</div>`,
+      h("Now press <strong style=\"color:inherit\">T.</strong>", 8, 40, 124, 86, "color:var(--accent-fg)").replace('class="t"', 'class="t section-t"') + `<div class="ft" style="color:var(--accent-fg)"><span class="s">slaydy</span><span class="k">Klára Scholleová</span></div><div class="pn" style="color:var(--accent-fg)">05</div>`,
     // hero: the site's cover
     `<div class="mini m1"><b>Acme</b><span>Q3 business <em>review</em></span><i></i></div>` +
       `<div class="mini m2"><b>Nocturne</b><span>The <em>launch</em> plan</span><i></i></div>` +
       `<div class="mini m3"><b>Fernworks</b><span>roadmap <em>2027</em></span><i></i></div>` +
       `<div class="ey hero-ey">slaydy<b>a deck skill for Claude</b></div>` +
       `<div class="title-grp" id="tg"><div class="sel" id="sel"></div>` +
-      `<h1 class="t ttl"><span class="ln">Your <span id="w" class="w">brand’s</span><span class="caret" id="caret"></span></span>` +
-      `<span class="ln">deck skill. <strong>Don’t</strong></span><span class="ln"><strong>rebuild the runtime.</strong></span></h1></div>` +
+      `<h1 class="t ttl"><span class="ln">Your <span id="w" class="w">next deck</span><span class="caret" id="caret"></span>,</span>` +
+      `<span class="ln">made with <strong>slaydy</strong>.</span></h1></div>` +
       `<div class="ln1 hero-rule"></div><div class="hero-note">This is a real deck &nbsp;—&nbsp; → to advance &nbsp;—&nbsp; T switches the brand</div>`,
     // code: nine tokens
     h("A brand starts at <strong>nine tokens.</strong>", 8, 11, 54) + r("sf", 8, 32, 84, 54) +
@@ -324,8 +331,8 @@
     [6, 6.8, { x: 980, y: 760 }, { el: "btn-ov", dx: 10, dy: 8 }],
     [9, 9.8, null, { el: "btn-theme", dx: 4, dy: 8 }],
     [12, 12.8, null, { el: "btn-edit", dx: 2, dy: 8 }],
-    [13.75, 14.85, null, { el: "w", left: true, dx: 132, dy: 6 }],
-    [15.3, 15.9, null, { el: "w", left: true, dx: 330, dy: -40 }],   // step aside so the typing stays clear
+    [13.75, 14.85, null, { el: "w", left: true, dx: 150, dy: 6 }],
+    [15.3, 15.9, null, { el: "w", left: true, dx: 380, dy: -40 }],   // step aside so the typing stays clear
     [17.25, 17.9, null, { x: 880, y: 600 }],
     [19, 19.8, null, { x: 1180, y: 820 }],
   ].map(([a, z, f, to]) => [b(a), b(z), f, to]);
@@ -334,7 +341,7 @@
   const pressT = [CLICK.ov, CLICK.th1, CLICK.th2, CLICK.edit, CLICK.word - .16, CLICK.word, CLICK.away];
 
   // the rewrite: double-click selects "next deck" on 15, typing replaces it across beat 16
-  const OLD = "brand’s", NEW = "team’s";
+  const OLD = "next deck", NEW = "best deck";
   const wordAt = (t) => t < b(16) ? OLD : NEW.slice(0, Math.min(NEW.length, 1 + Math.floor((t - b(16)) / (BEAT / NEW.length))));
   const selPct = track([[0, 0], [15, 0], [15.15, 34], [16, 34], [16.01, 0]], io3);
   const boxO = track([[0, 0], [14.85, 0], [15, 1], [18, 1], [18.3, 0]], io3);
@@ -348,7 +355,7 @@
   const q = (sel) => hero.querySelector(sel), qa = (sel) => [...hero.querySelectorAll(sel)];
   const heroParts = [
     [q(".m1"), BL.m1, "c"], [q(".m2"), BL.m2, "c"], [q(".m3"), BL.m3, "c"],
-    [q(".hero-ey"), BL.ey, "x"], [qa(".ln")[0], BL.t1, "y"], [qa(".ln")[1], BL.t2, "y"], [qa(".ln")[2], BL.t3, "y"],
+    [q(".hero-ey"), BL.ey, "x"], [qa(".ln")[0], BL.t1, "y"], [qa(".ln")[1], BL.t2, "y"],
     [q(".hero-rule"), BL.rule, "x"], [q(".hero-note"), BL.note, "o"],
   ];
   let K = 1;
