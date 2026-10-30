@@ -2,344 +2,323 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Jak do UX — edice 2026</title>
 <meta name="description" content="Subjektivní, nespisovnej a upřímnej guide pro aspirující UXáky — v době, kdy AI generuje obrazovky a výmluvy umřely. Od Kláry Scholleový.">
 <meta property="og:title" content="Jak do UX — edice 2026">
 <meta property="og:description" content="Vygenerovat věc je snadný. Odladit experience je ta práce. Upřímnej guide, jak se dostat do UX.">
 <meta property="og:type" content="article">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='%23ffe600' stroke='%23131313' stroke-width='3'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#F6F7F9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'%3E%3Cpath fill='%230B0B0B' d='M1 1h6v6H1z'/%3E%3Cpath fill='%23DCFF3D' d='M2 2h4v4H2z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:ital,wght@0,400..700;1,400..700&family=Hanken+Grotesk:ital,wght@0,300..800;1,300..800&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+<link rel="preload" href="../assets/fonts/geist-pixel-square.woff2" as="font" type="font/woff2" crossorigin>
 <script>document.documentElement.classList.add('js')</script>
 <style>
 /* ============================================================
-   JAK DO UX · 2026
-   listy papíru + jedna červená nit — flat, clean, editorial
+   JAK DO UX · 2026 — v brandu ksch.cz
+   mist + inkoust, modrá a limetková, pixel font, notová osnova
    ============================================================ */
+@font-face{font-family:'Geist Pixel Square';src:url('../assets/fonts/geist-pixel-square.woff2') format('woff2');font-display:swap}
 :root{
-  --ink:#131313;
-  --ink-60:rgba(19,19,19,.6);
-  --ink-45:rgba(19,19,19,.45);
-  --hair:rgba(19,19,19,.14);
-  --paper:#fbfaf8;
-  --red:#131313; /* linky a nit = inkoust (paleta Fix) */
-  --red-soft:rgba(19,19,19,.14);
-  --hl:#ffe600; /* žlutej zvýrazňovač — jedinej barevnej akcent */
-  --mono:'Spline Sans Mono',ui-monospace,monospace;
-  --sans:'Hanken Grotesk',-apple-system,sans-serif;
-  --disp:'Familjen Grotesk',var(--sans);
-  --pad:clamp(22px,5vw,76px);
-  --maxw:760px;
+  --blue:#2B3BFF; --ink:#0B0B0B; --lime:#DCFF3D; --mist:#F6F7F9;
+  --grey:#474C53; --grey-2:#6A7078; --hair:rgba(11,11,11,.12);
+  --pix:'Geist Pixel Square',ui-monospace,monospace;
+  --sans:'Schibsted Grotesk',system-ui,sans-serif;
+  --pad:clamp(20px,5vw,80px); --maxw:740px; --hdr:64px;
+  --ease:cubic-bezier(.2,.8,.2,1);
 }
+@media (max-width:719px){:root{--pad:20px;--hdr:56px}}
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{
-  font-family:var(--sans);
-  background:var(--ink);
-  color:var(--ink);
-  line-height:1.65;
-  font-size:clamp(15.5px,1vw + 10px,17px);
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
+  font-family:var(--sans);color:var(--ink);
+  background:linear-gradient(180deg,#F6F7F9 0%,#EEF1F5 100%) fixed,var(--mist);
+  line-height:1.6;font-size:clamp(16px,1vw + 10px,18px);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip;
 }
-::selection{background:var(--hl);color:var(--ink)}
-
-a{color:inherit;text-decoration:underline;text-decoration-color:rgba(19,19,19,.3);text-decoration-thickness:1.5px;text-underline-offset:3px;transition:background-color .15s ease,text-decoration-color .15s ease}
-a:hover{background-color:var(--hl);text-decoration-color:var(--ink);color:var(--ink)}
+::selection{background:var(--lime);color:var(--ink)}
+a{color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:rgba(11,11,11,.35);transition:background-color .15s,text-decoration-color .15s}
+a:hover{background:var(--lime);color:var(--ink);text-decoration-color:var(--ink)}
 strong{font-weight:600}
-em{font-style:italic}
+a:focus-visible,button:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:3px}
 
-/* ---------- nit: levá kolejnice ---------- */
-.rail{position:fixed;left:clamp(8px,2vw,28px);top:0;bottom:0;width:2px;background:var(--red-soft);z-index:90}
-.rail .fill{position:absolute;top:0;left:0;width:100%;height:var(--p,0%);background:var(--red);pointer-events:none}
-.rail .hit{position:absolute;top:0;bottom:0;left:-12px;right:-16px;touch-action:none;cursor:grab}
-.rail.scrubbing .hit{cursor:grabbing}
-.rail .knot{
-  position:absolute;left:50%;transform:translate(-50%,-50%);
-  width:9px;height:9px;border-radius:50%;
-  background:var(--paper);border:1.5px solid var(--red);
-  cursor:pointer;transition:transform .18s ease,background .18s ease;padding:0;
-}
-.rail .knot:hover{transform:translate(-50%,-50%) scale(1.55);background:var(--hl)}
-.rail .knot.passed{background:var(--red)}
-.rail .knot::after{
-  content:attr(data-label);position:absolute;left:16px;top:50%;
-  transform:translateY(-50%) translateX(-6px);
-  background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:10.5px;
-  padding:5px 10px;border-radius:3px;white-space:nowrap;letter-spacing:.02em;
-  opacity:0;pointer-events:none;transition:opacity .15s ease,transform .15s ease;
-}
-.rail .knot:hover::after,.rail .knot.show::after{opacity:1;transform:translateY(-50%)}
+/* ---------- pixel helpery (stejný jako na homepage) ---------- */
+.pix,.eyebrow{font-family:var(--pix);font-weight:400}
+.num{display:inline-block;padding:1px 6px 2px;border-radius:4px;font-family:var(--pix);font-size:.85em;line-height:1.2;font-weight:400;background:var(--ink);color:var(--lime);letter-spacing:0}
+.num.b{background:var(--blue);color:#fff}
+.hl{font-family:var(--pix);font-weight:400;font-size:.9em;letter-spacing:-.04em;-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 .14em;margin:0 .04em}
+.hl.b{background:var(--blue);color:#fff}
+.hl.l{background:var(--lime);color:var(--ink)}
 
-/* ---------- listy ---------- */
-.sheet{
-  position:relative;
-  border-radius:18px 18px 0 0;
-  margin-top:-20px;
-  padding:calc(var(--pad) + 20px) var(--pad) calc(var(--pad) + 8px);
-  box-shadow:0 -1px 0 rgba(19,19,19,.07), 0 -14px 28px rgba(19,19,19,.06);
+/* ---------- keycap ---------- */
+.key{
+  position:relative;display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--pix);color:var(--ink);background:var(--lime);text-decoration:none;
+  border:1.5px solid var(--ink);border-bottom-width:6px;border-radius:10px;
+  cursor:pointer;user-select:none;-webkit-user-select:none;
+  transition:transform .35s cubic-bezier(.3,1.9,.45,1),border-bottom-width .1s;
 }
-.sheet:first-of-type{margin-top:0;border-radius:0;padding-top:var(--pad);box-shadow:none}
+.key:hover{background:var(--lime);transform:translateY(-2px)}
+.key:active{transform:translateY(4px);border-bottom-width:2px;transition:transform .06s,border-bottom-width .06s}
+.key.sm{font-size:16px;padding:8px 15px 6px}
+.key.md{font-size:clamp(20px,2.4vw,28px);padding:.35em .65em .28em;border-width:2px;border-bottom-width:8px;border-radius:14px}
+.key.md:active{border-bottom-width:3px;transform:translateY(5px)}
+.key.ink{background:var(--ink);color:var(--lime);border-color:var(--lime)}
+.key.ink:hover{background:var(--ink);color:var(--lime)}
+
+/* ---------- hlavička s osnovou ---------- */
+.hdr{
+  position:fixed;top:0;left:0;right:0;z-index:100;height:var(--hdr);
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(16px,3vw,48px);
+  padding:0 var(--pad);
+}
+.hdr::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:rgba(246,247,249,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(11,11,11,.06);opacity:0;transition:opacity .3s;
+}
+.hdr.solid::before{opacity:1}
+.hdr .name{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;text-decoration:none}
+.hdr .name span{font-family:var(--pix);font-weight:400;color:var(--grey-2);margin-left:8px}
+.hdr .name:hover{background:none;opacity:.6}
+.hdr .key{white-space:nowrap}
+
+/* osnova: pět linek, jedna nota na kapitolu, playhead = kde zrovna jste */
+.staff{position:relative;height:36px;opacity:0;transition:opacity .4s}
+.hdr.solid .staff{opacity:1}
+.staff .ln{position:absolute;left:0;right:0;height:1px;background:rgba(11,11,11,.16)}
+.staff .nt{
+  position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;padding:0;border:0;background:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.staff .nt svg{position:absolute;left:50%;top:50%;width:12px;height:8px;margin:-4px 0 0 -6px;shape-rendering:crispEdges;transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
+.staff .nt:hover svg,.staff .nt:focus-visible svg{transform:scale(1.5)}
+.staff .nt:focus-visible{outline:none}
+.staff .nt .tip{
+  position:absolute;left:50%;top:26px;transform:translateX(-50%);white-space:nowrap;
+  font-family:var(--pix);font-size:12px;color:var(--ink);background:var(--lime);padding:1px 6px;border-radius:3px;
+  opacity:0;pointer-events:none;transition:opacity .15s;
+}
+.staff .nt:hover .tip,.staff .nt:focus-visible .tip{opacity:1}
+.staff .ph{position:absolute;top:-6px;bottom:-6px;width:1.5px;background:var(--blue);transition:left .12s linear}
+.staff .now{position:absolute;top:calc(100% + 4px);font-family:var(--pix);font-size:12px;color:#fff;background:var(--blue);padding:1px 6px;border-radius:3px;white-space:nowrap;transform:translateX(-50%);transition:left .12s linear}
+.staff .nt:hover ~ .now{opacity:0}
+
+/* ---------- layout ---------- */
+main{position:relative}
+.sheet{position:relative;padding:clamp(110px,12vw,180px) var(--pad) 0}
 .sheet-inner{max-width:var(--maxw);margin:0 auto;position:relative}
+.sheet[id]{scroll-margin-top:calc(var(--hdr) - 40px)}
 
-/* listy: jednotnej papír (ztmavování zrušený), kontrast až černý outro */
-.t0,.t1,.t2,.t3,.t4,.t5,.t6{background:var(--paper)}
-.t-ink{background:#121110;color:#f0eee8}
-.t-ink a{text-decoration-color:rgba(240,238,232,.35)}
-.t-ink .numeral b{color:var(--hl)}
-.t-ink .knot-final path,.t-ink .knot-final circle{stroke:var(--hl)}
-.t-ink .knot-final circle{fill:var(--hl)!important}
+.numeral{font-family:var(--pix);font-size:16px;color:var(--grey-2);margin-bottom:22px;display:flex;align-items:center;gap:10px}
+.numeral b{font-weight:400;order:2}
+.numeral b{display:inline-block;padding:1px 6px 2px;border-radius:4px;font-size:.85em;line-height:1.2;background:var(--ink);color:var(--lime)}
 
-/* ---------- typografie ---------- */
-.numeral{
-  font-family:var(--mono);font-size:11px;letter-spacing:.16em;
-  color:var(--ink-45);margin-bottom:34px;font-weight:400;text-transform:uppercase;
-}
-.numeral b{color:var(--red);font-weight:500;margin-right:6px}
-.t-ink .numeral{color:rgba(240,238,232,.4)}
-h1,h2,h3,.claim,.chmenu a,blockquote{font-family:var(--disp)}
-h2{
-  font-weight:600;
-  font-size:clamp(1.75rem,4.6vw,2.7rem);
-  line-height:1.05;letter-spacing:-.03em;margin-bottom:28px;
-}
 h1,h2,h3{text-wrap:balance}
 p{text-wrap:pretty}
-h3{font-weight:600;font-size:clamp(1.05rem,2.2vw,1.2rem);letter-spacing:-.015em;margin:40px 0 12px}
-.hn{
-  font-family:var(--mono);font-weight:400;font-size:.6em;color:var(--red);
-  vertical-align:.55em;margin-right:.7em;letter-spacing:.06em;
-}
-p{margin-bottom:14px;max-width:62ch}
-ul,ol{margin:0 0 16px 20px;max-width:60ch}
-li{margin-bottom:10px}
-li::marker{color:var(--red);font-weight:500}
-.kicker{font-family:var(--mono);font-size:12px;color:var(--ink-45);margin:-18px 0 26px;letter-spacing:.02em}
-.t-ink .kicker{color:rgba(240,238,232,.45)}
+h2{font-weight:600;font-size:clamp(30px,4.2vw,54px);line-height:1.04;letter-spacing:-.03em;margin-bottom:32px}
+h3{font-weight:600;font-size:clamp(19px,2vw,23px);line-height:1.2;letter-spacing:-.02em;margin:48px 0 12px}
+p{margin-bottom:16px;max-width:64ch;color:var(--grey)}
+p strong,li strong{color:var(--ink)}
+ul,ol{margin:0 0 18px 22px;max-width:62ch;color:var(--grey)}
+li{margin-bottom:12px;padding-left:4px}
+ul li::marker{content:"■  ";font-size:.6em;color:var(--blue)}
+ol li::marker{font-family:var(--pix);color:var(--blue)}
+.kicker{font-family:var(--pix);font-size:15px;color:var(--grey-2);margin:-18px 0 30px}
 
-/* zesnulý výmluvy — čitelný, jen decentně pohřbený */
-.rip{color:var(--ink-60);font-style:italic}
-.rip sup{font-family:var(--mono);font-style:normal;font-size:.6em;color:var(--red);margin-left:4px;letter-spacing:.05em;white-space:nowrap}
-/* žlutej marker — přejede přes text při revealu */
+/* číslování v h3 */
+.hn{display:inline-block;margin-right:12px;padding:1px 6px 2px;border-radius:4px;font-family:var(--pix);font-weight:400;font-size:.7em;line-height:1.2;vertical-align:.2em;background:var(--blue);color:#fff;letter-spacing:0}
+
+/* zesnulý výmluvy */
+.rip{color:var(--grey-2);font-style:italic;text-decoration:line-through;text-decoration-color:rgba(11,11,11,.35);text-decoration-thickness:1px}
+.rip sup{font-family:var(--pix);font-style:normal;font-size:.65em;color:var(--blue);margin-left:4px;white-space:nowrap;display:inline-block;text-decoration:none}
+
+/* limetkovej marker — přejede přes text při revealu */
 .u{
-  white-space:nowrap;padding:0 .1em;
-  background-image:linear-gradient(var(--hl),var(--hl));
-  background-repeat:no-repeat;background-position:0 58%;background-size:100% 48%;
+  white-space:nowrap;padding:0 .12em;color:var(--ink);
+  background-image:linear-gradient(var(--lime),var(--lime));
+  background-repeat:no-repeat;background-position:0 50%;background-size:100% 100%;
   transition:background-size .8s cubic-bezier(.7,0,.2,1) .35s;
 }
-.js .u{background-size:0% 48%}
-.js .in .u{background-size:100% 48%}
+.js .u{background-size:0% 100%}
+.js .in .u,.js .u.in{background-size:100% 100%}
 
-/* blok (dřív aside) — flat, editorial */
-.block{border-left:2px solid var(--red);padding:4px 0 4px 22px;margin:30px 0;max-width:60ch}
+/* blok — bílá karta jako na homepage */
+.block{
+  background:#fff;border:1px solid rgba(11,11,11,.08);border-radius:16px;
+  padding:22px 24px 22px;margin:34px 0;max-width:64ch;
+}
 .block .lbl{
-  display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
-  color:var(--ink);background:var(--hl);padding:3px 9px;margin-bottom:10px;
-  text-transform:uppercase;font-weight:500;
+  display:inline-block;font-family:var(--pix);font-size:14px;
+  color:var(--ink);background:var(--lime);padding:2px 8px 3px;border-radius:4px;margin-bottom:12px;
 }
 .block p{margin-bottom:8px}
 .block p:last-child{margin-bottom:0}
 
 blockquote{
-  font-style:italic;font-size:1.2rem;line-height:1.5;font-weight:500;
-  padding:0;margin:34px 0;max-width:54ch;color:var(--ink);letter-spacing:-.015em;
+  font-size:clamp(20px,2vw,24px);line-height:1.38;letter-spacing:-.015em;font-weight:500;
+  margin:44px 0;max-width:46ch;color:var(--ink);padding-left:22px;border-left:2px solid var(--blue);
 }
-blockquote cite{
-  display:block;font-family:var(--mono);font-style:normal;font-size:11px;
-  margin-top:12px;color:var(--ink-45);letter-spacing:.08em;text-transform:uppercase;
-}
+blockquote cite{display:block;font-family:var(--pix);font-style:normal;font-size:15px;font-weight:400;margin-top:14px;color:var(--grey-2);letter-spacing:0}
+code{font-family:var(--pix);font-size:.95em;background:var(--lime);color:var(--ink);padding:0 6px;border-radius:3px}
 
 /* reveal */
-.js .reveal{opacity:0;transform:translateY(14px);transition:opacity .65s ease,transform .65s ease}
+.js .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease),transform .9s var(--ease)}
 .js .reveal.in{opacity:1;transform:none}
 
-/* ---------- hero ---------- */
-.cover{min-height:100svh;display:flex;flex-direction:column}
-.cover .bar{
-  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
-  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;
-  color:var(--ink-45);padding-bottom:24px;text-transform:uppercase;
-}
+/* ---------- obálka ---------- */
+.cover{min-height:100svh;display:flex;flex-direction:column;padding-top:calc(var(--hdr) + 6vh);padding-bottom:40px}
+.cover .sheet-inner{max-width:1600px;width:100%;display:flex;flex-direction:column;flex:1}
+.cover .eyebrow{font-size:16px;color:var(--grey-2);display:flex;gap:10px;align-items:center}
 .cover h1{
-  font-weight:600;font-size:clamp(3.4rem,15vw,10rem);
-  line-height:.9;letter-spacing:-.05em;margin:auto 0 0;
+  font-weight:600;font-size:clamp(72px,15vw,220px);line-height:.88;letter-spacing:-.055em;margin:18px 0 0;
 }
-.cover h1 .ux{background:var(--hl);padding:0 .1em;margin-left:-.02em}
-.cover .thread-hero{display:block;width:100%;max-width:620px;margin:10px 0 4px}
-.cover .thread-hero path{
-  stroke:var(--red);fill:none;stroke-width:2;
-  stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 3s cubic-bezier(.6,0,.3,1) forwards .5s;
+.cover h1 .hl{font-size:.86em;padding:0 .08em;margin-left:.04em;letter-spacing:-.06em}
+.cover .sub{font-size:clamp(18px,1.6vw,22px);max-width:34ch;margin:30px 0 0;line-height:1.45;color:var(--grey);letter-spacing:-.01em}
+.cover .sub em{font-style:normal}
+.cover .ctas{margin-top:30px;display:flex;flex-wrap:wrap;align-items:center;gap:14px 26px}
+.cover .ctas a.lnk{font-size:15px;font-weight:500;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px}
+.cover .ctas a.lnk:hover{background:none;opacity:.6}
+
+/* velká osnova v obálce — obsah jako melodie */
+.score{position:relative;height:150px;margin:clamp(40px,7vh,80px) 0 0}
+.score .ln{position:absolute;left:0;right:0;height:1px;background:rgba(11,11,11,.16)}
+.score .nt{position:absolute;width:150px;margin-left:-14px;transform:translateY(-50%);display:flex;align-items:center;gap:10px;text-decoration:none;font-size:14.5px;font-weight:500;letter-spacing:-.01em;line-height:1.15}
+.score .nt:hover{background:none}
+.score .nt svg{flex:none;width:30px;height:20px;shape-rendering:crispEdges;transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
+.score .nt:hover svg{transform:scale(1.25)}
+.score .nt span{background:var(--mist);padding:2px 4px;border-radius:3px}
+.score .nt:hover span{background:var(--lime)}
+.toc{display:none}
+@media (max-width:899px){
+  .score{display:none}
+  .toc{display:grid;grid-template-columns:1fr;margin-top:40px;border-top:1px solid var(--hair)}
+  .toc a{text-decoration:none;display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--hair);font-size:16px;font-weight:500;letter-spacing:-.01em}
+  .toc a:hover{background:none;color:var(--blue)}
+  .toc a b{font-weight:400}
 }
-@keyframes draw{to{stroke-dashoffset:0}}
-.cover .sub{
-  font-size:clamp(1.05rem,2.3vw,1.35rem);max-width:40ch;margin-bottom:34px;line-height:1.5;
-  letter-spacing:-.01em;
-}
-a:focus-visible,button:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:2px}
-.sheet[id]{scroll-margin-top:8px}
-.cover .toc{margin-top:auto;border-top:1px solid var(--hair);display:grid;grid-template-columns:1fr 1fr;column-gap:clamp(24px,6vw,72px)}
-.cover .toc a{
-  text-decoration:none;display:flex;gap:14px;align-items:baseline;
-  padding:11px 0;border-bottom:1px solid var(--hair);
-  font-size:14.5px;letter-spacing:-.01em;transition:color .15s ease;
-}
-.cover .toc a b{font-family:var(--mono);font-weight:400;font-size:11px;color:var(--red)}
-.cover .toc a:hover{color:var(--red)}
-.cover .hint{font-family:var(--mono);font-size:11px;color:var(--ink-45);margin-top:20px;animation:bob 2.4s ease-in-out infinite;width:max-content}
-@keyframes bob{50%{transform:translateY(4px)}}
 
 /* ---------- claim ---------- */
-.claim{
-  font-weight:600;font-size:clamp(1.5rem,4.2vw,2.35rem);line-height:1.12;
-  letter-spacing:-.03em;margin:34px 0 26px;max-width:24ch;
+.claim{font-weight:600;font-size:clamp(28px,3.8vw,46px);line-height:1.08;letter-spacing:-.03em;margin:44px 0 34px;max-width:20ch;color:inherit}
+
+/* ---------- modrá kapitola (Nová doba) ---------- */
+.sheet.blue{
+  background:var(--blue);color:#fff;margin-top:clamp(110px,12vw,180px);
+  border-radius:28px 28px 0 0;padding-bottom:clamp(90px,10vw,140px);
 }
-/* dvojitý podtržení zvýrazňovačem — jeden tah, kreslí se při scrollu */
-.circle-w{position:relative;white-space:nowrap}
-.circle-w svg{
-  position:absolute;left:-2%;bottom:-.42em;width:104%;height:.62em;
-  overflow:visible;pointer-events:none;mix-blend-mode:multiply;
-}
-.circle-w svg path{
-  stroke:var(--hl);fill:none;stroke-width:7.5;stroke-linecap:round;
-  stroke-dasharray:480;transition:stroke-dashoffset 1.1s cubic-bezier(.6,0,.3,1) .5s;
-}
-.js .circle-w svg path{stroke-dashoffset:480}
-.js .in .circle-w svg path{stroke-dashoffset:0}
+.sheet.blue + .sheet{border-radius:0}
+.blue p,.blue ul,.blue ol{color:rgba(255,255,255,.84)}
+.blue strong,.blue li strong,.blue p strong{color:#fff}
+.blue .numeral{color:rgba(255,255,255,.75)}
+.blue .claim{color:#fff}
+.blue a{text-decoration-color:rgba(255,255,255,.5)}
+.blue ul li::marker{color:var(--lime)}
+.blue .rip{color:rgba(255,255,255,.6);text-decoration-color:rgba(255,255,255,.45)}
+.blue .rip sup{color:var(--lime)}
+.blue .block{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22)}
+.blue .block p{color:rgba(255,255,255,.84)}
+.blue + .sheet{padding-top:clamp(110px,12vw,180px)}
 
 /* ---------- slovníček ---------- */
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 0;max-width:none}
+.chips{display:flex;flex-wrap:wrap;gap:10px 8px;margin:28px 0 0;max-width:none}
 .chip{
-  font-family:var(--sans);font-size:13.5px;font-weight:500;letter-spacing:-.01em;
-  border:1px solid var(--hair);background:transparent;color:inherit;
-  border-radius:999px;padding:7px 15px;cursor:pointer;transition:all .15s ease;
+  font-family:var(--pix);font-size:15px;color:var(--ink);background:#fff;
+  border:1.5px solid var(--ink);border-bottom-width:4px;border-radius:8px;padding:6px 12px 4px;cursor:pointer;
+  transition:transform .3s cubic-bezier(.3,1.9,.45,1),border-bottom-width .08s,background .15s;
 }
-.chip:hover{border-color:var(--ink)}
-.chip.active{border-color:var(--ink);background:var(--hl);color:var(--ink)}
-.defbox{min-height:80px;border-left:2px solid var(--red);padding:4px 0 4px 22px;margin-top:26px;max-width:60ch}
-.defbox .term{font-weight:600;margin-bottom:4px}
-.defbox p{margin:0;font-size:15px;color:var(--ink-60)}
+.chip:hover{transform:translateY(-2px)}
+.chip:active,.chip.active{transform:translateY(2px);border-bottom-width:2px}
+.chip.active{background:var(--lime)}
+.defbox{min-height:110px;background:var(--ink);color:#fff;border-radius:16px;padding:22px 24px;margin-top:24px;max-width:64ch}
+.defbox .term{font-family:var(--pix);color:var(--lime);font-size:18px;margin-bottom:6px}
+.defbox p{margin:0;font-size:16px;color:rgba(255,255,255,.8)}
 
 /* ---------- zdroje ---------- */
 .res h3{display:flex;align-items:baseline;gap:14px}
 .res h3::after{content:"";flex:1;height:1px;background:var(--hair)}
-details{margin:30px 0 0;max-width:62ch}
-details summary{
-  cursor:pointer;font-family:var(--mono);font-size:12px;color:var(--red);
-  list-style:none;display:flex;align-items:center;gap:10px;padding:10px 0;
-  letter-spacing:.08em;text-transform:uppercase;
-}
-details summary::before{content:"+";font-size:16px;transition:transform .2s ease}
-details[open] summary::before{transform:rotate(45deg)}
-details summary::-webkit-details-marker{display:none}
-code{font-family:var(--mono);font-size:.85em;background:rgba(19,19,19,.06);padding:1px 6px;border-radius:4px}
 
 /* ---------- outro ---------- */
-.outro{padding-bottom:calc(var(--pad) * 1.3)}
-.outro h2{font-size:clamp(2.1rem,6.5vw,3.8rem)}
-.knot-final{display:block;margin:40px 0 8px}
-.knot-final path,.knot-final circle{
-  stroke:var(--red);fill:none;stroke-width:2;
-  stroke-dasharray:900;transition:stroke-dashoffset 2.4s ease .3s;
+.sheet.outro{
+  background:var(--ink);color:#fff;margin-top:clamp(110px,12vw,180px);border-radius:28px 28px 0 0;
+  padding-bottom:calc(var(--pad) + 20px);
 }
-.js .knot-final path,.js .knot-final circle{stroke-dashoffset:900}
-.js .in .knot-final path,.js .in .knot-final circle{stroke-dashoffset:0}
-.contacts{display:flex;gap:26px;flex-wrap:wrap;font-family:var(--mono);font-size:13px;margin:28px 0 44px;letter-spacing:.02em}
-.sig{
-  font-family:var(--mono);font-size:11.5px;color:rgba(240,238,232,.4);
-  border-top:1px solid rgba(240,238,232,.14);padding-top:24px;max-width:none;line-height:1.7;
-}
+.outro h2{font-size:clamp(40px,7vw,96px);line-height:.96;letter-spacing:-.045em}
+.outro p{color:rgba(255,255,255,.78)}
+.outro p strong{color:#fff}
+.outro .numeral{color:rgba(255,255,255,.6)}
+.outro .numeral b{background:var(--lime);color:var(--ink)}
+.outro .key.md{border-color:#9DB80F}
+.contacts{display:flex;gap:14px 16px;flex-wrap:wrap;align-items:flex-end;margin:34px 0 44px}
+.endbar{display:block;margin:56px 0 0;width:100%;max-width:var(--maxw);height:48px}
+.sig{font-family:var(--pix);font-size:14px;color:rgba(255,255,255,.45);border-top:1px solid rgba(255,255,255,.14);padding-top:24px;margin-top:24px;max-width:none;line-height:1.7}
+.sig a{text-decoration-color:rgba(255,255,255,.35)}
 
-/* ---------- mobilní obsah: pill + menu ---------- */
-.pill{
-  display:none;position:fixed;right:16px;bottom:16px;z-index:110;
-  font-family:var(--mono);font-size:11px;letter-spacing:.04em;
-  background:var(--ink);color:var(--paper);border:none;border-radius:999px;
-  padding:11px 16px;cursor:pointer;box-shadow:0 6px 20px rgba(19,19,19,.25);
-  max-width:70vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.pill .dot{color:var(--hl);margin-right:8px}
-.chmenu{position:fixed;inset:0;background:var(--paper);z-index:120;padding:20px 24px;display:flex;flex-direction:column;overflow:auto}
+/* ---------- mobilní obsah ---------- */
+.pill{display:none;position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:110;max-width:72vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill.key{font-size:14px;padding:9px 14px 7px;display:none}
+.chmenu{position:fixed;inset:0;background:var(--mist);z-index:120;padding:16px 20px;display:flex;flex-direction:column;overflow:auto}
 .chmenu[hidden]{display:none}
-.chmenu .close{
-  align-self:flex-end;font-size:26px;line-height:1;background:none;border:none;
-  padding:10px;cursor:pointer;color:var(--ink);font-family:var(--sans);
+.chmenu .close{align-self:flex-end;font-family:var(--pix);font-size:15px}
+.chmenu nav{display:flex;flex-direction:column;margin-top:14px}
+.chmenu a{text-decoration:none;font-size:22px;font-weight:600;letter-spacing:-.02em;padding:14px 0;border-bottom:1px solid var(--hair);display:flex;gap:14px;align-items:center}
+.chmenu a:hover{background:none}
+.chmenu a b{font-family:var(--pix);font-size:13px;font-weight:400;padding:1px 6px 2px;border-radius:4px;background:var(--ink);color:var(--lime)}
+.chmenu a.cur{color:var(--blue)}
+.chmenu a.cur b{background:var(--blue);color:#fff}
+@media (max-width:719px){
+  .pill.key{display:inline-flex}
+  .hdr{grid-template-columns:auto 1fr;gap:16px}
+  .hdr .key{display:none}
+  .hdr .name span{display:none}
+  .staff .nt{pointer-events:none}
+  .staff .now{display:none}
+  .sheet.blue,.sheet.outro{border-radius:20px 20px 0 0}
+  .block{padding:18px 18px}
+  blockquote{padding-left:16px}
 }
-.chmenu nav{display:flex;flex-direction:column;margin-top:6px}
-.chmenu a{
-  text-decoration:none;font-size:20px;font-weight:600;letter-spacing:-.02em;
-  padding:15px 0;border-bottom:1px solid var(--hair);
-  display:flex;gap:16px;align-items:baseline;
-}
-.chmenu a b{font-family:var(--mono);font-size:11.5px;color:var(--red);font-weight:400}
-.chmenu a.cur{color:var(--red)}
-@media (max-width:640px){ .pill{display:block} }
 
-/* ---------- motion ---------- */
-@supports (animation-timeline: view()){
-  .sheet:not(.t-ink){
-    animation:settle linear both;
-    animation-timeline:view();
-    animation-range:exit 0% exit 100%;
-    transform-origin:50% 100%;
-  }
-  @keyframes settle{to{transform:scale(.992)}}
-}
 @media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .js .reveal{opacity:1;transform:none}
-  .cover .thread-hero path,.js .circle-w svg path,.js .knot-final path,.js .knot-final circle{stroke-dashoffset:0}
-  .js .u{background-size:100% 48%}
-}
-@media (max-width:640px){
-  .sheet{border-radius:12px 12px 0 0;margin-top:-14px;
-    padding:calc(var(--pad) + 20px) calc(var(--pad) + 2px) calc(var(--pad) + 6px)}
-  .cover .toc{grid-template-columns:1fr}
-  /* nit na mobilu: horizontální progress nahoře, žádný uzly nalepený na text */
-  .rail{left:0;right:0;top:0;bottom:auto;width:auto;height:2px;background:transparent}
-  .rail .fill{width:var(--p,0%);height:100%}
-  .rail .knot,.rail .hit{display:none}
+  .js .u{background-size:100% 100%}
 }
 </style>
 </head>
 <body>
 
-<nav class="rail" aria-label="Kapitoly"><div class="fill"></div></nav>
-<button class="pill" id="pill" aria-haspopup="true" aria-controls="chmenu"><span class="dot">●</span>Obsah</button>
+<header class="hdr" id="hdr">
+  <a class="name" href="/">Klára Scholleová<span>/ Jak do UX</span></a>
+  <div class="staff" id="staff" role="navigation" aria-label="Kapitoly"></div>
+  <a class="key sm" href="#s8">Napiš mi ↵</a>
+</header>
+<button class="pill key" id="pill" aria-haspopup="true" aria-controls="chmenu">Obsah</button>
 <div class="chmenu" id="chmenu" hidden role="dialog" aria-label="Obsah">
-  <button class="close" aria-label="Zavřít">✕</button>
+  <button class="close key sm" aria-label="Zavřít">Zavřít ✕</button>
   <nav></nav>
 </div>
 
+<main>
+
 <!-- ============ OBÁLKA ============ -->
-<header class="sheet t0 cover" id="top">
-  <div class="sheet-inner cover" style="min-height:calc(100svh - var(--pad)*2)">
-    <div class="bar">
-      <span>Klára Scholleová</span>
-      <span>Edice 2026</span>
+<section class="sheet cover" id="top">
+  <div class="sheet-inner">
+    <div class="eyebrow">Edice 2026 <span class="num">CZ</span></div>
+    <h1>Jak do <span class="hl l">UX</span></h1>
+    <p class="sub">Subjektivní, nespisovnej a upřímnej guide pro aspirující UXáky — v době, kdy AI generuje obrazovky a výmluvy umřely.</p>
+    <div class="ctas">
+      <a class="key sm" href="#s1">Začít číst ↵</a>
+      <a class="lnk" href="#s2">Rovnou k AI části ↓</a>
     </div>
-    <h1>Jak do <span class="ux">UX</span></h1>
-    <svg class="thread-hero" viewBox="0 0 640 64" aria-hidden="true">
-      <path d="M0,14 C110,14 150,50 300,50 C420,50 440,18 560,18 L640,18"/>
-    </svg>
-    <p class="sub">Subjektivní, nespisovnej a <em>upřímnej</em> guide pro aspirující UXáky — v době, kdy AI generuje obrazovky a výmluvy umřely.</p>
-    <div class="toc">
-      <a href="#s1"><b>01</b> Úvod</a>
-      <a href="#s2"><b>02</b> Ukaž, že umíš shipovat</a>
-      <a href="#s3"><b>03</b> Jak bych na to šla já</a>
-      <a href="#s4"><b>04</b> Co se čeká od juniorů</a>
-      <a href="#s5"><b>05</b> Portfolio a CV</a>
-      <a href="#s6"><b>06</b> Slovníček</a>
-      <a href="#s7"><b>07</b> Zdroje</a>
-      <a href="#s8"><b>08</b> Outro</a>
-    </div>
-    <div class="hint">↓</div>
+    <div class="score" id="score" aria-label="Obsah"></div>
+    <nav class="toc" id="toc" aria-label="Obsah"></nav>
   </div>
-</header>
+</section>
 
 <!-- ============ 01 ÚVOD ============ -->
-<section class="sheet t1" id="s1">
+<section class="sheet" id="s1">
   <div class="sheet-inner">
     <div class="numeral"><b>01</b>Úvod</div>
     <h2 class="reveal">Nezávidim vám to.<br>Ale nevzdávejte to.</h2>
@@ -358,13 +337,13 @@ code{font-family:var(--mono);font-size:.85em;background:rgba(19,19,19,.06);paddi
 </section>
 
 <!-- ============ 02 SHIP IT ============ -->
-<section class="sheet t2" id="s2">
+<section class="sheet blue" id="s2">
   <div class="sheet-inner">
     <div class="numeral"><b>02</b>Nová doba</div>
     <h2 class="reveal">Ukaž, že umíš shipovat</h2>
     <p class="reveal">Když jsem tenhle text psala poprvý (2024), platilo: nauč se základy, udělej si projekt, hezky ho odvyprávěj v portfoliu. To platí furt. Ale mezitím se stala zásadní věc: <strong>s AI nástrojema dneska naprototypuješ — a klidně nasadíš — funkční věc za víkend.</strong></p>
     <p class="reveal">Což znamená jediný: <strong>výmluvy umřely.</strong> Dřív mohl junior říct <span class="rip">„neumím kódovat, tak mám jen mockupy do šuplíku“<sup>†&thinsp;2024</sup></span>. Dneska můžeš mít živou věc, kterou si lidi fakt osahali. A bacha — když ji můžeš mít ty, můžou ji mít i všichni ostatní kandidáti.</p>
-    <p class="claim reveal">Vygenerovat věc — to dneska dokáže každej. <span class="circle-w"><em>Odladit experience</em><svg viewBox="0 0 200 24" preserveAspectRatio="none"><path d="M4,7 C70,3 150,2 196,6 C197,9 193,11 187,12 C120,16 50,15 7,18"/></svg></span> je ta práce.</p>
+    <p class="claim reveal">Vygenerovat věc — to dneska dokáže každej. <span class="hl l">Odladit experience</span> je ta práce.</p>
     <p class="reveal">A přesně tady se pozná designer: <strong>že z toho, co si dneska vygeneruje každej, umíš udělat něco fakt odladěnýho.</strong> AI umí vyplivnout obrazovku. Neumí poznat, že je blbě.</p>
     <p class="reveal">Junior roku 2026 se podle mě pozná takhle: vezme vygenerovanou věc, dá ji lidem do rukou, kouká, kde se zasekávaj, a iteruje. To je celej UX proces v kostce — a poprvý v historii ho můžeš mít v portfoliu <em>celej</em>: od problému přes nasazenou věc po reálnou zpětnou vazbu a iterace.</p>
     <p class="reveal">(A jestli z týhle kapitoly máte úzkost: klid. Řemeslo, metody a přemejšlení o problému — celej zbytek tohohle textu — platěj furt a jsou důležitější než kterejkoliv nástroj. AI je násobí, nenahrazuje.)</p>
@@ -391,7 +370,7 @@ code{font-family:var(--mono);font-size:.85em;background:rgba(19,19,19,.06);paddi
 </section>
 
 <!-- ============ 03 JAK BYCH NA TO ŠLA ============ -->
-<section class="sheet t3" id="s3">
+<section class="sheet" id="s3">
   <div class="sheet-inner">
     <div class="numeral"><b>03</b>Strategie</div>
     <h2 class="reveal">Jak bych na to (asi) šla já</h2>
@@ -419,7 +398,7 @@ code{font-family:var(--mono);font-size:.85em;background:rgba(19,19,19,.06);paddi
 </section>
 
 <!-- ============ 04 CO SE ČEKÁ ============ -->
-<section class="sheet t4" id="s4">
+<section class="sheet" id="s4">
   <div class="sheet-inner">
     <div class="numeral"><b>04</b>Kvality</div>
     <h2 class="reveal">Co se čeká od juniorních designerů</h2>
@@ -446,7 +425,7 @@ code{font-family:var(--mono);font-size:.85em;background:rgba(19,19,19,.06);paddi
 </section>
 
 <!-- ============ 05 PORTFOLIO ============ -->
-<section class="sheet t5" id="s5">
+<section class="sheet" id="s5">
   <div class="sheet-inner">
     <div class="numeral"><b>05</b>Portfolio a CV</div>
     <h2 class="reveal">Recruiteři na vás nemají čas</h2>
@@ -469,7 +448,7 @@ code{font-family:var(--mono);font-size:.85em;background:rgba(19,19,19,.06);paddi
 </section>
 
 <!-- ============ 06 SLOVNÍČEK ============ -->
-<section class="sheet t6" id="s6">
+<section class="sheet" id="s6">
   <div class="sheet-inner">
     <div class="numeral"><b>06</b>Slovníček</div>
     <h2 class="reveal">Co byste měli znát</h2>
@@ -483,7 +462,7 @@ code{font-family:var(--mono);font-size:.85em;background:rgba(19,19,19,.06);paddi
 </section>
 
 <!-- ============ 07 ZDROJE ============ -->
-<section class="sheet t6 res" id="s7">
+<section class="sheet res" id="s7">
   <div class="sheet-inner">
     <div class="numeral"><b>07</b>Zdroje</div>
     <h2 class="reveal">Co za to fakt stojí</h2>
@@ -531,112 +510,128 @@ code{font-family:var(--mono);font-size:.85em;background:rgba(19,19,19,.06);paddi
 </section>
 
 <!-- ============ 08 OUTRO ============ -->
-<section class="sheet t-ink outro" id="s8">
+<section class="sheet outro" id="s8">
   <div class="sheet-inner">
     <div class="numeral"><b>08</b>Outro</div>
-    <h2 class="reveal">🍾 A to je konec!</h2>
+    <h2 class="reveal">🍾 A to je <span class="hl l">konec!</span></h2>
     <p class="reveal">Díky, že jste dočetli až sem — tentokrát to snad bylo kratší 😀 Pokud vám to k něčemu bylo, budu ráda za zmínku, sdílení, nebo mi na Mondayi kupte pivko. A pokud máte dotazy, feedback, nebo zájem o konzultaci — napište mi.</p>
     <div class="contacts reveal">
-      <a href="mailto:klara.scholleova@gmail.com">mail</a>
-      <a href="https://www.linkedin.com/in/klara-scholleova/">linkedin</a>
-      <a href="https://www.instagram.com/klara_scho/">instagram</a>
+      <a class="key md" href="mailto:klara.scholleova@gmail.com">Napiš mi ↵</a>
+      <a class="key sm ink" href="https://www.linkedin.com/in/klara-scholleova/">LinkedIn ↗</a>
+      <a class="key sm ink" href="https://www.instagram.com/klara_scho/">Instagram ↗</a>
     </div>
     <p class="reveal"><strong>Držim palce — a doufám, že se vidíme v hospodě na UX Mondayi 🍻</strong></p>
-    <div class="reveal">
-      <svg class="knot-final" width="150" height="90" viewBox="0 0 150 90" aria-hidden="true">
-        <path d="M0,45 C30,45 40,20 65,20 C90,20 95,55 75,60 C55,65 55,30 80,32 C105,34 105,58 130,58 L150,58"/>
-        <circle cx="146" cy="58" r="3.5" style="fill:var(--red);stroke:none"/>
-      </svg>
-    </div>
-    <p class="sig reveal">Jak do UX — první verze 2024, tahle edice 2026. Díky český UX komunitě, Adri (že mě dokopala to vydat) a všem, co mi dali feedback: Tobiáš, Honza, Petr, Filip, Gabka, Dugi, Vašek, Tomáš a další 🙏</p>
+    <!-- konec skladby: osnova, poslední nota a dvojitá taktová čára -->
+    <svg class="endbar reveal" viewBox="0 0 740 48" preserveAspectRatio="none" aria-hidden="true" shape-rendering="crispEdges">
+      <g fill="rgba(255,255,255,.22)"><rect y="4" width="728" height="1"/><rect y="14" width="728" height="1"/><rect y="24" width="728" height="1"/><rect y="34" width="728" height="1"/><rect y="44" width="728" height="1"/></g>
+      <rect x="718" y="4" width="2" height="41" fill="#fff"/><rect x="724" y="4" width="6" height="41" fill="#fff"/>
+    </svg>
+    <p class="sig reveal">Jak do UX — první verze 2024, tahle edice 2026. Díky český UX komunitě, Adri (že mě dokopala to vydat) a všem, co mi dali feedback: Tobiáš, Honza, Petr, Filip, Gabka, Dugi, Vašek, Tomáš a další 🙏<br><a href="/">← zpátky na ksch.cz</a></p>
   </div>
 </section>
 
-<script>
-/* ============ reveal on scroll ============ */
-const io = new IntersectionObserver(entries=>{
-  for(const e of entries){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }
-},{threshold:.15});
-document.querySelectorAll('.reveal, .claim').forEach(el=>io.observe(el));
+</main>
 
-/* ============ nit: progress + uzly + scrub ============ */
-const rail = document.querySelector('.rail');
-const fill = rail.querySelector('.fill');
-const sections = [...document.querySelectorAll('.sheet[id]')];
-const LABELS = {
-  top:'Obálka', s1:'01 Úvod', s2:'02 Ukaž, že umíš shipovat',
-  s3:'03 Jak bych na to šla já', s4:'04 Co se čeká od juniorů',
-  s5:'05 Portfolio a CV', s6:'06 Slovníček', s7:'07 Zdroje', s8:'08 Outro'
-};
-const hit = document.createElement('div'); hit.className='hit'; rail.appendChild(hit);
-const knots = sections.map(sec=>{
-  const k = document.createElement('button');
-  k.className='knot';
-  k.dataset.label = LABELS[sec.id] || sec.id;
-  k.setAttribute('aria-label','Přejít na ' + k.dataset.label);
-  k.addEventListener('click',()=>sec.scrollIntoView({behavior:'smooth'}));
-  rail.appendChild(k);
-  return k;
-});
-function layoutKnots(){
-  const max = document.documentElement.scrollHeight - innerHeight;
-  sections.forEach((sec,i)=>{ knots[i].style.top = (Math.min(sec.offsetTop,max)/max*100)+'%'; });
-}
-function onScroll(){
-  const max = document.documentElement.scrollHeight - innerHeight;
-  const p = Math.min(1, scrollY/max);
-  fill.style.setProperty('--p', (p*100)+'%');
-  sections.forEach((sec,i)=>knots[i].classList.toggle('passed', scrollY + 10 >= sec.offsetTop));
-  let cur = sections[0];
-  for(const s of sections){ if(scrollY + innerHeight*0.35 >= s.offsetTop) cur = s; }
-  const lbl = LABELS[cur.id];
-  pill.innerHTML = '<span class="dot">●</span>' + (cur.id==='top' ? 'Obsah' : lbl);
-  menuNav.querySelectorAll('a').forEach(a=>a.classList.toggle('cur', a.hash === '#'+cur.id));
-}
-/* mobilní obsah */
-const pill = document.getElementById('pill');
-const chmenu = document.getElementById('chmenu');
-const menuNav = chmenu.querySelector('nav');
-sections.forEach(sec=>{
+<script>
+(() => {
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const B = '#2B3BFF', K = '#0B0B0B', L = '#DCFF3D';
+
+/* ============ reveal on scroll ============ */
+const io = new IntersectionObserver(entries => {
+  for (const e of entries) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}, { threshold: .15 });
+document.querySelectorAll('.reveal, .claim').forEach(el => io.observe(el));
+
+/* ============ kapitoly jako melodie ============ */
+// [id, číslo, krátkej název, dlouhej název, pozice na osnově (0 = horní linka, 8 = spodní), barva]
+const CH = [
+  ['top', '',   'Obálka',    'Obálka',                     6, 'ring'],
+  ['s1',  '01', 'Úvod',      'Úvod',                       4, K],
+  ['s2',  '02', 'Nová doba', 'Ukaž, že umíš shipovat',     1, B],
+  ['s3',  '03', 'Strategie', 'Jak bych na to šla já',      3, K],
+  ['s4',  '04', 'Kvality',   'Co se čeká od juniorů',      5, 'ring'],
+  ['s5',  '05', 'Portfolio', 'Portfolio a CV',             2, B],
+  ['s6',  '06', 'Slovníček', 'Slovníček',                  6, K],
+  ['s7',  '07', 'Zdroje',    'Zdroje',                     3, B],
+  ['s8',  '08', 'Outro',     'Outro',                      0, 'ring'],
+].map(([id, n, short, long, pos, col]) => ({ id, n, short, long, pos, col, el: document.getElementById(id) }));
+
+// pixelová hlavička noty (6×4), stejná jako na homepage
+const HEAD = [[1,0],[2,0],[3,0],[4,0],[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[1,3],[2,3],[3,3],[4,3]];
+const CEN = ['2,1','3,1','2,2','3,2'];
+const head = col => '<svg viewBox="0 0 6 4" aria-hidden="true">' + HEAD.map(([x, y]) => {
+  const f = col === 'ring' ? (CEN.includes(x + ',' + y) ? L : K) : col;
+  return '<rect x="' + x + '" y="' + y + '" width="1" height="1" fill="' + f + '"/>';
+}).join('') + '</svg>';
+const go = c => c.el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+const lines = (el, y0, gap) => { for (let i = 0; i < 5; i++) { const l = document.createElement('div'); l.className = 'ln'; l.style.top = (y0 + i * gap) + 'px'; el.appendChild(l); } };
+
+/* velká osnova v obálce + mobilní seznam */
+const score = document.getElementById('score'), toc = document.getElementById('toc');
+lines(score, 15, 30);
+CH.slice(1).forEach((c, i) => {
   const a = document.createElement('a');
-  a.href = '#'+sec.id;
-  const l = LABELS[sec.id];
-  const m = l.match(/^(\d+)\s(.*)$/);
-  a.innerHTML = m ? '<b>'+m[1]+'</b>'+m[2] : l;
-  a.addEventListener('click',e=>{
-    e.preventDefault(); closeMenu();
-    sec.scrollIntoView({behavior:'smooth'});
-  });
+  a.className = 'nt'; a.href = '#' + c.id;
+  a.style.left = (i / 7 * 88) + '%';
+  a.style.top = (15 + c.pos * 15) + 'px';
+  a.innerHTML = head(c.col) + '<span>' + c.short + '</span>';
+  score.appendChild(a);
+  const t = document.createElement('a');
+  t.href = '#' + c.id; t.innerHTML = '<b class="num">' + c.n + '</b>' + c.long;
+  toc.appendChild(t);
+});
+
+/* malá osnova v hlavičce */
+const hdr = document.getElementById('hdr'), staff = document.getElementById('staff');
+lines(staff, 6, 6);
+const X = CH.map((c, i) => i / (CH.length - 1) * 100);
+CH.forEach((c, i) => {
+  const b = document.createElement('button');
+  b.className = 'nt';
+  b.style.left = X[i] + '%'; b.style.top = (6 + c.pos * 3) + 'px';
+  b.setAttribute('aria-label', 'Přejít na ' + c.long);
+  b.innerHTML = head(c.col) + '<span class="tip">' + (c.n ? c.n + ' ' : '') + c.short + '</span>';
+  b.addEventListener('click', () => go(c));
+  staff.appendChild(b);
+});
+const ph = document.createElement('div'); ph.className = 'ph'; staff.appendChild(ph);
+const now = document.createElement('span'); now.className = 'now'; staff.appendChild(now);
+
+/* mobilní obsah */
+const pill = document.getElementById('pill'), chmenu = document.getElementById('chmenu'), menuNav = chmenu.querySelector('nav');
+CH.forEach(c => {
+  const a = document.createElement('a');
+  a.href = '#' + c.id;
+  a.innerHTML = c.n ? '<b>' + c.n + '</b>' + c.long : c.long;
+  a.addEventListener('click', e => { e.preventDefault(); closeMenu(); go(c); });
   menuNav.appendChild(a);
 });
-function openMenu(){ chmenu.hidden=false; document.body.style.overflow='hidden'; }
-function closeMenu(){ chmenu.hidden=true; document.body.style.overflow=''; }
-pill.addEventListener('click',openMenu);
-chmenu.querySelector('.close').addEventListener('click',closeMenu);
-addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
+function openMenu() { chmenu.hidden = false; document.body.style.overflow = 'hidden'; }
+function closeMenu() { chmenu.hidden = true; document.body.style.overflow = ''; }
+pill.addEventListener('click', openMenu);
+chmenu.querySelector('.close').addEventListener('click', closeMenu);
+addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
 
-addEventListener('scroll',onScroll,{passive:true});
-addEventListener('resize',()=>{layoutKnots();onScroll();});
-layoutKnots(); onScroll();
-
-/* scrub po niti (drag/touch) */
-let scrub = null;
-function scrubTo(cy){
-  const max = document.documentElement.scrollHeight - innerHeight;
-  const p = Math.min(1, Math.max(0, cy/innerHeight));
-  scrollTo({top:p*max, behavior:'instant'});
-  let best=0, bd=1e9;
-  knots.forEach((k,i)=>{const d=Math.abs(k.offsetTop-cy); if(d<bd){bd=d;best=i}});
-  knots.forEach((k,i)=>k.classList.toggle('show', i===best));
+/* playhead: dojede přesně na notu, když začne kapitola */
+let tops = [];
+const measure = () => { tops = CH.map(c => c.el.getBoundingClientRect().top + scrollY); };
+function onScroll() {
+  const y = scrollY + innerHeight * .35, max = document.documentElement.scrollHeight - innerHeight;
+  let i = 0; while (i < CH.length - 1 && y >= tops[i + 1]) i++;
+  let f = i < CH.length - 1 ? (y - tops[i]) / (tops[i + 1] - tops[i]) : 0;
+  if (scrollY >= max - 2) { i = CH.length - 1; f = 0; }
+  const x = X[i] + (i < CH.length - 1 ? (X[i + 1] - X[i]) * Math.max(0, Math.min(1, f)) : 0);
+  ph.style.left = x + '%'; now.style.left = x + '%';
+  now.textContent = CH[i].short;
+  hdr.classList.toggle('solid', scrollY > innerHeight * .5);
+  pill.textContent = i === 0 ? 'Obsah' : CH[i].n + ' ' + CH[i].short;
+  menuNav.querySelectorAll('a').forEach((a, j) => a.classList.toggle('cur', j === i));
 }
-hit.addEventListener('pointerdown',e=>{
-  scrub={y0:e.clientY}; hit.setPointerCapture(e.pointerId);
-  rail.classList.add('scrubbing'); scrubTo(e.clientY); e.preventDefault();
-});
-hit.addEventListener('pointermove',e=>{ if(scrub) scrubTo(e.clientY); });
-function endScrub(){ rail.classList.remove('scrubbing'); knots.forEach(k=>k.classList.remove('show')); scrub=null; }
-hit.addEventListener('pointerup',endScrub);
-hit.addEventListener('pointercancel',endScrub);
+addEventListener('scroll', onScroll, { passive: true });
+addEventListener('resize', () => { measure(); onScroll(); });
+addEventListener('load', () => { measure(); onScroll(); });
+measure(); onScroll();
 
 /* ============ slovníček ============ */
 const TERMS = [
@@ -658,21 +653,21 @@ const TERMS = [
   ["design tokens","Pojmenovaný designový hodnoty (barvy, spacing, typo) sdílený mezi designem a kódem. Základ škálovatelnýho design systemu."],
   ["Figma řemeslo","Autolayout, komponenty, variables, constraints. Nemalujte obdélníky ve skupinách — a nezaměňujte #supafast tiktokový triky za umění návrhu UI."]
 ];
-const chipsEl = document.getElementById('chips');
-const defbox = document.getElementById('defbox');
-TERMS.forEach(([t,d])=>{
-  const b=document.createElement('button');
-  b.className='chip'; b.textContent=t;
-  b.addEventListener('click',()=>{
-    chipsEl.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+const chipsEl = document.getElementById('chips'), defbox = document.getElementById('defbox');
+TERMS.forEach(([t, d]) => {
+  const b = document.createElement('button');
+  b.className = 'chip'; b.textContent = t;
+  b.addEventListener('click', () => {
+    chipsEl.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
     b.classList.add('active');
-    defbox.innerHTML = '<div class="term">'+t+'</div><p>'+d+'</p>';
+    defbox.innerHTML = '<div class="term">' + t + '</div><p>' + d + '</p>';
   });
   chipsEl.appendChild(b);
 });
 
 /* easter egg */
-console.log('%ckoukáš pod kapotu? správně. ship it. 🍻','color:#131313;background:#ffe600;padding:2px 8px;font-size:14px;font-family:monospace');
+console.log('%ckoukáš pod kapotu? správně. ship it. 🍻', 'color:#0B0B0B;background:#DCFF3D;padding:2px 8px;font-size:14px;font-family:monospace');
+})();
 </script>
 </body>
 </html>
