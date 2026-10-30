@@ -17,7 +17,7 @@
 <script>document.documentElement.classList.add('js')</script>
 <style>
 /* ============================================================
-   JAK DO UX · 2026 — v brandu ksch.cz
+   JAK DO UX, 2026 — v brandu ksch.cz
    mist + inkoust, modrá a limetková, pixel font, notová osnova
    ============================================================ */
 @font-face{font-family:'Geist Pixel Square';src:url('../assets/fonts/geist-pixel-square.woff2') format('woff2');font-display:swap}
@@ -86,25 +86,31 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--blue);outline-offse
 .hdr .key{white-space:nowrap}
 
 /* osnova: pět linek, jedna nota na kapitolu, playhead = kde zrovna jste */
+/* progress: tenká linka, jedno pixelový kolečko na kapitolu */
 .staff{position:relative;height:36px;opacity:0;transition:opacity .4s}
 .hdr.solid .staff{opacity:1}
-.staff .ln{position:absolute;left:0;right:0;height:1px;background:rgba(11,11,11,.16)}
+.staff .trk,.staff .fill{position:absolute;left:0;top:50%;height:2px;margin-top:-1px}
+.staff .trk{right:0;background:rgba(11,11,11,.14)}
+.staff .fill{width:0;background:var(--blue);transition:width .12s linear}
 .staff .nt{
-  position:absolute;width:28px;height:28px;margin:-14px 0 0 -14px;padding:0;border:0;background:none;cursor:pointer;
+  position:absolute;top:50%;width:28px;height:28px;margin:-14px 0 0 -14px;padding:0;border:0;background:none;cursor:pointer;
   -webkit-tap-highlight-color:transparent;
 }
-.staff .nt svg{position:absolute;left:50%;top:50%;width:12px;height:8px;margin:-4px 0 0 -6px;shape-rendering:crispEdges;transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
-.staff .nt:hover svg,.staff .nt:focus-visible svg{transform:scale(1.5)}
+.staff .nt svg{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;shape-rendering:crispEdges;transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
+.staff .nt .r{fill:rgba(11,11,11,.35)}
+.staff .nt .c{fill:var(--mist)}
+.staff .nt.done .r,.staff .nt.done .c{fill:var(--blue)}
+.staff .nt.cur .r{fill:var(--ink)}
+.staff .nt.cur .c{fill:var(--lime)}
+.staff .nt.cur svg{transform:scale(1.3)}
+.staff .nt:hover svg,.staff .nt:focus-visible svg{transform:scale(1.45)}
 .staff .nt:focus-visible{outline:none}
 .staff .nt .tip{
-  position:absolute;left:50%;top:26px;transform:translateX(-50%);white-space:nowrap;
+  position:absolute;left:50%;top:28px;transform:translateX(-50%);white-space:nowrap;
   font-family:var(--pix);font-size:12px;color:var(--ink);background:var(--lime);padding:1px 6px;border-radius:3px;
   opacity:0;pointer-events:none;transition:opacity .15s;
 }
 .staff .nt:hover .tip,.staff .nt:focus-visible .tip{opacity:1}
-.staff .ph{position:absolute;top:-6px;bottom:-6px;width:1.5px;background:var(--blue);transition:left .12s linear}
-.staff .now{position:absolute;top:calc(100% + 4px);font-family:var(--pix);font-size:12px;color:#fff;background:var(--blue);padding:1px 6px;border-radius:3px;white-space:nowrap;transform:translateX(-50%);transition:left .12s linear}
-.staff .nt:hover ~ .now{opacity:0}
 
 /* ---------- layout ---------- */
 main{position:relative}
@@ -273,7 +279,6 @@ code{font-family:var(--pix);font-size:.95em;background:var(--lime);color:var(--i
   .hdr .key{display:none}
   .hdr .name span{display:none}
   .staff .nt{pointer-events:none}
-  .staff .now{display:none}
   .sheet.blue,.sheet.outro{border-radius:20px 20px 0 0}
   .block{padding:18px 18px}
   blockquote{padding-left:16px}
@@ -416,7 +421,7 @@ code{font-family:var(--pix);font-size:.95em;background:var(--lime);color:var(--i
     <p class="reveal">Nová položka na seznamu, viz <a href="#s2">kapitola 02</a>. U pohovoru chci slyšet: co jsi postavila, kdo to používal, co ses dozvěděla a co jsi změnila. AI nástroje ovládat — ale nebejt jejich rukojmí.</p>
     <h3 class="reveal"><span class="hn">04</span>Zkušenost řešit problémy a učit se z nich</h3>
     <p class="reveal">Paradox „jak mám mít zkušenost, když hledám první zkušenost“ řešej <strong>osobní projekty.</strong> Spolupráce se zadavatelem a omezení reálnýho světa vás naučej víc než teoretickej domácák. A nemusí to bejt jen UI — klidně pomoc neziskovce s procesama nebo návrh webu kámošovi. Platí <strong>„outcomes over outputs“</strong>: hodnota je umět formulovat cíl a vymyslet cestu k němu.</p>
-    <blockquote class="reveal">„5× bych podtrhl potřebu co nejdřív si najít nějaký svůj projekt, klidně for free, a začít všechnu tu hezky znějící teorii dost pracně aplikovat do praxe.“<cite>Tobiáš Vybíral · předseda Asociace UX</cite></blockquote>
+    <blockquote class="reveal">„5× bych podtrhl potřebu co nejdřív si najít nějaký svůj projekt, klidně for free, a začít všechnu tu hezky znějící teorii dost pracně aplikovat do praxe.“<cite>Tobiáš Vybíral, předseda Asociace UX</cite></blockquote>
     <div class="block reveal">
       <span class="lbl">Unpopular opinion — dnes populárnější než kdy dřív</span>
       <p>Designer, co chce dělat UI, by měl chápat základy HTML, CSS a ideálně JS. V AI době to platí dvojnásob — víte, co vám AI vlastně generuje, a poznáte, kdy je to nesmysl. Nejlepší zdroj je <a href="https://developer.mozilla.org/en-US/docs/Learn">MDN</a>. (A jo, pořád platí: jedině React 😂)</p>
@@ -582,21 +587,26 @@ CH.slice(1).forEach((c, i) => {
   toc.appendChild(t);
 });
 
-/* malá osnova v hlavičce */
+/* progress v hlavičce: linka + pixelový kolečka */
 const hdr = document.getElementById('hdr'), staff = document.getElementById('staff');
-lines(staff, 6, 6);
+staff.innerHTML = '<div class="trk"></div><div class="fill"></div>';
+const bar = staff.querySelector('.fill');
+// pixelový kolečko 7×7: obrys (r) a výplň (c)
+const RING = [[2,0],[3,0],[4,0],[1,1],[5,1],[0,2],[6,2],[0,3],[6,3],[0,4],[6,4],[1,5],[5,5],[2,6],[3,6],[4,6]];
+const FILL = [[2,1],[3,1],[4,1],[1,2],[2,2],[3,2],[4,2],[5,2],[1,3],[2,3],[3,3],[4,3],[5,3],[1,4],[2,4],[3,4],[4,4],[5,4],[2,5],[3,5],[4,5]];
+const px = (pts, cls) => pts.map(([x, y]) => '<rect class="' + cls + '" x="' + x + '" y="' + y + '" width="1" height="1"/>').join('');
+const dot = '<svg viewBox="0 0 7 7" aria-hidden="true">' + px(RING, 'r') + px(FILL, 'c') + '</svg>';
 const X = CH.map((c, i) => i / (CH.length - 1) * 100);
-CH.forEach((c, i) => {
+const dots = CH.map((c, i) => {
   const b = document.createElement('button');
   b.className = 'nt';
-  b.style.left = X[i] + '%'; b.style.top = (6 + c.pos * 3) + 'px';
+  b.style.left = X[i] + '%';
   b.setAttribute('aria-label', 'Přejít na ' + c.long);
-  b.innerHTML = head(c.col) + '<span class="tip">' + (c.n ? c.n + ' ' : '') + c.short + '</span>';
+  b.innerHTML = dot + '<span class="tip">' + (c.n ? c.n + ' ' : '') + c.short + '</span>';
   b.addEventListener('click', () => go(c));
   staff.appendChild(b);
+  return b;
 });
-const ph = document.createElement('div'); ph.className = 'ph'; staff.appendChild(ph);
-const now = document.createElement('span'); now.className = 'now'; staff.appendChild(now);
 
 /* mobilní obsah */
 const pill = document.getElementById('pill'), chmenu = document.getElementById('chmenu'), menuNav = chmenu.querySelector('nav');
@@ -613,7 +623,7 @@ pill.addEventListener('click', openMenu);
 chmenu.querySelector('.close').addEventListener('click', closeMenu);
 addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
 
-/* playhead: dojede přesně na notu, když začne kapitola */
+/* progress: dojede přesně na kolečko, když začne kapitola */
 let tops = [];
 const measure = () => { tops = CH.map(c => c.el.getBoundingClientRect().top + scrollY); };
 function onScroll() {
@@ -622,8 +632,8 @@ function onScroll() {
   let f = i < CH.length - 1 ? (y - tops[i]) / (tops[i + 1] - tops[i]) : 0;
   if (scrollY >= max - 2) { i = CH.length - 1; f = 0; }
   const x = X[i] + (i < CH.length - 1 ? (X[i + 1] - X[i]) * Math.max(0, Math.min(1, f)) : 0);
-  ph.style.left = x + '%'; now.style.left = x + '%';
-  now.textContent = CH[i].short;
+  bar.style.width = x + '%';
+  dots.forEach((d, j) => { d.classList.toggle('done', j < i); d.classList.toggle('cur', j === i); });
   hdr.classList.toggle('solid', scrollY > innerHeight * .5);
   pill.textContent = i === 0 ? 'Obsah' : CH[i].n + ' ' + CH[i].short;
   menuNav.querySelectorAll('a').forEach((a, j) => a.classList.toggle('cur', j === i));
