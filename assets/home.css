@@ -83,6 +83,9 @@ a { color: inherit; text-decoration: none; }
 #nav .right { display: flex; align-items: center; gap: 28px; }
 #nav .links { display: flex; gap: 28px; font-size: 15px; font-weight: 500; }
 @media (max-width: 719px) { #nav .links { display: none; } }
+/* the nav's Say hello only shows once the hero's own button has scrolled away (and not over the footer's) */
+#navHello { transition: opacity .3s, transform .3s, visibility 0s; }
+#navHello.off { opacity: 0; visibility: hidden; transform: translateY(-8px); pointer-events: none; transition: opacity .25s, transform .25s, visibility 0s .25s; }
 
 /* ---------- staff ---------- */
 #staff { position: fixed; inset: 0; z-index: 9; pointer-events: none; }

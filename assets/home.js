@@ -136,6 +136,8 @@
     const links = $('navLinks');
     links.style.opacity = cl(1 - td * 2.2, 0, 1).toFixed(2);
     links.style.pointerEvents = td > 0.4 ? 'none' : 'auto';
+    const hc = $('heroCtas').getBoundingClientRect(), fh = $('footHello').getBoundingClientRect();
+    $('navHello').classList.toggle('off', hc.bottom > navH || fh.top < innerHeight);
 
     // plucking (desktop, big staff only)
     if (big && !mobile && !reduce && ptr.px > -9000) {
