@@ -97,7 +97,7 @@
     <div class="panel">
       <div class="seg tabs"><span class="on">Lessons</span><span>Free practice</span></div>
       <div class="fields">
-        <div><span class="mono">Lesson</span><div class="sel">1. Quarter notes <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+        <div><span class="mono">Lesson</span><div class="sel">4. Eighth notes <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
         <div><span class="mono">Exercise</span><div class="seg"><span class="on">A</span><span>B</span><span>C</span></div></div>
         <div><span class="mono">Step</span><div class="seg"><span class="on">Learn</span><span>Prac…</span><span>Coun…</span></div></div>
         <div><span class="mono">Tempo</span><div class="seg"><span>−</span><span style="flex:3;letter-spacing:.02em;text-transform:none">72 bpm</span><span>+</span></div></div>
@@ -105,7 +105,7 @@
       <div class="note">0 of 3 steps done on this exercise. A step counts as done at 85 or more, at 55 bpm or faster.</div>
     </div>
     <div class="go">
-      <span class="mono">Quarter notes, exercise A, learn</span>
+      <span class="mono">Eighth notes, exercise A, learn</span>
       <div class="row"><b>Play</b><span class="kbd enter">↵</span><svg viewBox="0 0 42 30" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 15h37M26 2l13 13-13 13"/></svg></div>
     </div>
   </div>
@@ -145,7 +145,9 @@
   const WORD = { perfect: "perfect", good: "good", ok: "a touch early" };
 
   const P1 = [];   // quarter notes, desktop only
-  for (let i = 0; i < 8; i++) P1.push({ at: 5 + i, hand: 0, g: i === 6 ? "good" : "perfect" });
+  // eighth notes, two bars of 4/4: q ee q ee | ee ee q q
+  const ON1 = [0, 1, 1.5, 2, 3, 3.5, 4, 4.5, 5, 5.5, 6, 7];
+  ON1.forEach((o, i) => P1.push({ at: 5 + o, off: o, hand: 0, g: i === 8 ? "good" : i === 5 ? "ok" : "perfect" }));
   const P2 = [];   // 3 against 2: right hand (1) plays three while the left (0) plays two, per 2/4 bar
   for (let k = 0; k < 4; k++) {
     for (let j = 0; j < 3; j++) P2.push({ at: 14 + 2 * k + j * 2 / 3, hand: 1, bar: k, j, g: k === 2 && j === 1 ? "ok" : (k === 1 && j === 2 ? "good" : "perfect") });
@@ -250,9 +252,12 @@
     svgEl("line", { x1: 680, x2: 680, y1: Y - 12, y2: Y + 12, stroke: INK, "stroke-width": 1.2 }, g);
     svgEl("line", { x1: 1226, x2: 1226, y1: Y - 12, y2: Y + 12, stroke: INK, "stroke-width": 1.2 }, g);
     svgEl("rect", { x: 1234, y: Y - 12, width: 4, height: 24, fill: INK }, g);
-    P1.forEach((n, i) => notes.set(n, { x: 170 + i * 128 + (i > 3 ? 44 : 0), y: Y }));
-    const bars = [{ x: 110, w: 560, y: Y - 40, h: 58 }, { x: 690, w: 530, y: Y - 40, h: 58 }];
-    return { g, notes, bars };
+    P1.forEach((n) => { const bar = Math.floor(n.off / 4), o = n.off % 4; notes.set(n, { x: (bar ? 726 : 150) + o * 128, y: Y }); });
+    // beamed pairs (each eighth on a beat with its partner half a beat later)
+    const beams = [];
+    for (let i = 0; i + 1 < P1.length; i++) if (P1[i].off % 1 === 0 && P1[i + 1].off - P1[i].off === .5) beams.push([P1[i], P1[i + 1]]);
+    const bars = [{ x: 110, w: 560, y: Y - 52, h: 70 }, { x: 690, w: 530, y: Y - 52, h: 70 }];
+    return { g, notes, bars, beams };
   }
   const drawNotes = (svg, part) => {
     for (const [n, p] of part.notes) {
@@ -262,6 +267,7 @@
       p.el = g;
     }
     part.hl = svgEl("rect", { rx: 2, fill: "rgba(107,63,160,.09)" }, part.g);
+    (part.beams || []).forEach(bm => { const a = part.notes.get(bm[0]), z = part.notes.get(bm[1]); bm.el = svgEl("rect", { x: a.x + 7.4, y: a.y - 44, width: z.x - a.x + 1.8, height: 6, fill: GREY }, part.g); });
     part.g.insertBefore(part.hl, part.g.firstChild);
   };
 
@@ -388,7 +394,9 @@
       const col = d < 0 ? GREY : d < .45 ? GC[n.g] : mix(GC[n.g], INK, clamp((d - .45) / .35));
       p.head.setAttribute("fill", col); p.stem.setAttribute("fill", col);
       p.el.setAttribute("transform", `translate(${p.x} ${p.y}) scale(${(1 + .35 * pulse(t, n.t, .28)).toFixed(3)})`);
+      p.col = col;
     }
+    for (const bm of part.beams || []) bm.el.setAttribute("fill", part.notes.get(bm[1]).col);
     return cur;
   }
 
@@ -401,7 +409,7 @@
     set(D.play, "opacity", playO.toFixed(3));
 
     // header: the app's own wording
-    const title = part === 1 ? "Quarter notes, exercise A: learn" : "Two hands: 3 against 2, exercise A: learn";
+    const title = part === 1 ? "Eighth notes, exercise A: learn" : "Two hands: 3 against 2, exercise A: learn";
     const tEl = D.hd.firstChild, mEl = D.hd.lastChild;
     if (tEl.textContent !== title) tEl.textContent = title;
     if (mEl.textContent !== "72 bpm, play along") mEl.textContent = "72 bpm, play along";

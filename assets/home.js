@@ -110,7 +110,9 @@
     let top, gap, nL, nR, lineL, lineR;
     if (mobile) {
       const dGap = 4.5, dTop = navH + 6;
-      top = lerp(H * 0.84, dTop, td); gap = lerp(H * 0.026, dGap, td);
+      // higher on the hero so all five lines clear the first scene's colour; back down once the scenes take over
+      const hero = ease(cl(y / (S.stageTop * 0.8), 0, 1));
+      top = lerp(H * lerp(0.78, 0.84, hero), dTop, td); gap = lerp(H * 0.026, dGap, td);
       nL = lerp(pad + 6, pad + 10, td); nR = lerp(W - pad - 6, W - pad - 10, td);
       lineL = lerp(0, pad, td); lineR = lerp(W, W - pad, td);
     } else {
