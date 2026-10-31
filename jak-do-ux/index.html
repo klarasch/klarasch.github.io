@@ -99,14 +99,10 @@ a:focus-visible,button:focus-visible{outline:3px solid var(--blue);outline-offse
   position:absolute;top:50%;width:28px;height:28px;margin:-14px 0 0 -14px;padding:0;border:0;background:none;cursor:pointer;
   -webkit-tap-highlight-color:transparent;
 }
-.staff .nt svg{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;shape-rendering:crispEdges;transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
-.staff .nt .r{fill:rgba(11,11,11,.35)}
-.staff .nt .c{fill:var(--mist)}
-.staff .nt.done .r,.staff .nt.done .c{fill:var(--blue)}
-.staff .nt.cur .r{fill:var(--ink)}
-.staff .nt.cur .c{fill:var(--lime)}
-.staff .nt.cur svg{transform:scale(1.3)}
-.staff .nt:hover svg,.staff .nt:focus-visible svg{transform:scale(1.45)}
+.staff .nt svg{position:absolute;left:50%;top:50%;width:15px;height:10px;margin:-5px 0 0 -7.5px;shape-rendering:crispEdges;opacity:.3;transition:transform .3s cubic-bezier(.3,1.7,.5,1),opacity .2s}
+.staff .nt.done svg{opacity:1}
+.staff .nt.cur svg{opacity:1;transform:scale(1.5)}
+.staff .nt:hover svg,.staff .nt:focus-visible svg{opacity:1;transform:scale(1.6)}
 .staff .nt:focus-visible{outline:none}
 .staff .nt .tip{
   position:absolute;left:50%;top:28px;transform:translateX(-50%);white-space:nowrap;
@@ -191,22 +187,20 @@ code{font-family:var(--pix);font-size:.95em;background:var(--lime);color:var(--i
 .cover .ctas a.lnk{font-size:15px;font-weight:500;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:2px}
 .cover .ctas a.lnk:hover{background:none;opacity:.6}
 
-/* velká osnova v obálce — obsah jako melodie */
-.score{position:relative;height:150px;margin:clamp(40px,7vh,80px) 0 0}
-.score .ln{position:absolute;left:0;right:0;height:1px;background:rgba(11,11,11,.16)}
-.score .nt{position:absolute;width:150px;margin-left:-14px;transform:translateY(-50%);display:flex;align-items:center;gap:10px;text-decoration:none;font-size:14.5px;font-weight:500;letter-spacing:-.01em;line-height:1.15}
-.score .nt:hover{background:none}
-.score .nt svg{flex:none;width:30px;height:20px;shape-rendering:crispEdges;transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
-.score .nt:hover svg{transform:scale(1.25)}
-.score .nt span{background:var(--mist);padding:2px 4px;border-radius:3px}
-.score .nt:hover span{background:var(--lime)}
-.toc{display:none}
-@media (max-width:899px){
-  .score{display:none}
-  .toc{display:grid;grid-template-columns:1fr;margin-top:40px;border-top:1px solid var(--hair)}
-  .toc a{text-decoration:none;display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--hair);font-size:16px;font-weight:500;letter-spacing:-.01em}
-  .toc a:hover{background:none;color:var(--blue)}
-  .toc a b{font-weight:400}
+/* obsah v obálce: tenká osnova s melodií, pod ní seznam; noty jsou odrážky */
+.band{position:relative;height:56px;margin:clamp(40px,7vh,72px) 0 22px}
+.band .ln{position:absolute;left:0;right:0;height:1px;background:rgba(11,11,11,.16)}
+.band svg{position:absolute;width:21px;height:14px;margin-top:-7px;shape-rendering:crispEdges}
+.toc{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,auto);grid-auto-flow:column;column-gap:clamp(32px,5vw,64px);border-top:1px solid var(--hair)}
+.toc a{text-decoration:none;display:flex;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid var(--hair);font-size:17px;font-weight:500;letter-spacing:-.01em;min-width:0}
+.toc a:hover{background:none;color:var(--blue)}
+.toc a svg{flex:none;width:18px;height:12px;shape-rendering:crispEdges;transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
+.toc a:hover svg{transform:scale(1.35)}
+.toc a b{font-weight:400}
+@media (max-width:719px){
+  .band{display:none}
+  .toc{grid-template-columns:1fr;grid-auto-flow:row;grid-template-rows:none;margin-top:40px}
+  .toc a{font-size:16px;padding:12px 0}
 }
 
 /* ---------- claim ---------- */
@@ -322,7 +316,7 @@ code{font-family:var(--pix);font-size:.95em;background:var(--lime);color:var(--i
       <a class="key sm" href="#s1">Začít číst ↵</a>
       <a class="lnk" href="#s2">Rovnou k AI části ↓</a>
     </div>
-    <div class="score" id="score" aria-label="Obsah"></div>
+    <div class="band" id="band" aria-hidden="true"></div>
     <nav class="toc" id="toc" aria-label="Obsah"></nav>
   </div>
 </section>
@@ -577,37 +571,27 @@ const head = col => '<svg viewBox="0 0 6 4" aria-hidden="true">' + HEAD.map(([x,
 const go = c => c.el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
 const lines = (el, y0, gap) => { for (let i = 0; i < 5; i++) { const l = document.createElement('div'); l.className = 'ln'; l.style.top = (y0 + i * gap) + 'px'; el.appendChild(l); } };
 
-/* velká osnova v obálce + mobilní seznam */
-const score = document.getElementById('score'), toc = document.getElementById('toc');
-lines(score, 15, 30);
+/* obsah v obálce: melodie na osnově + seznam se stejnýma notama */
+const band = document.getElementById('band'), toc = document.getElementById('toc');
+lines(band, 4, 12);
 CH.slice(1).forEach((c, i) => {
-  const a = document.createElement('a');
-  a.className = 'nt'; a.href = '#' + c.id;
-  a.style.left = (i / 7 * 88) + '%';
-  a.style.top = (15 + c.pos * 15) + 'px';
-  a.innerHTML = head(c.col) + '<span>' + c.short + '</span>';
-  score.appendChild(a);
+  band.insertAdjacentHTML('beforeend', head(c.col).replace('<svg', '<svg style="left:' + (4 + i * 12.5) + '%;top:' + (4 + c.pos * 6) + 'px"'));
   const t = document.createElement('a');
-  t.href = '#' + c.id; t.innerHTML = '<b class="num">' + c.n + '</b>' + c.long;
+  t.href = '#' + c.id; t.innerHTML = head(c.col) + '<b class="num">' + c.n + '</b>' + c.long;
   toc.appendChild(t);
 });
 
-/* progress v hlavičce: linka + pixelový kolečka */
+/* progress v hlavičce: linka + stejný noty jako v obsahu */
 const hdr = document.getElementById('hdr'), staff = document.getElementById('staff');
 staff.innerHTML = '<div class="trk"></div><div class="fill"></div>';
 const bar = staff.querySelector('.fill');
-// pixelový kolečko 7×7: obrys (r) a výplň (c)
-const RING = [[2,0],[3,0],[4,0],[1,1],[5,1],[0,2],[6,2],[0,3],[6,3],[0,4],[6,4],[1,5],[5,5],[2,6],[3,6],[4,6]];
-const FILL = [[2,1],[3,1],[4,1],[1,2],[2,2],[3,2],[4,2],[5,2],[1,3],[2,3],[3,3],[4,3],[5,3],[1,4],[2,4],[3,4],[4,4],[5,4],[2,5],[3,5],[4,5]];
-const px = (pts, cls) => pts.map(([x, y]) => '<rect class="' + cls + '" x="' + x + '" y="' + y + '" width="1" height="1"/>').join('');
-const dot = '<svg viewBox="0 0 7 7" aria-hidden="true">' + px(RING, 'r') + px(FILL, 'c') + '</svg>';
 const X = CH.map((c, i) => i / (CH.length - 1) * 100);
 const dots = CH.map((c, i) => {
   const b = document.createElement('button');
   b.className = 'nt';
   b.style.left = X[i] + '%';
   b.setAttribute('aria-label', 'Přejít na ' + c.long);
-  b.innerHTML = dot + '<span class="tip">' + (c.n ? c.n + ' ' : '') + c.short + '</span>';
+  b.innerHTML = head(c.col) + '<span class="tip">' + (c.n ? c.n + ' ' : '') + c.short + '</span>';
   b.addEventListener('click', () => go(c));
   staff.appendChild(b);
   return b;
@@ -628,7 +612,7 @@ pill.addEventListener('click', openMenu);
 chmenu.querySelector('.close').addEventListener('click', closeMenu);
 addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
 
-/* progress: dojede přesně na kolečko, když začne kapitola */
+/* progress: dojede přesně na notu, když začne kapitola */
 let tops = [];
 const measure = () => { tops = CH.map(c => c.el.getBoundingClientRect().top + scrollY); };
 function onScroll() {
