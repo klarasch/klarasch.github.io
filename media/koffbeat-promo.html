@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>koffbeat promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Silkscreen&display=swap">
+<style>
+  :root {
+    --void: #f6f4f0; --ink: #2a1e34; --dim: #635a6b; --faint: #6f6676; --line: rgba(42, 30, 52, .14);
+    --ui: "Inter", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace; --pixel: "Silkscreen", var(--mono);
+  }
+  html, body { margin: 0; height: 100%; background: var(--void); overflow: hidden; }
+  /* the frame keeps 16:9 and letterboxes inside whatever holds it */
+  .fit { position: absolute; inset: 0; display: grid; place-items: center; }
+  .frame { position: relative; width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; overflow: hidden; }
+  .stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: #ebe8e2; color: var(--ink); font-family: var(--ui); }
+
+  /* a device: the app at its own CSS size inside a bezel, placed by the camera */
+  .dev { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+  .bezel { position: absolute; inset: calc(var(--bz) * -1); border-radius: var(--br); background: #1d1720; box-shadow: 0 40px 70px -30px rgba(30, 20, 40, .55); opacity: var(--chrome, 1); }
+  .chromebar { position: absolute; left: 0; right: 0; top: calc(var(--cb) * -1); height: var(--cb); background: #e3dfe6; border-radius: 14px 14px 0 0; opacity: var(--chrome, 1); }
+  .chromebar i { position: absolute; top: 50%; width: 11px; height: 11px; margin-top: -5.5px; border-radius: 50%; background: #c9c2ce; }
+  .chromebar span { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 34%; height: 15px; border-radius: 8px; background: #f3f1f4; }
+  .devlbl { position: absolute; left: 0; right: 0; text-align: center; font: 500 26px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--dim); opacity: var(--chrome, 1); }
+  .app {
+    position: absolute; inset: 0; overflow: hidden; border-radius: var(--ar, 0);
+    background: var(--void) radial-gradient(110% 34% at 50% 52%, rgba(255, 254, 252, .7), rgba(255, 254, 252, 0)) no-repeat;
+  }
+  .app > * { position: absolute; }
+  .app canvas { left: 0; top: 0; }
+  .layer { inset: 0; }
+  .layer > * { position: absolute; }
+
+  .mono { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+  .kbd {
+    display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 6px; box-sizing: border-box;
+    border: 1px solid #cfc9d3; border-bottom-width: 2px; border-radius: 4px; background: #fbfaf8;
+    font: 500 11px/1 var(--mono); letter-spacing: 0; color: var(--ink); vertical-align: middle;
+  }
+
+  /* home (desktop only) */
+  .logo { left: 56px; top: 40px; display: flex; align-items: flex-end; gap: 10px; font: 400 15px/1 var(--pixel); letter-spacing: .32em; }
+  .logo svg { width: 14px; height: 26px; }
+  .menu { right: 56px; top: 48px; display: flex; gap: 36px; }
+  .panel { left: 56px; right: 56px; top: 384px; height: 196px; box-sizing: border-box; border: 1px solid var(--line); border-radius: 4px; background: rgba(250, 249, 246, .72); }
+  .panel > * { position: absolute; }
+  .seg { display: flex; border: 2px solid var(--ink); }
+  .seg span { display: grid; place-items: center; height: 36px; padding: 0 18px; font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+  .seg span + span { border-left: 2px solid var(--ink); }
+  .seg .on { background: var(--ink); color: #fbfaf8; }
+  .tabs { left: 24px; top: 16px; }
+  .tabs span { width: 176px; }
+  .fields { left: 0; right: 0; top: 70px; height: 92px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; grid-template-columns: repeat(4, 1fr); }
+  .fields > div { position: relative; padding: 18px 22px 0; border-left: 1px solid var(--line); }
+  .fields > div:first-child { border-left: 0; }
+  .fields .mono { font-size: 10px; display: block; margin-bottom: 12px; }
+  .fields .seg span { flex: 1; padding: 0 6px; }
+  .sel { height: 36px; border: 2px solid var(--ink); box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font: 400 15px/1 var(--ui); }
+  .panel .note { left: 22px; bottom: 9px; font: 400 12px/1 var(--ui); color: var(--dim); }
+  .go { right: 60px; top: 600px; display: grid; justify-items: end; gap: 8px; }
+  .go .mono { font-size: 11px; letter-spacing: .06em; text-transform: none; }
+  .go .row { display: flex; align-items: center; gap: 22px; }
+  .go b { font: 600 74px/.9 var(--ui); letter-spacing: -.045em; }
+  .go .kbd { min-width: 34px; height: 30px; font-size: 15px; }
+  .go svg { width: 42px; height: 30px; }
+
+  /* play */
+  .hd .t { font: 500 17px/1.25 var(--ui); }
+  .hd .mono { margin-top: 6px; font-size: 11px; }
+  .ctl { display: flex; align-items: center; gap: 10px; color: var(--dim); }
+  .ctl svg { width: 16px; height: 16px; }
+  .ctl .gap { width: 22px; }
+  .prog { height: 20px; }
+  .prog i { position: absolute; }
+  .prog .dot { position: absolute; top: 18px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--ink); }
+  .prog .bar { position: absolute; font-size: 10px; white-space: nowrap; }
+  .staff { left: 0; top: 0; overflow: visible; }
+  .flash { left: 0; right: 0; text-align: center; font: 500 14px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; }
+  .zones { left: 0; right: 0; bottom: 14px; display: flex; }
+  .zones span { flex: 1; text-align: center; font: 400 10px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
+  .zones .kbd { margin-left: 6px; }
+  .touch { width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: rgba(42, 30, 52, .16); box-shadow: 0 0 0 2px rgba(42, 30, 52, .22); opacity: 0; }
+</style>
+</head>
+<body>
+<div class="fit"><div class="frame" id="frame">
+<div class="stage" id="stage"></div>
+</div></div>
+
+<template id="homeTpl">
+  <div class="layer home">
+    <div class="logo"><svg viewBox="0 0 7 13" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M5 0h1v7h-1zM6 1h1v2h-1zM1 7h4v1h-4zM0 8h5v1h-5zM0 9h4v1h-4z"/></svg>Koffbeat</div>
+    <div class="menu"><span class="mono">How to play</span><span class="mono">Settings</span></div>
+    <div class="panel">
+      <div class="seg tabs"><span class="on">Lessons</span><span>Free practice</span></div>
+      <div class="fields">
+        <div><span class="mono">Lesson</span><div class="sel">4. Eighth notes <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div></div>
+        <div><span class="mono">Exercise</span><div class="seg"><span class="on">A</span><span>B</span><span>C</span></div></div>
+        <div><span class="mono">Step</span><div class="seg"><span class="on">Learn</span><span>Prac…</span><span>Coun…</span></div></div>
+        <div><span class="mono">Tempo</span><div class="seg"><span>−</span><span style="flex:3;letter-spacing:.02em;text-transform:none">72 bpm</span><span>+</span></div></div>
+      </div>
+      <div class="note">0 of 3 steps done on this exercise. A step counts as done at 85 or more, at 55 bpm or faster.</div>
+    </div>
+    <div class="go">
+      <span class="mono">Eighth notes, exercise A, learn</span>
+      <div class="row"><b>Play</b><span class="kbd enter">↵</span><svg viewBox="0 0 42 30" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 15h37M26 2l13 13-13 13"/></svg></div>
+    </div>
+  </div>
+</template>
+
+<script>
+(() => {
+  /* ======================= timeline helpers (same engine as the slaydy promo) ======================= */
+  const BEAT = 60 / 72, b = (n) => n * BEAT;
+  const T = b(26);
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const io3 = (x) => x < .5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2;
+  const io5 = (x) => x < .5 ? 16 * x ** 5 : 1 - (-2 * x + 2) ** 5 / 2;
+  const out = (x) => 1 - (1 - x) ** 4;
+  const lerp = (a, c, f) => a + (c - a) * f;
+  const track = (keys, ease = io3) => {
+    keys = keys.map(([n, v]) => [b(n), v]);
+    return (t) => {
+      if (t <= keys[0][0]) return keys[0][1];
+      for (let i = 1; i < keys.length; i++) {
+        if (t <= keys[i][0]) {
+          const [t0, v0] = keys[i - 1], [t1, v1] = keys[i];
+          return lerp(v0, v1, ease((t - t0) / (t1 - t0)));
+        }
+      }
+      return keys[keys.length - 1][1];
+    };
+  };
+  const pulse = (t, at, len = .3) => { const x = (t - at) / len; return x < 0 || x > 1 ? 0 : Math.sin(Math.PI * x); };
+
+  /* ======================= the choreography (in beats) ======================= */
+  //  0 desktop home, sand drifting     3 press ↵        5–12 quarter notes on F
+  // 12.5 pull back: the same app on tablet and phone   14–21 3 against 2, all three in sync
+  // 22.5 push back into the desktop     24 home again     26 loop
+  const ENTER = b(3);
+  const GC = { perfect: "#6b3fa0", good: "#a466c8", ok: "#f09a3e" };
+  const WORD = { perfect: "perfect", good: "good", ok: "a touch early" };
+
+  const P1 = [];   // quarter notes, desktop only
+  // eighth notes, two bars of 4/4: q ee q ee | ee ee q q
+  const ON1 = [0, 1, 1.5, 2, 3, 3.5, 4, 4.5, 5, 5.5, 6, 7];
+  ON1.forEach((o, i) => P1.push({ at: 5 + o, off: o, hand: 0, g: i === 8 ? "good" : i === 5 ? "ok" : "perfect" }));
+  const P2 = [];   // 3 against 2: right hand (1) plays three while the left (0) plays two, per 2/4 bar
+  for (let k = 0; k < 4; k++) {
+    for (let j = 0; j < 3; j++) P2.push({ at: 14 + 2 * k + j * 2 / 3, hand: 1, bar: k, j, g: k === 2 && j === 1 ? "ok" : (k === 1 && j === 2 ? "good" : "perfect") });
+    for (let j = 0; j < 2; j++) P2.push({ at: 14 + 2 * k + j, hand: 0, bar: k, j, g: "perfect" });
+  }
+  [...P1, ...P2].forEach(n => { n.t = b(n.at); });
+  const ALL = [...P1, ...P2];
+
+  /* ======================= the sand: grains settle onto the nodal lines of a Chladni figure ======================= */
+  const MODES = [[2, 3, 1], [1, 4, -1], [3, 4, -1], [2, 5, 1], [1, 5, -1], [3, 5, 1], [4, 5, -1]];
+  const FIG = [[0, 0], [9, 1], [13, 2], [16, 3], [18, 4], [20, 5], [22, 6], [24, 0]].map(([n, m]) => [b(n), m]);
+  const figAt = (t) => {
+    let i = 0;
+    while (i + 1 < FIG.length && t >= FIG[i + 1][0]) i++;
+    const prev = i > 0 ? FIG[i - 1][1] : FIG[FIG.length - 1][1];
+    return { a: MODES[prev], b: MODES[FIG[i][1]], w: io3(clamp((t - FIG[i][0]) / .7)) };
+  };
+  const baseE = track([[0, .55], [3, .55], [4.5, .06], [23.4, .06], [24.6, .55]]);
+  const energy = (t) => {
+    let e = baseE(t);
+    for (const n of ALL) { const d = t - n.t; if (d >= 0 && d < 2) e += (n.g === "ok" ? .45 : .12) * Math.exp(-d * 4); }
+    return e;
+  };
+  const PAL = ["#c7382b", "#e06629", "#ed8f3d", "#853d99", "#5e368f", "#b8365f"];
+  const N = 3200;
+  const gx = new Float32Array(N), gz = new Float32Array(N), gc = new Uint8Array(N), gs = new Float32Array(N);
+  let seed = 7;
+  const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+  for (let i = 0; i < N; i++) { gx[i] = rnd() * 2 - 1; gz[i] = rnd() * 2 - 1; gc[i] = (rnd() * PAL.length) | 0; gs[i] = .7 + rnd() * .7; }
+  const PI = Math.PI;
+  const field = (m, x, z, o) => {
+    const a = m[0] * PI, c = m[1] * PI, s = m[2];
+    const cax = Math.cos(a * x), sax = Math.sin(a * x), ccz = Math.cos(c * z), scz = Math.sin(c * z);
+    const ccx = Math.cos(c * x), scx = Math.sin(c * x), caz = Math.cos(a * z), saz = Math.sin(a * z);
+    o[0] = cax * ccz + s * ccx * caz;
+    o[1] = -a * sax * ccz - s * c * scx * caz;
+    o[2] = -c * cax * scz - s * a * ccx * saz;
+  };
+  const fa = [0, 0, 0], fb = [0, 0, 0];
+  function step(t, dt) {
+    const F = figAt(t), E = energy(t), jit = (.0016 + .03 * E) * dt * 60, pull = Math.min(1, 6 * dt);
+    for (let i = 0; i < N; i++) {
+      const x = gx[i], z = gz[i];
+      field(F.a, x, z, fa); field(F.b, x, z, fb);
+      const w = F.w, f = fa[0] * (1 - w) + fb[0] * w, dx = fa[1] * (1 - w) + fb[1] * w, dz = fa[2] * (1 - w) + fb[2] * w;
+      const g2 = dx * dx + dz * dz + 1e-3;
+      let mx = -f * dx / g2 * pull, mz = -f * dz / g2 * pull;
+      const ml = Math.hypot(mx, mz), cap = .02 * dt * 60;
+      if (ml > cap) { mx *= cap / ml; mz *= cap / ml; }
+      gx[i] = x + mx + (rnd() - .5) * jit;
+      gz[i] = z + mz + (rnd() - .5) * jit;
+      if (gx[i] < -1.02 || gx[i] > 1.02 || gz[i] < -1.02 || gz[i] > 1.02) { gx[i] = rnd() * 2 - 1; gz[i] = rnd() * 2 - 1; }
+    }
+  }
+
+  /* ======================= devices ======================= */
+  const NS = "http://www.w3.org/2000/svg";
+  const svgEl = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+  const html = (cls, parent, inner = "", style = "") => { const e = document.createElement("div"); e.className = cls; e.innerHTML = inner; if (style) e.style.cssText = style; parent.appendChild(e); return e; };
+  const stage = document.getElementById("stage");
+  const INK = "#2a1e34", DIM = "#635a6b", GREY = "#a49dab";
+
+  // a 2/4 grand-ish staff for 3 against 2: right hand (J) above, left hand (F) below, wrapped into rows
+  function buildP2(svg, L) {
+    const g = svgEl("g", {}, svg), notes = new Map(), bars = [];
+    const rows = Math.ceil(4 / L.per);
+    for (let r = 0; r < rows; r++) {
+      const yJ = L.y0 + r * L.rowGap, yF = yJ + L.gap;
+      const xs = r === 0 ? L.x0 + 74 : L.x0 + 34, bw = (L.x1 - xs) / L.per;
+      [yJ, yF].forEach((y, li) => {
+        svgEl("line", { x1: L.x0 + 22, x2: L.x1, y1: y, y2: y, stroke: INK, "stroke-width": 1.2 }, g);
+        svgEl("text", { x: L.x0, y: y + 5, "font-family": "IBM Plex Mono, monospace", "font-weight": 500, "font-size": 14, fill: DIM }, g).textContent = li ? "F" : "J";
+        if (r === 0) {
+          svgEl("text", { x: L.x0 + 50, y: y - 4, "font-family": "Georgia, serif", "font-weight": 700, "font-size": 28, "text-anchor": "middle", fill: INK }, g).textContent = "2";
+          svgEl("text", { x: L.x0 + 50, y: y + 21, "font-family": "Georgia, serif", "font-weight": 700, "font-size": 28, "text-anchor": "middle", fill: INK }, g).textContent = "4";
+        }
+        for (let k = 1; k <= L.per; k++) {
+          const x = xs + k * bw - 6, last = r === rows - 1 && k === L.per;
+          svgEl("line", { x1: x, x2: x, y1: y - 12, y2: y + 12, stroke: INK, "stroke-width": 1.2 }, g);
+          if (last) svgEl("rect", { x: x + 4, y: y - 12, width: 4, height: 24, fill: INK }, g);
+        }
+      });
+      for (let k = 0; k < L.per; k++) {
+        const bar = r * L.per + k, bx = xs + k * bw;
+        bars[bar] = { x: bx + 2, w: bw - 14, y: yJ - 62, h: L.gap + 86 };
+        const tx = [0, 1, 2].map(j => bx + bw * .12 + j * bw * .78 / 3);
+        const y = yJ - 50, x0 = tx[0] - 2, x1 = tx[2] + 14, xm = (x0 + x1) / 2;
+        svgEl("path", { d: `M${x0} ${y + 6}V${y}H${xm - 9}M${xm + 9} ${y}H${x1}V${y + 6}`, fill: "none", stroke: DIM, "stroke-width": 1.2 }, g);
+        svgEl("text", { x: xm, y: y + 5, "font-family": "Georgia, serif", "font-style": "italic", "font-weight": 700, "font-size": 14, "text-anchor": "middle", fill: DIM }, g).textContent = "3";
+        for (const n of P2) if (n.bar === bar) notes.set(n, { x: n.hand ? tx[n.j] : bx + bw * .12 + n.j * bw * .78 / 2, y: n.hand ? yJ : yF });
+      }
+    }
+    return { g, notes, bars };
+  }
+  // 4/4 quarter notes on one line (desktop's first exercise)
+  function buildP1(svg) {
+    const g = svgEl("g", {}, svg), notes = new Map(), Y = 196;
+    svgEl("rect", { x: 40, y: Y - 12, width: 6, height: 24, fill: INK }, g); svgEl("rect", { x: 50, y: Y - 12, width: 6, height: 24, fill: INK }, g);
+    svgEl("text", { x: 84, y: Y - 4, "font-family": "Georgia, serif", "font-weight": 700, "font-size": 30, "text-anchor": "middle", fill: INK }, g).textContent = "4";
+    svgEl("text", { x: 84, y: Y + 22, "font-family": "Georgia, serif", "font-weight": 700, "font-size": 30, "text-anchor": "middle", fill: INK }, g).textContent = "4";
+    svgEl("line", { x1: 40, x2: 1240, y1: Y, y2: Y, stroke: INK, "stroke-width": 1.2 }, g);
+    svgEl("line", { x1: 680, x2: 680, y1: Y - 12, y2: Y + 12, stroke: INK, "stroke-width": 1.2 }, g);
+    svgEl("line", { x1: 1226, x2: 1226, y1: Y - 12, y2: Y + 12, stroke: INK, "stroke-width": 1.2 }, g);
+    svgEl("rect", { x: 1234, y: Y - 12, width: 4, height: 24, fill: INK }, g);
+    P1.forEach((n) => { const bar = Math.floor(n.off / 4), o = n.off % 4; notes.set(n, { x: (bar ? 726 : 150) + o * 128, y: Y }); });
+    // beamed pairs (each eighth on a beat with its partner half a beat later)
+    const beams = [];
+    for (let i = 0; i + 1 < P1.length; i++) if (P1[i].off % 1 === 0 && P1[i + 1].off - P1[i].off === .5) beams.push([P1[i], P1[i + 1]]);
+    const bars = [{ x: 110, w: 560, y: Y - 52, h: 70 }, { x: 690, w: 530, y: Y - 52, h: 70 }];
+    return { g, notes, bars, beams };
+  }
+  const drawNotes = (svg, part) => {
+    for (const [n, p] of part.notes) {
+      const g = svgEl("g", {}, part.g);
+      p.head = svgEl("ellipse", { cx: 0, cy: 0, rx: 9, ry: 6.6, transform: "rotate(-22)", fill: GREY }, g);
+      p.stem = svgEl("rect", { x: 7.4, y: -44, width: 1.8, height: 43, fill: GREY }, g);
+      p.el = g;
+    }
+    part.hl = svgEl("rect", { rx: 2, fill: "rgba(107,63,160,.09)" }, part.g);
+    (part.beams || []).forEach(bm => { const a = part.notes.get(bm[0]), z = part.notes.get(bm[1]); bm.el = svgEl("rect", { x: a.x + 7.4, y: a.y - 44, width: z.x - a.x + 1.8, height: 6, fill: GREY }, part.g); });
+    part.g.insertBefore(part.hl, part.g.firstChild);
+  };
+
+  // layouts at each device's own CSS size; plate = where the sand bed sits
+  const DEVS = {
+    desk: {
+      W: 1280, H: 720, touch: false, bz: 0, br: 14, cb: 30,
+      hd: "left:40px;top:30px", ctl: "right:50px;top:34px", prog: { x: 430, y: 92, w: 420, lbl: "left:-84px;top:4px" },
+      p2: { x0: 40, x1: 1240, y0: 170, gap: 112, per: 4, rowGap: 0 },
+      plate: { cy: 492, R: 660, k: .36 }, flash: 344,
+    },
+    tab: {
+      W: 768, H: 1024, touch: true, bz: 22, br: 46, ar: "24px",
+      hd: "left:40px;top:40px", ctl: "right:44px;top:44px", prog: { x: 194, y: 120, w: 520, lbl: "left:-100px;top:4px" },
+      p2: { x0: 30, x1: 744, y0: 280, gap: 104, per: 4, rowGap: 0 },
+      plate: { cy: 700, R: 470, k: .5 }, flash: 470,
+    },
+    ph: {
+      W: 390, H: 844, touch: true, bz: 14, br: 54, ar: "40px",
+      hd: "left:22px;top:54px;width:250px", ctl: "right:22px;top:58px", prog: { x: 45, y: 168, w: 300, lbl: "right:0;top:-22px" },
+      p2: { x0: 14, x1: 380, y0: 262, gap: 92, per: 2, rowGap: 196 },
+      plate: { cy: 730, R: 300, k: .56 }, flash: 614,
+    },
+  };
+
+  for (const [id, D] of Object.entries(DEVS)) {
+    const dev = html("dev", stage); D.dev = dev;
+    dev.style.width = D.W + "px"; dev.style.height = D.H + "px";
+    dev.style.setProperty("--bz", D.bz + "px"); dev.style.setProperty("--br", D.br + "px");
+    if (id === "desk") {
+      html("bezel", dev, "", "inset:-30px -1px -1px;border-radius:14px;background:#e3dfe6");
+      html("chromebar", dev, `<i style="left:16px"></i><i style="left:34px"></i><i style="left:52px"></i><span></span>`).style.setProperty("--cb", "30px");
+    } else html("bezel", dev);
+    const lbl = html("devlbl", dev, { desk: "Desktop · F and J", tab: "Tablet · tap", ph: "Phone · tap" }[id]);
+    lbl.style.top = (D.H + (D.bz || 0) + (id === "desk" ? 36 : 44) * (id === "desk" ? 1 : D.W / 300)) + "px";
+    lbl.style.fontSize = (id === "desk" ? 26 : 26 * D.W / 300 * (id === "ph" ? .85 : .55)) + "px";
+    const app = html("app", dev); D.app = app;
+    if (D.ar) app.style.setProperty("--ar", D.ar);
+    D.cv = document.createElement("canvas"); app.appendChild(D.cv); D.ctx = D.cv.getContext("2d");
+    D.cv.style.width = D.W + "px"; D.cv.style.height = D.H + "px";
+
+    const play = html("layer", app); D.play = play;
+    D.hd = html("hd", play, `<div class="t"></div><div class="mono"></div>`, D.hd);
+    html("ctl", play, `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4h4"/></svg>${D.touch ? "" : `<span class="kbd">R</span>`}<span class="gap"></span><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" fill="currentColor"/></svg>${D.touch ? "" : `<span class="kbd">Esc</span>`}`, D.ctl);
+    D.progEl = html("prog", play, `<span class="mono bar"></span><div class="dot"></div>`, `left:${D.prog.x}px;top:${D.prog.y}px;width:${D.prog.w}px`);
+    D.progEl.querySelector(".bar").style.cssText = D.prog.lbl;
+    D.segs = [0, 1, 2, 3].map(() => { const e = document.createElement("i"); D.progEl.appendChild(e); return e; });
+    D.svg = svgEl("svg", { class: "staff", width: D.W, height: D.H, viewBox: `0 0 ${D.W} ${D.H}` }, play);
+    D.p2 = buildP2(D.svg, D.p2); drawNotes(D.svg, D.p2);
+    if (id === "desk") { D.p1 = buildP1(D.svg); drawNotes(D.svg, D.p1); }
+    D.flashEl = html("flash", play, "", `top:${D.flash}px`);
+    D.zoneL = document.createElement("span"); D.zoneR = document.createElement("span");
+    html("zones", play).append(D.zoneL, D.zoneR);
+    if (D.touch) { D.touchL = html("touch", play, "", `left:${D.W * .25}px;top:${D.H * .8}px`); D.touchR = html("touch", play, "", `left:${D.W * .75}px;top:${D.H * .8}px`); }
+    if (id === "desk") { app.appendChild(document.getElementById("homeTpl").content.cloneNode(true)); D.home = app.querySelector(".home"); D.enter = app.querySelector(".enter"); }
+  }
+  const desk = DEVS.desk, tab = DEVS.tab, ph = DEVS.ph;
+
+  /* ======================= camera ======================= */
+  // pulled back: the three devices side by side, desktop at half size in a browser window
+  const pull = track([[0, 0], [12.4, 0], [14, 1], [22.4, 1], [23.8, 0]], io5);
+  const PLACE = { desk: [36, 186, .52], tab: [746, 152, .36], ph: [1072, 162, .43] };
+  const side = { tab: track([[0, 1], [12.6, 1], [14.2, 0], [22.4, 0], [23.6, 1]], io5), ph: track([[0, 1], [12.8, 1], [14.4, 0], [22.4, 0], [23.4, 1]], io5) };
+
+  /* ======================= render ======================= */
+  let K = 1, DPR = 1;
+  const set = (el, prop, v) => { if (el.style[prop] !== v) el.style[prop] = v; };
+  const hex = (c) => [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16));
+  const mix = (c1, c2, f) => { const a = hex(c1), z = hex(c2); return `rgb(${a.map((v, i) => Math.round(v + (z[i] - v) * f)).join(",")})`; };
+  const fit = () => {
+    K = document.getElementById("frame").clientWidth / 1280; stage.style.transform = `scale(${K})`;
+    DPR = devicePixelRatio || 1;
+  };
+  const sizeCanvas = (D, s) => {
+    const q = Math.min(2, Math.max(.35, s * K * DPR)), w = Math.round(D.W * q), h = Math.round(D.H * q);
+    if (D.cv.width !== w || D.cv.height !== h) { D.cv.width = w; D.cv.height = h; }
+    return q;
+  };
+
+  function drawSand(D, t, q) {
+    const ctx = D.ctx, { cy, R, k } = D.plate, cx = D.W / 2;
+    ctx.setTransform(q, 0, 0, q, 0, 0);
+    ctx.clearRect(0, 0, D.W, D.H);
+    const notes = t < b(13.2) ? P1 : P2;
+    for (const n of notes) {
+      const age = (t - n.t) / 1.5;
+      if (age < 0 || age > 1) continue;
+      const rr = R * (.08 + 1.1 * out(age));
+      ctx.strokeStyle = n.g === "ok" ? "#f09a3e" : "#6b3fa0";
+      for (let j = 0; j < 3; j++) {
+        ctx.globalAlpha = (1 - age) * [.05, .07, .12][j];
+        ctx.lineWidth = [22, 12, 4][j] * (1 - age * .5) * R / 660;
+        ctx.beginPath(); ctx.ellipse(cx, cy, rr, rr * k, 0, 0, PI * 2); ctx.stroke();
+      }
+    }
+    const gsz = 2.3 * Math.max(.75, R / 660);
+    for (let c = 0; c < PAL.length; c++) {
+      ctx.fillStyle = PAL[c];
+      for (let i = 0; i < N; i++) {
+        if (gc[i] !== c) continue;
+        const x = gx[i], z = gz[i], p = 1 / (1 - .3 * z);
+        const rim = clamp((1.02 - Math.max(Math.abs(x), Math.abs(z))) / .25);
+        if (rim <= 0) continue;
+        ctx.globalAlpha = .88 * rim;
+        const sz = gsz * gs[i] * p;
+        ctx.fillRect(cx + x * R * p - sz / 2, cy + z * R * k * p - sz / 2, sz, sz);
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function renderPart(D, part, notes, t, on, start, len) {
+    const cur = Math.floor((t / BEAT - start) / len);
+    part.g.style.display = on > .01 ? "" : "none";
+    if (on <= .01) return cur;
+    part.g.style.opacity = on;
+    if (cur >= 0 && cur < part.bars.length) {
+      const B = part.bars[cur];
+      for (const [k, v] of [["x", B.x], ["y", B.y], ["width", B.w], ["height", B.h]]) part.hl.setAttribute(k, v);
+      part.hl.style.opacity = 1;
+    } else part.hl.style.opacity = 0;
+    for (const [n, p] of part.notes) {
+      const d = t - n.t;
+      const col = d < 0 ? GREY : d < .45 ? GC[n.g] : mix(GC[n.g], INK, clamp((d - .45) / .35));
+      p.head.setAttribute("fill", col); p.stem.setAttribute("fill", col);
+      p.el.setAttribute("transform", `translate(${p.x} ${p.y}) scale(${(1 + .35 * pulse(t, n.t, .28)).toFixed(3)})`);
+      p.col = col;
+    }
+    for (const bm of part.beams || []) bm.el.setAttribute("fill", part.notes.get(bm[1]).col);
+    return cur;
+  }
+
+  function renderDev(D, id, t, scale) {
+    const q = sizeCanvas(D, scale);
+    drawSand(D, t, q);
+    const isDesk = id === "desk";
+    const part = isDesk && t < b(13.2) ? 1 : 2;
+    const playO = isDesk ? track([[0, 0], [3.6, 0], [4.4, 1], [23.4, 1], [24, 0]])(t) : 1;
+    set(D.play, "opacity", playO.toFixed(3));
+
+    // header: the app's own wording
+    const title = part === 1 ? "Eighth notes, exercise A: learn" : "Two hands: 3 against 2, exercise A: learn";
+    const tEl = D.hd.firstChild, mEl = D.hd.lastChild;
+    if (tEl.textContent !== title) tEl.textContent = title;
+    if (mEl.textContent !== "72 bpm, play along") mEl.textContent = "72 bpm, play along";
+    D.zoneL.innerHTML = (part === 1 ? "tap" : "left hand") + (D.touch ? "" : ` <span class="kbd">F</span>`);
+    D.zoneR.innerHTML = (part === 1 ? "tap" : "right hand") + (D.touch ? "" : ` <span class="kbd">J</span>`);
+
+    let cur, nb, start, len;
+    if (isDesk) {
+      const o1 = track([[0, 1], [12.6, 1], [13.2, 0]])(t), o2 = track([[0, 0], [13.2, 0], [13.8, 1]])(t);
+      const c1 = renderPart(D, D.p1, P1, t, o1, 5, 4), c2 = renderPart(D, D.p2, P2, t, o2, 14, 2);
+      if (part === 1) { cur = c1; nb = 2; start = 5; len = 4; } else { cur = c2; nb = 4; start = 14; len = 2; }
+    } else { cur = renderPart(D, D.p2, P2, t, 1, 14, 2); nb = 4; start = 14; len = 2; }
+
+    // progress
+    const W = D.prog.w, sw = (W - (nb - 1) * 16) / nb;
+    D.segs.forEach((e, i) => {
+      if (i >= nb) { e.style.display = "none"; return; }
+      const done = i < cur, now = i === cur;
+      e.style.cssText = `display:block;left:${i * (sw + 16)}px;width:${sw}px;top:${done || now ? 2 : 6}px;height:${done || now ? 10 : 3}px;background:${done ? "#6b3fa0" : now ? INK : "#d8d3dc"}`;
+    });
+    D.progEl.querySelector(".dot").style.left = (clamp((t / BEAT - start) / (len * nb)) * W).toFixed(1) + "px";
+    const bl = `Bar ${Math.min(nb, Math.max(1, cur + 1))} / ${nb}`, bEl = D.progEl.querySelector(".bar");
+    if (bEl.textContent !== bl) bEl.textContent = bl;
+
+    // grade flash, the hand zones
+    const notes = part === 1 ? P1 : P2;
+    let last = null;
+    for (const n of notes) if (t >= n.t) last = n;
+    const fa = last ? clamp(1 - (t - last.t - .25) / .6) : 0;
+    if (last && D.flashEl.textContent !== WORD[last.g]) D.flashEl.textContent = WORD[last.g];
+    if (last) D.flashEl.style.color = GC[last.g];
+    set(D.flashEl, "opacity", fa.toFixed(3));
+    for (const h of [0, 1]) {
+      let pr = 0;
+      for (const n of notes) { if (part === 1 ? h === 0 : n.hand === h) pr = Math.max(pr, pulse(t, n.t - .04, .26)); }
+      const zone = h ? D.zoneR : D.zoneL;
+      const kb = zone.querySelector(".kbd");
+      if (kb) { kb.style.transform = `translateY(${pr.toFixed(2)}px)`; kb.style.background = pr > .05 ? mix("#fbfaf8", "#6b3fa0", pr * .3) : "#fbfaf8"; }
+      const tc = h ? D.touchR : D.touchL;
+      if (tc) { tc.style.opacity = (pr * .9).toFixed(3); tc.style.transform = `scale(${(.7 + .3 * pr).toFixed(3)})`; }
+    }
+  }
+
+  function render(t) {
+    const pb = pull(t);
+    stage.style.background = mix("#f6f4f0", "#ebe8e2", pb);
+    // desktop: full frame → a browser window on the left
+    const [dx, dy, ds] = PLACE.desk;
+    const s = lerp(1, ds, pb);
+    desk.dev.style.transform = `translate(${lerp(0, dx, pb).toFixed(2)}px, ${lerp(0, dy, pb).toFixed(2)}px) scale(${s.toFixed(4)})`;
+    desk.dev.style.setProperty("--chrome", clamp(pb * 1.6 - .2).toFixed(3));
+    renderDev(desk, "desk", t, s);
+    // home (desktop only)
+    const ho = track([[0, 1], [3.2, 1], [4, 0], [23.6, 0], [24.4, 1]])(t);
+    set(desk.home, "opacity", ho.toFixed(3));
+    set(desk.home, "visibility", ho < .01 ? "hidden" : "visible");
+    const ep = pulse(t, ENTER - .05, .3);
+    desk.enter.style.transform = `translateY(${(ep * 2).toFixed(2)}px)`;
+    desk.enter.style.background = ep > .3 ? "#e9e1f2" : "#fbfaf8";
+    // tablet and phone slide in from the right
+    for (const id of ["tab", "ph"]) {
+      const D = DEVS[id], [x, y, sc] = PLACE[id], off = side[id](t);
+      const vis = off < .999;
+      set(D.dev, "display", vis ? "" : "none");
+      if (!vis) continue;
+      D.dev.style.transform = `translate(${(x + off * 520).toFixed(2)}px, ${y}px) scale(${sc})`;
+      D.dev.style.opacity = (1 - off).toFixed(3);
+      renderDev(D, id, t, sc);
+    }
+  }
+
+  /* ======================= clock ======================= */
+  const still = matchMedia("(prefers-reduced-motion: reduce)");
+  let playing = true, last = performance.now(), t = 0, visible = true;
+  const settle = (to, secs = 3) => { for (let s = Math.max(0, to - secs); s < to; s += 1 / 60) step(s, 1 / 60); };
+  const tick = (now) => {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (playing && visible && !document.hidden && !still.matches) { t = (t + dt) % T; step(t, dt); }
+    render(t);
+    requestAnimationFrame(tick);
+  };
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(document.getElementById("frame"));
+  // ?t=7.9 freezes a frame (handy for a poster image)
+  const fixed = parseFloat(new URLSearchParams(location.search).get("t"));
+  if (!isNaN(fixed)) { t = fixed; playing = false; }
+  if (still.matches) { t = b(17.2); playing = false; }
+  window.promo = { seek: (x) => { t = x; settle(x); playing = false; }, play: () => { playing = true; }, render };
+
+  const start = () => { fit(); settle(t, playing ? 2 : 4); requestAnimationFrame(tick); };
+  addEventListener("resize", fit);
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(start);
+})();
+</script>
+</body>
+</html>

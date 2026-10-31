@@ -22,7 +22,7 @@
   <a href="#top" class="name" id="navName">Klára Scholleová</a>
   <div class="right">
     <div class="links" id="navLinks"><a class="lnk" href="#stage">Work</a><a class="lnk" href="#before">Before</a><a class="lnk" href="#how">How I work</a></div>
-    <a class="key sm" data-sent href="https://www.linkedin.com/in/klara-scholleova/" target="_blank" rel="noopener">Say hello ↵</a>
+    <a class="key sm off" id="navHello" data-sent href="https://www.linkedin.com/in/klara-scholleova/" target="_blank" rel="noopener">Say hello ↵</a>
   </div>
 </nav>
 
@@ -42,7 +42,7 @@
   <div id="heroInner">
     <h1>I design <span class="hl b">complex products</span>. And I build things, <span class="hl l">hands-on</span>.</h1>
     <p class="lede">Staff Product Designer at SentinelOne, ex-Oracle. From cybersecurity platforms to small tools and experiments, I work across design, code and the details that make things work.</p>
-    <div class="ctas">
+    <div class="ctas" id="heroCtas">
       <a class="key sm" data-sent href="https://www.linkedin.com/in/klara-scholleova/" target="_blank" rel="noopener">Say hello on LinkedIn ↵</a>
       <a class="lnk u" href="#stage">See the work ↓</a>
     </div>
@@ -78,13 +78,13 @@
       <div class="txt">
         <div class="eyebrow">Tools for designers <span class="num">01</span></div>
         <h2>Slaydy. A deck skill anyone can make their own.</h2>
-        <p>A meta skill. I design its framework, layouts, editing UI and interactions. Anyone can train it on their brand, and from then on it turns a sentence into a deck in that brand, still editable by hand.</p>
+        <p>A meta skill. I design the whole platform: the runtime, its UI, the layouts and the editing. Anyone can train it on their brand, and from then on it turns a sentence into a deck in that brand, still editable by hand.</p>
         <div class="tags"><span class="tag">Meta skill</span><span class="tag">Brand training</span><span class="tag">Editable HTML decks</span></div>
         <a class="go lnk u" href="https://klarasch.github.io/slaydy/" target="_blank" rel="noopener">See Slaydy ↗</a>
       </div>
       <div class="vis wide">
-        <div class="screen" style="background:#08080a">
-          <iframe title="Slaydy in motion" data-src="media/slaydy-promo.html" loading="lazy" tabindex="-1"></iframe>
+        <div class="screen" style="background:#e9e6df">
+          <iframe title="Slaydy in motion" data-src="media/slaydy-promo.html" loading="lazy" tabindex="-1" style="background:#e9e6df"></iframe>
         </div>
       </div>
     </article>
@@ -97,9 +97,9 @@
         <div class="tags"><span class="tag">Open standard</span><span class="tag">State canvas</span><span class="tag">Guided tours</span></div>
         <a class="go lnk u" href="https://klarasch.github.io/stavy/" target="_blank" rel="noopener">See Stavy ↗</a>
       </div>
-      <div class="vis">
-        <div class="screen" style="background:#fff">
-          <iframe class="scaled" title="The Stavy canvas, live" data-src="https://klarasch.github.io/stavy/stavy/?view=map" loading="lazy" tabindex="-1" width="1280" height="800" style="background:#fff"></iframe>
+      <div class="vis wide">
+        <div class="screen" style="background:#f4f4f5">
+          <iframe title="Stavy in motion" data-src="media/stavy-promo.html" loading="lazy" tabindex="-1" style="background:#f4f4f5"></iframe>
         </div>
       </div>
     </article>
@@ -112,17 +112,9 @@
         <div class="tags"><span class="tag">Side project</span><span class="tag">One or two hands</span><span class="tag">EN / CZ</span></div>
         <a class="go lnk u" href="https://klarasch.github.io/koffbeat/" target="_blank" rel="noopener">Play Koffbeat ↗</a>
       </div>
-      <div class="vis">
-        <div class="screen sk" style="background:#1A1A1A">
-          <div class="row"><div class="bar a" style="background:#DCFF3D"></div><div class="bar b" style="background:#333"></div></div>
-          <div class="body">
-            <div class="side"><div class="bar b" style="background:#333"></div><div class="bar a" style="background:#DCFF3D"></div><div class="bar b" style="background:#333"></div><div class="bar b" style="background:#333"></div></div>
-            <div class="main">
-              <div class="cols"><div style="height:40%;background:#DCFF3D"></div><div style="height:72%;background:#DCFF3D"></div><div style="height:55%;background:#fff"></div><div style="height:92%;background:#DCFF3D"></div><div style="height:30%;background:#fff"></div></div>
-              <div class="bar a" style="background:#DCFF3D"></div><div class="bar b" style="background:#333"></div>
-            </div>
-          </div>
-          <div class="media-note" style="color:#fff">[Koffbeat screen recording]</div>
+      <div class="vis wide">
+        <div class="screen" style="background:#f6f4f0">
+          <iframe title="Koffbeat in motion" data-src="media/koffbeat-promo.html" loading="lazy" tabindex="-1" style="background:#f6f4f0"></iframe>
         </div>
       </div>
     </article>
@@ -137,7 +129,7 @@
     <li><span class="org">Oracle</span><span class="role">Senior UX Designer</span><p class="what">Complex interaction flows for Visual Builder Studio, an IDE-like environment for building apps, and a rebuild of its component architecture.</p></li>
     <li><span class="org">Česko.digital</span><span class="role">Lead Designer</span><p class="what">Civic tech, as a volunteer: election tools including the Czech election compass, and refugee support initiatives.</p></li>
     <li><span class="org">Etnetera</span><span class="role">UX / Product Design</span><p class="what">Agency UX for O2, ČSOB, Allianz and Škoda Auto, across telecom, banking, insurance and e-commerce.</p></li>
-    <li class="music"><span class="org">Conservatory of Pardubice</span><span class="role">Organ &amp; piano</span><p class="what">Before software, I trained as a musician. That’s why this page is a score: every section is a note on the staff above. Later came a BSc in software engineering. <span class="clefnote">♪</span></p></li>
+    <li class="music"><span class="org">Conservatory of Pardubice</span><span class="role">Organ &amp; piano</span><p class="what">I trained as a musician alongside software: I started at the conservatory in my last year of high school and kept going through my BSc in software engineering and my MA. That’s why this page is a score: every section is a note on the staff above. <span class="clefnote">♪</span></p></li>
   </ul>
 </section>
 
@@ -166,7 +158,7 @@
 <footer id="hello" class="wrap">
   <div class="eyebrow">Say hello</div>
   <div class="keys">
-    <a class="key lg" data-sent href="https://www.linkedin.com/in/klara-scholleova/" target="_blank" rel="noopener">Say hello ↵</a>
+    <a class="key lg" id="footHello" data-sent href="https://www.linkedin.com/in/klara-scholleova/" target="_blank" rel="noopener">Say hello ↵</a>
     <button class="key lg ink" id="playSch" aria-label="Play my name">♪</button>
   </div>
   <p id="schHint" aria-live="polite"></p>

@@ -6,15 +6,16 @@
 <title>slaydy promo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Inter+Tight:wght@600&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500&family=Instrument+Serif:ital@1&family=Inter:wght@400;500&family=Inter+Tight:wght@600;700&family=JetBrains+Mono:wght@500;600&family=Schibsted+Grotesk:wght@400;500;600&display=swap">
+<style>@font-face { font-family: "Geist Pixel Square"; src: url("../assets/fonts/geist-pixel-square.woff2") format("woff2"); font-display: block; }</style>
 <style>
-  html, body { margin: 0; height: 100%; background: #08080a; overflow: hidden; }
+  html, body { margin: 0; height: 100%; background: #e9e6df; overflow: hidden; }
   /* the frame keeps 16:9 and letterboxes inside whatever holds it */
   .fit { position: absolute; inset: 0; display: grid; place-items: center; }
   .frame { position: relative; width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; overflow: hidden; }
   .stage {
     position: absolute; left: 0; top: 0; width: 1280px; height: 720px;
-    transform-origin: 0 0; background: #08080a; overflow: hidden;
+    transform-origin: 0 0; background: #e9e6df; overflow: hidden;
     font-family: "Inter", system-ui, sans-serif;
   }
 
@@ -23,31 +24,66 @@
   .plane { position: absolute; left: 0; top: 0; width: 5312px; height: 2288px; transform-origin: 0 0; }
   .slide {
     position: absolute; width: 1280px; height: 720px; overflow: hidden;
-    background: var(--bg); border-radius: 6px;
-    box-shadow: 0 30px 80px -20px rgba(0,0,0,.45); outline-offset: 16px;
+    background: var(--bg); color: var(--fg); border-radius: 6px;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.4); outline-offset: 16px;
+    font-family: var(--fb);
   }
+  /* brand type, as in themes/*.css: slaydy = Bricolage + vermilion serif italic emphasis */
+  .slide[data-f="sl"]   { --fd: "Bricolage Grotesque", "Inter Tight", sans-serif; --fw: 800; --ls: -.035em; --fb: "IBM Plex Sans", "Inter", sans-serif; --fm: "IBM Plex Mono", monospace; }
+  .slide[data-f="mid"]  { --fd: "Inter Tight", "Inter", sans-serif; --fw: 600; --ls: -.028em; --fb: "Inter", sans-serif; --fm: "JetBrains Mono", monospace; }
+  .slide[data-f="ks"]   { --fd: "Schibsted Grotesk", sans-serif; --fw: 600; --ls: -.04em; --fb: "Schibsted Grotesk", sans-serif; --fm: "Geist Pixel Square", monospace; }
   .s > * { position: absolute; }
-  .b  { border-radius: 10px; background: var(--fg); }
-  .m  { border-radius: 8px;  background: var(--muted); }
-  .f  { border-radius: 8px;  background: var(--faint); }
-  .a  { border-radius: 10px; background: var(--accent); }
-  .a2 { border-radius: 10px; background: var(--accent-2); }
-  .sf { border-radius: 18px; background: var(--surface); }
-  .foot { left: 8%; bottom: 6.5%; width: 9%; height: 10px; border-radius: 5px; background: var(--muted); opacity: .7; }
-  .pg   { right: 8%; bottom: 6.5%; width: 2.6%; height: 10px; border-radius: 5px; background: var(--muted); opacity: .7; }
+  .t { margin: 0; font-family: var(--fd); font-weight: var(--fw); letter-spacing: var(--ls); line-height: 1.04; color: var(--fg); text-wrap: balance; }
+  .t strong { font-weight: inherit; color: var(--em); }
+  /* Klára's brand: emphasis is a pixel-type marker highlight, as on her homepage */
+  .slide[data-f="ks"] .t strong { font-family: "Geist Pixel Square", monospace; font-weight: 400; font-size: .9em; letter-spacing: -.04em; color: var(--fg); background: var(--accent-2); padding: 0 .14em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  .slide[data-f="ks"] .section-t strong { background: var(--accent-2); color: #0b0b0b; }
+  .ft .k { display: none; }
+  .slide[data-f="ks"] .ft .k { display: inline; }
+  .slide[data-f="ks"] .ft .s { display: none; }
+  .slide[data-f="sl"] .t strong { font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -.01em; font-size: 1.08em; }
+  .ey { font: 500 15px/1 var(--fm); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .ey b { font-weight: 500; color: var(--accent); margin-left: .5em; }
+  .mono { font: 500 15px/1.6 var(--fm); color: var(--muted); }
+  .b  { border-radius: 8px; background: var(--fg); }
+  .m  { border-radius: 6px; background: var(--muted); }
+  .f  { border-radius: 6px; background: var(--faint); }
+  .a  { border-radius: 8px; background: var(--accent); }
+  .a2 { border-radius: 8px; background: var(--accent-2); }
+  .sf { border-radius: 16px; background: var(--surface); }
+  .ln1 { height: 1px; background: var(--faint); }
+  .ft { left: 8%; bottom: 6%; font: 500 15px/1 var(--fb); color: var(--muted); }
+  .pn { right: 8%; bottom: 6%; font: 500 14px/1 var(--fm); color: var(--muted); }
+  .big { font-family: var(--fd); font-weight: var(--fw); letter-spacing: -.05em; line-height: .9; }
+  .section { background: var(--accent); }
 
-  /* hero (edit-mode chrome rides inside it) */
-  .hero-k { left: 8%; top: 29%; width: 64px; height: 6px; border-radius: 3px; background: var(--accent); }
-  .title-grp { left: 8%; top: 34%; }
-  .sel { position: absolute; inset: -14px -22px; border: 2px dashed var(--accent); border-radius: 10px; opacity: 0; }
-  .ttl { position: relative; margin: 0; font: 600 62px/1.08 "Inter Tight", "Inter", system-ui, sans-serif; letter-spacing: -.028em; color: var(--fg); white-space: nowrap; }
-  .ttl .ln { display: block; }
-  .ttl .acc { color: var(--accent); }
+  /* hero: the site's cover slide (edit-mode chrome rides inside it) */
+  .title-grp { left: 8%; top: 35%; }
+  .sel { position: absolute; inset: -12px -18px; border: 2px dashed var(--accent); border-radius: 10px; opacity: 0; }
+  .ttl { position: relative; margin: 0; font-size: 88px; line-height: 1.02; }
+  .ttl .ln { display: block; white-space: nowrap; }
   .ttl .w { border-radius: 6px; background: color-mix(in srgb, var(--accent) var(--sel, 0%), transparent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) var(--sel, 0%), transparent); }
   .caret { display: inline-block; width: 4px; height: .8em; margin: 0 -2px; vertical-align: -.04em; border-radius: 2px; background: var(--accent); opacity: 0; }
-  .hero-sub { left: 8%; top: 63%; margin: 0; font: 400 24px/1.4 "Inter", system-ui, sans-serif; color: var(--muted); }
-  .hero-foot { left: 8%; bottom: 6%; font: 500 15px/1 "Inter", system-ui, sans-serif; color: var(--muted); }
-  .hero-pg { right: 8%; bottom: 6%; font: 500 14px/1 "JetBrains Mono", ui-monospace, monospace; color: var(--muted); }
+  .hero-ey { left: 8%; top: 24%; }
+  .hero-rule { left: 8%; right: 0; top: 78%; }
+  .hero-note { left: 8%; top: 82%; font: 500 15px/1 var(--fm); color: var(--muted); }
+  /* the same slide in three other brands, fanned off the right edge */
+  .mini {
+    width: 340px; aspect-ratio: 16 / 9; padding: 26px 28px; box-sizing: border-box;
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 10px;
+    border-radius: 10px; background: var(--b); color: var(--f);
+    box-shadow: 0 0 0 1px rgba(19,19,24,.1), 0 30px 50px -24px rgba(10,10,20,.45);
+  }
+  .mini b { font: 600 9px/1 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--a); }
+  .mini span { font-size: 34px; line-height: 1; letter-spacing: -.03em; }
+  .mini em { font-style: inherit; color: var(--a); }
+  .mini i { display: block; height: 5px; width: 62%; border-radius: 3px; background: currentColor; opacity: .16; box-shadow: 0 11px 0 currentColor; margin-bottom: 11px; }
+  .m1 { top: 30px;  right: -44px; --r: 7deg;  --b: #ffffff; --f: #1b2b4b; --a: #0a66ff; }
+  .m2 { top: 212px; right: 36px;  --r: -6deg; --b: #0b0b0f; --f: #f6f5f3; --a: #ff5b2e; }
+  .m3 { top: 404px; right: -64px; --r: 5deg;  --b: #071612; --f: #eefaf4; --a: #3ddc97; }
+  .m1 span { font-family: "Inter Tight", sans-serif; font-weight: 700; }
+  .m2 span { font-family: "Instrument Serif", serif; font-weight: 400; font-size: 40px; letter-spacing: -.015em; }
+  .m3 span { font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 27px; letter-spacing: -.04em; }
 
   /* ---------- toolbar: copied from runtime.css ---------- */
   .barcam { position: absolute; left: 640px; top: 0; width: 0; height: 0; }
@@ -116,16 +152,17 @@
 (() => {
   /* ======================= themes (themes/*.css) ======================= */
   const THEMES = [
-    { app: "#08080a", bg: "#0b0b0f", fg: "#f6f5f3", muted: "rgba(246,245,243,.56)", faint: "rgba(246,245,243,.13)", surface: "#14141b", accent: "#ff5b2e", accent2: "#7c5cff", accentFg: "#0b0b0f" }, // midnight
-    { app: "#e9e6df", bg: "#fbfaf7", fg: "#131318", muted: "rgba(19,19,24,.58)",    faint: "rgba(19,19,24,.14)",    surface: "#f2efe8", accent: "#d93a1f", accent2: "#3a2fd6", accentFg: "#fbfaf7" }, // paper
-    { app: "#05100d", bg: "#071612", fg: "#eefaf4", muted: "rgba(238,250,244,.58)", faint: "rgba(238,250,244,.14)", surface: "#0d211b", accent: "#3ddc97", accent2: "#22d3ee", accentFg: "#04120e" }, // mint
+    { f: "sl",   app: "#e9e6df", bg: "#fbfaf7", fg: "#131318", muted: "rgba(19,19,24,.6)",     faint: "rgba(19,19,24,.14)",    surface: "#f2efe8", accent: "#3a2fd6", accent2: "#d93a1f", accentFg: "#fbfaf7", em: "#d93a1f" }, // slaydy (the site)
+    { f: "mid",  app: "#08080a", bg: "#0b0b0f", fg: "#f6f5f3", muted: "rgba(246,245,243,.56)", faint: "rgba(246,245,243,.13)", surface: "#14141b", accent: "#ff5b2e", accent2: "#7c5cff", accentFg: "#0b0b0f", em: "#ff5b2e" }, // stock midnight
+    { f: "ks",   app: "#e3e6eb", bg: "#f6f7f9", fg: "#0b0b0b", muted: "rgba(11,11,11,.58)",    faint: "rgba(11,11,11,.12)",    surface: "#ffffff", accent: "#2b3bff", accent2: "#dcff3d", accentFg: "#ffffff", em: "#0b0b0b" }, // Klára's own brand
   ];
   THEMES.push(THEMES[0]); // midnight again, so the loop closes
   const parse = (c) => {
     if (c[0] === "#") return [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)).concat(1);
     return c.match(/[\d.]+/g).map(Number);
   };
-  const KEYS = ["app", "bg", "fg", "muted", "faint", "surface", "accent", "accent2", "accentFg"];
+  const KEYS = ["app", "bg", "fg", "muted", "faint", "surface", "accent", "accent2", "accentFg", "em"];
+  const FONT = THEMES.map(t => t.f);
   const P = THEMES.map(t => Object.fromEntries(KEYS.map(k => [k, parse(t[k])])));
   const mixTheme = (p) => {
     p = Math.max(0, Math.min(THEMES.length - 1, p));
@@ -141,47 +178,62 @@
     el.style.setProperty("--bg", th.bg); el.style.setProperty("--fg", th.fg);
     el.style.setProperty("--muted", th.muted); el.style.setProperty("--faint", th.faint);
     el.style.setProperty("--surface", th.surface); el.style.setProperty("--accent", th.accent);
-    el.style.setProperty("--accent-2", th.accent2);
+    el.style.setProperty("--accent-2", th.accent2); el.style.setProperty("--accent-fg", th.accentFg);
+    el.style.setProperty("--em", th.em);
   };
 
   /* ======================= slides ======================= */
   const r = (cls, x, y, w, h, extra = "") => `<div class="${cls}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%;${extra}"></div>`;
-  const chrome = `<div class="foot"></div><div class="pg"></div>`;
+  // a title in the brand's display face; <strong> is the brand's emphasis
+  const h = (html, x, y, size, w = 76, extra = "") => `<h2 class="t" style="left:${x}%;top:${y}%;width:${w}%;font-size:${size}px;${extra}">${html}</h2>`;
+  const chrome = (n) => `<div class="ft"><span class="s">slaydy</span><span class="k">Klára Scholleová</span></div><div class="pn">${String(n).padStart(2, "0")}</div>`;
   const SLIDES = [
-    // section
-    r("a", 8, 30, 16, 26, "border-radius:16px") + r("b", 8, 62, 46, 8) + r("m", 8, 74, 28, 3) + chrome,
-    // stats
-    [0, 1, 2].map(i => r(i === 0 ? "a" : "b", 8 + i * 29, 34, 18, 16) + r("m", 8 + i * 29, 56, 22, 3) + r("f", 8 + i * 29, 62, 16, 3)).join("") + r("b", 8, 14, 30, 5) + chrome,
-    // quote
-    `<div style="left:7%;top:6%;font:900 340px/1 Georgia,serif;color:var(--accent)">&ldquo;</div>` + r("b", 8, 46, 70, 7) + r("b", 8, 57, 56, 7) + r("m", 8, 72, 18, 3) + chrome,
-    // bento
-    r("sf", 8, 12, 40, 76) + r("sf", 50, 12, 42, 36) + r("sf", 50, 52, 20, 36) + r("sf", 72, 52, 20, 36) +
-      r("a", 12, 20, 14, 24, "border-radius:50%") + r("b", 12, 66, 28, 5) + r("m", 12, 75, 20, 3) + r("a2", 54, 20, 22, 4) + r("f", 54, 28, 32, 3) + r("a", 54, 62, 10, 14),
-    // bars chart
-    r("b", 8, 14, 32, 5) + [38, 54, 46, 70, 62, 84].map((h, i) => r(i === 5 ? "a" : "f", 10 + i * 13.5, 86 - h * .66, 9, h * .66, "border-radius:8px 8px 2px 2px")).join("") + r("m", 8, 86, 84, .5),
-    // hero: split title
-    r("sf", 54, 0, 46, 100, "border-radius:0") +
-      `<div style="left:62%;top:12%;width:40%;height:71%;border-radius:50%;background:var(--accent)"></div>` +
-      `<div style="left:56%;top:58%;width:20%;height:36%;border-radius:50%;border:16px solid var(--accent-2);box-sizing:border-box"></div>` +
-      `<div class="hero-k"></div>` +
-      `<div class="title-grp" id="tg"><div class="sel" id="sel"></div>` +
-      `<h1 class="ttl"><span class="ln">Your <span id="w" class="w">next deck</span><span class="caret" id="caret"></span>,</span>` +
-      `<span class="ln">made with <span class="acc">slaydy</span>.</span></h1></div>` +
-      `<p class="hero-sub">Branded HTML decks that stay editable.</p>` +
-      `<div class="hero-foot">slaydy</div><div class="hero-pg">06</div>`,
-    // timeline
-    r("b", 8, 14, 34, 5) + r("f", 8, 55, 84, .8) + [0, 1, 2, 3].map(i => r(i === 2 ? "a" : "b", 10 + i * 26, 52.3, 2.4, 4.3, "border-radius:50%") + r("m", 8 + i * 26, 62, 16, 3) + r("f", 8 + i * 26, 68, 11, 3)).join("") + chrome,
-    // image
-    r("sf", 0, 0, 100, 100, "border-radius:0") + `<div style="left:40%;top:-30%;width:70%;height:124%;border-radius:50%;background:var(--accent-2);opacity:.85"></div>` +
-      `<div style="left:58%;top:30%;width:34%;height:60%;border-radius:50%;background:var(--accent)"></div>` + r("b", 8, 68, 34, 7) + r("m", 8, 80, 20, 3),
-    // bullets
-    r("b", 8, 14, 38, 6) + [0, 1, 2, 3].map(i => r("a", 8, 35.4 + i * 13, 1.6, 2.8, "border-radius:50%") + r(i % 2 ? "m" : "b", 12, 35 + i * 13, [52, 44, 58, 36][i], 3.6)).join("") + chrome,
-    // compare
-    r("sf", 8, 14, 40, 72) + r("sf", 52, 14, 40, 72, "box-shadow:inset 0 0 0 4px var(--accent)") + [0, 1].map(c => r(c ? "a" : "b", 12 + c * 44, 22, 18, 5) + [0, 1, 2].map(i => r("m", 12 + c * 44, 40 + i * 12, 28 - i * 4, 3)).join("")).join(""),
     // statement
-    r("b", 8, 30, 72, 12) + r("b", 8, 47, 44, 12) + r("a", 54, 47, 30, 12) + chrome,
+    h("A generated deck nobody can touch is <strong>dead on arrival.</strong>", 8, 26, 76, 80) + chrome(1),
+    // compare
+    h("Editable beats <strong>regenerated.</strong>", 8, 11, 54) +
+      r("sf", 8, 32, 40, 54) + r("sf", 52, 32, 40, 54, "box-shadow:inset 0 0 0 3px var(--accent)") +
+      [0, 1].map(c => r(c ? "a" : "m", 12 + c * 44, 40, 14, 4) + [0, 1, 2].map(i => r(c ? "b" : "f", 12 + c * 44, 54 + i * 9, 30 - i * 5, 3)).join("")).join("") + chrome(2),
+    // bullets
+    h("Press <strong>E</strong> and fix it yourself.", 8, 11, 54) +
+      [0, 1, 2, 3].map(i => r("a", 8, 37.4 + i * 12, 1.4, 2.5, "border-radius:50%") + r(i % 2 ? "m" : "b", 12, 37 + i * 12, [52, 44, 58, 36][i], 3.2)).join("") + chrome(3),
+    // cards
+    h("Or <strong>ask Claude.</strong>", 8, 11, 54) +
+      [0, 1, 2].map(i => r("sf", 8 + i * 28.7, 34, 26, 50) + r(i === 0 ? "a" : "f", 11 + i * 28.7, 40, 4.4, 7.8, "border-radius:10px") + r("b", 11 + i * 28.7, 60, 16, 3.4) + r("m", 11 + i * 28.7, 68, 19, 2.6) + r("m", 11 + i * 28.7, 74, 13, 2.6)).join("") + chrome(4),
+    // section
+    `<div style="inset:0" class="section"></div>` + `<div class="ey" style="left:8%;top:30%;color:var(--accent-fg);opacity:.7">03 · Themes</div>` +
+      h("Now press <strong style=\"color:inherit\">T.</strong>", 8, 40, 124, 86, "color:var(--accent-fg)").replace('class="t"', 'class="t section-t"') + `<div class="ft" style="color:var(--accent-fg)"><span class="s">slaydy</span><span class="k">Klára Scholleová</span></div><div class="pn" style="color:var(--accent-fg)">05</div>`,
+    // hero: the site's cover
+    `<div class="mini m1"><b>Acme</b><span>Q3 business <em>review</em></span><i></i></div>` +
+      `<div class="mini m2"><b>Nocturne</b><span>The <em>launch</em> plan</span><i></i></div>` +
+      `<div class="mini m3"><b>Fernworks</b><span>roadmap <em>2027</em></span><i></i></div>` +
+      `<div class="ey hero-ey">slaydy<b>a deck skill for Claude</b></div>` +
+      `<div class="title-grp" id="tg"><div class="sel" id="sel"></div>` +
+      `<h1 class="t ttl"><span class="ln">Your <span id="w" class="w">next deck</span><span class="caret" id="caret"></span>,</span>` +
+      `<span class="ln">made with <strong>slaydy</strong>.</span></h1></div>` +
+      `<div class="ln1 hero-rule"></div><div class="hero-note">This is a real deck &nbsp;—&nbsp; → to advance &nbsp;—&nbsp; T switches the brand</div>`,
+    // code: nine tokens
+    h("A brand starts at <strong>nine tokens.</strong>", 8, 11, 54) + r("sf", 8, 32, 84, 54) +
+      ["--bg", "--fg", "--accent", "--accent-2", "--surface"].map((k, i) =>
+        `<div class="mono" style="left:12%;top:${38 + i * 9}%;font-size:20px;color:var(--fg)">${k}:</div>` +
+        r(["sf", "b", "a", "a2", "f"][i], 30, 38.6 + i * 9, 2.4, 4.2, "border-radius:5px;box-shadow:0 0 0 1px var(--faint)") + r("f", 34, 39.6 + i * 9, [18, 14, 20, 16, 12][i], 2.4)).join("") + chrome(7),
+    // timeline
+    h("Your brand is <strong>one prompt.</strong>", 8, 11, 54) + r("f", 8, 55, 84, .5) +
+      [0, 1, 2, 3].map(i => r(i === 2 ? "a" : "b", 10 + i * 26, 53, 1.8, 3.2, "border-radius:50%") + r("b", 8 + i * 26, 63, 15, 3.2) + r("m", 8 + i * 26, 70, 18, 2.4) + r("m", 8 + i * 26, 75, 12, 2.4)).join("") + chrome(8),
+    // stats
+    h("A small core <strong>you can extend.</strong>", 8, 11, 54) +
+      [["1", "file"], ["9", "tokens"], ["0", "merges"]].map(([n, l], i) =>
+        `<div class="big" style="left:${8 + i * 29}%;top:36%;font-size:180px;color:${i === 1 ? "var(--accent)" : "var(--fg)"}">${n}</div>` +
+        r("m", 8 + i * 29, 70, 16, 2.8) + r("f", 8 + i * 29, 76, 22, 2.8)).join("") + chrome(9),
+    // bento
+    h("Out <strong>the door.</strong>", 8, 9, 50) +
+      r("sf", 8, 26, 40, 62) + r("a", 50, 26, 42, 30, "border-radius:16px") + r("sf", 50, 58, 20, 30) + r("sf", 72, 58, 20, 30) +
+      r("b", 12, 72, 24, 4) + r("m", 12, 80, 18, 2.6) + r("f", 54, 66, 10, 3) + r("f", 76, 66, 10, 3) + chrome(10),
+    // table
+    h("Updates are <strong>one prompt,</strong> never a merge.", 8, 9, 50, 80) +
+      [0, 1, 2, 3, 4].map(i => r("ln1", 8, 40 + i * 10, 84, .2) + r(i ? "b" : "m", 8, 43 + i * 10, 18, 2.6) + r(i ? "m" : "m", 36, 43 + i * 10, 26, 2.6) + r(i === 2 ? "a" : i ? "f" : "m", 72, 43 + i * 10, 12, 2.6)).join("") + chrome(11),
     // end
-    r("a", 44, 22, 12, 21.3, "border-radius:50%") + r("b", 32, 54, 36, 7) + r("m", 40, 67, 20, 3),
+    h("Put your brand on it <strong>by Friday.</strong>", 8, 32, 96, 84) + chrome(12),
   ];
   const plane = document.getElementById("plane");
   const COLS = 4, GAP = 64, HERO = 5;
@@ -192,6 +244,7 @@
     el.dataset.d = c + rw; // distance along the diagonal, drives the theme wave
     el.style.left = c * (1280 + GAP) + "px"; el.style.top = rw * (720 + GAP) + "px";
     el.innerHTML = html;
+    el.dataset.f = FONT[0];
     plane.appendChild(el);
     return el;
   });
@@ -262,7 +315,7 @@
 
   // hero content lands on beats 0, 1, 2 and leaves on beat 19
   const build = (n) => track([[0, 0], [n, 0], [n + .8, 1], [19, 1], [19.8, 0]], out);
-  const BL = { panel: build(0), sun: build(.25), ring2: build(.5), kick: build(1), t1: build(1), t2: build(1.25), sub: build(2), foot: build(2) };
+  const BL = { m1: build(0), m2: build(.25), m3: build(.5), ey: build(1), t1: build(1), t2: build(1.25), t3: build(1.5), rule: build(2), note: build(2.25) };
 
   // toolbar camera: scale, which point of the bar sits at frame centre-x, y, opacity
   const bs = track([[0, 1.3], [5.5, 1.3], [6.75, 2.3], [13.5, 2.4], [14.75, 1]]);
@@ -278,8 +331,8 @@
     [6, 6.8, { x: 980, y: 760 }, { el: "btn-ov", dx: 10, dy: 8 }],
     [9, 9.8, null, { el: "btn-theme", dx: 4, dy: 8 }],
     [12, 12.8, null, { el: "btn-edit", dx: 2, dy: 8 }],
-    [13.75, 14.85, null, { el: "w", left: true, dx: 118, dy: 4 }],
-    [15.3, 15.9, null, { el: "w", left: true, dx: 400, dy: 10 }],   // step aside so the typing stays clear
+    [13.75, 14.85, null, { el: "w", left: true, dx: 150, dy: 6 }],
+    [15.3, 15.9, null, { el: "w", left: true, dx: 380, dy: -40 }],   // step aside so the typing stays clear
     [17.25, 17.9, null, { x: 880, y: 600 }],
     [19, 19.8, null, { x: 1180, y: 820 }],
   ].map(([a, z, f, to]) => [b(a), b(z), f, to]);
@@ -288,7 +341,7 @@
   const pressT = [CLICK.ov, CLICK.th1, CLICK.th2, CLICK.edit, CLICK.word - .16, CLICK.word, CLICK.away];
 
   // the rewrite: double-click selects "next deck" on 15, typing replaces it across beat 16
-  const OLD = "next deck", NEW = "best talk";
+  const OLD = "next deck", NEW = "best deck";
   const wordAt = (t) => t < b(16) ? OLD : NEW.slice(0, Math.min(NEW.length, 1 + Math.floor((t - b(16)) / (BEAT / NEW.length))));
   const selPct = track([[0, 0], [15, 0], [15.15, 34], [16, 34], [16.01, 0]], io3);
   const boxO = track([[0, 0], [14.85, 0], [15, 1], [18, 1], [18.3, 0]], io3);
@@ -301,9 +354,9 @@
   const cursor = $("cursor"), arrow = $("arrow"), beam = $("beam"), ripple = $("ripple"), word = $("w");
   const q = (sel) => hero.querySelector(sel), qa = (sel) => [...hero.querySelectorAll(sel)];
   const heroParts = [
-    [hero.children[0], BL.panel, "x"], [hero.children[1], BL.sun, "s"], [hero.children[2], BL.ring2, "s"],
-    [q(".hero-k"), BL.kick, "x"], [qa(".ln")[0], BL.t1, "y"], [qa(".ln")[1], BL.t2, "y"],
-    [q(".hero-sub"), BL.sub, "y"], ...qa(".hero-foot,.hero-pg").map(e => [e, BL.foot, "o"]),
+    [q(".m1"), BL.m1, "c"], [q(".m2"), BL.m2, "c"], [q(".m3"), BL.m3, "c"],
+    [q(".hero-ey"), BL.ey, "x"], [qa(".ln")[0], BL.t1, "y"], [qa(".ln")[1], BL.t2, "y"],
+    [q(".hero-rule"), BL.rule, "x"], [q(".hero-note"), BL.note, "o"],
   ];
   let K = 1;
   const fit = () => { K = frame.clientWidth / 1280; stage.style.transform = `scale(${K})`; };
@@ -330,7 +383,10 @@
     // themes, slide by slide (colour only: no per-slide transforms while the wave runs)
     const sib = siblings(t);
     slides.forEach((el, i) => {
-      applyTheme(el, mixTheme(themeAt(t, +el.dataset.d)));
+      const p = themeAt(t, +el.dataset.d);
+      applyTheme(el, mixTheme(p));
+      const f = FONT[Math.round(p) % FONT.length];
+      if (el.dataset.f !== f) el.dataset.f = f;
       if (i === HERO) return;
       set(el, "opacity", sib.toFixed(3));
       set(el, "transform", `scale(${lerp(.9, 1, sib).toFixed(4)})`);
@@ -345,7 +401,7 @@
     for (const [el, f, mode] of heroParts) {
       const v = f(t);
       set(el, "opacity", v.toFixed(3));
-      set(el, "transform", mode === "x" ? `translateX(${((1 - v) * -40).toFixed(2)}px)` : mode === "y" ? `translateY(${((1 - v) * 28).toFixed(2)}px)` : mode === "s" ? `scale(${lerp(.82, 1, v).toFixed(4)})` : "none");
+      set(el, "transform", mode === "x" ? `translateX(${((1 - v) * -40).toFixed(2)}px)` : mode === "y" ? `translateY(${((1 - v) * 28).toFixed(2)}px)` : mode === "c" ? `translate(${((1 - v) * 90).toFixed(2)}px, ${((1 - v) * 24).toFixed(2)}px) rotate(calc(var(--r) + ${((1 - v) * 6).toFixed(2)}deg))` : "none");
     }
 
     // the rewrite
@@ -402,7 +458,7 @@
   const tick = (now) => {
     const dt = Math.min(.05, (now - last) / 1000); last = now;
     if (playing && visible && !document.hidden && !still.matches) t = (t + dt) % T;
-    render(still.matches ? b(10.8) : t);
+    render(still.matches ? b(3.5) : t);
     requestAnimationFrame(tick);
   };
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(frame);

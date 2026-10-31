@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>stavy promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  html, body { margin: 0; height: 100%; background: #f4f4f5; overflow: hidden; }
+  .fit { position: absolute; inset: 0; display: grid; place-items: center; }
+  .frame { position: relative; width: min(100vw, calc(100vh * 16 / 9)); aspect-ratio: 16 / 9; overflow: hidden; }
+  .stage {
+    position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden;
+    background: #f4f4f5; font-family: "Inter", system-ui, sans-serif; color: #18181b;
+  }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(#d4d4d8 1.1px, transparent 1.4px); }
+
+  /* ---------- the canvas: sections, state cards, chips, connectors ---------- */
+  .plane { position: absolute; left: 0; top: 0; width: 2400px; height: 800px; transform-origin: 0 0; }
+  .sec { position: absolute; border-radius: 22px; background: #ececed; box-shadow: inset 0 0 0 1px #e1e1e3; }
+  .pill {
+    position: absolute; left: 18px; top: -20px; display: flex; align-items: center; gap: 9px; height: 40px; padding: 0 18px;
+    background: #fff; border-radius: 99px; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 0 0 1px #e4e4e7;
+    font: 600 17px/1 "Inter"; white-space: nowrap;
+  }
+  .pill span { color: #71717a; font-weight: 500; }
+  .pill svg { width: 18px; height: 18px; }
+  .chips { position: absolute; display: flex; gap: 8px; white-space: nowrap; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 99px; background: #e4e4e7; font: 500 13px/1 "Inter"; color: #3f3f46; }
+  .chip.m { font-family: "JetBrains Mono", monospace; font-size: 12px; }
+  .chip.w { background: #fff; box-shadow: 0 0 0 1px #e4e4e7; }
+  .chip i { width: 7px; height: 7px; border-radius: 50%; background: #3b82f6; }
+  .chip.o i { background: #f59e0b; }
+  .chip .n { color: #18181b; }
+  .lbl { position: absolute; font: 500 12px/1 "Inter"; color: #a1a1aa; letter-spacing: .06em; text-transform: uppercase; }
+  .card { position: absolute; width: 320px; height: 170px; border-radius: 10px; overflow: hidden; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 0 0 1px #e4e4e7; }
+  .card.sm { width: 240px; height: 128px; }
+  .card .shot { position: absolute; left: 0; top: 0; width: 1280px; height: 680px; transform-origin: 0 0; }
+  .card.sm .shot { transform: scale(.1875); }
+  .card:not(.sm) .shot { transform: scale(.25); }
+  .card .ring { position: absolute; inset: 0; border-radius: 10px; box-shadow: inset 0 0 0 3px #3b82f6; opacity: 0; }
+  .cap { position: absolute; display: flex; gap: 6px; }
+  .cap .chip { height: 22px; font-size: 12px; background: #fff; box-shadow: 0 0 0 1px #e4e4e7; }
+  .cap-t { position: absolute; font: 400 13px/1.3 "Inter"; color: #71717a; white-space: nowrap; }
+  .name { position: absolute; font: 500 14px/1 "Inter"; color: #18181b; }
+  svg.wires { position: absolute; left: 0; top: 0; overflow: visible; }
+
+  /* ---------- floating viewer chrome over the canvas ---------- */
+  .ui { position: absolute; inset: 0; pointer-events: none; }
+  .bar {
+    position: absolute; display: flex; align-items: center; gap: 4px; height: 44px; padding: 0 8px; box-sizing: border-box;
+    background: #fff; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.06), 0 0 0 1px #e4e4e7; white-space: nowrap;
+    font: 500 14px/1 "Inter"; color: #27272a;
+  }
+  .bar .it { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 9px; border-radius: 8px; }
+  .bar .it.on { background: #f4f4f5; }
+  .bar .sep { width: 1px; height: 20px; background: #e4e4e7; margin: 0 4px; }
+  .bar b { font-weight: 600; }
+  .bar .dim { color: #71717a; font-weight: 500; }
+  .bar .cnt { height: 22px; padding: 0 8px; border-radius: 99px; background: #e4e4e7; font-size: 12px; display: inline-flex; align-items: center; }
+  .ic { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .contents {
+    position: absolute; left: 16px; top: 76px; width: 262px; padding: 10px 0 12px; box-sizing: border-box;
+    background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.06), 0 0 0 1px #e4e4e7; font: 400 14px/1 "Inter";
+  }
+  .contents .h { display: flex; align-items: center; gap: 8px; padding: 4px 16px 10px; font-weight: 600; font-size: 15px; }
+  .contents .r { display: flex; justify-content: space-between; padding: 7px 16px; color: #3f3f46; white-space: nowrap; border-radius: 8px; margin: 0 6px; }
+  .contents .r span { color: #a1a1aa; font-size: 13px; }
+  .contents .g { padding: 11px 16px 5px; font-size: 11px; letter-spacing: .07em; color: #a1a1aa; text-transform: uppercase; }
+  .contents .r.on { background: #eff4ff; color: #1d4ed8; }
+  .hint { position: absolute; left: 16px; bottom: 16px; display: flex; gap: 18px; height: 34px; align-items: center; padding: 0 14px; background: #fff; border-radius: 10px; box-shadow: 0 0 0 1px #e4e4e7; font: 400 13px/1 "Inter"; color: #52525b; }
+
+  /* ---------- the player: the real prototype in one frame, viewer chrome below ---------- */
+  .player { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: #fff; }
+  .player .view { position: absolute; left: 0; top: 0; width: 1280px; height: 680px; }
+  .pbar {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 40px; display: flex; align-items: center; gap: 6px; padding: 0 14px;
+    border-top: 1px solid #e4e4e7; background: #fff; font: 500 13px/1 "Inter"; color: #3f3f46; white-space: nowrap;
+  }
+  .pbar .ic { width: 15px; height: 15px; }
+  .pbar .sep { width: 1px; height: 18px; background: #e4e4e7; margin: 0 4px; }
+  .dd { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 99px; box-shadow: 0 0 0 1px #e4e4e7; }
+  .dd .k { color: #71717a; }
+  .dd.open { box-shadow: 0 0 0 1.5px #3b82f6; }
+  .pbar .mock { margin-left: auto; display: flex; align-items: center; gap: 7px; color: #52525b; font-weight: 400; }
+  .pbar .mock i { width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; }
+  .menu {
+    position: absolute; bottom: 46px; width: 170px; padding: 5px; box-sizing: border-box; background: #fff; border-radius: 12px;
+    box-shadow: 0 10px 30px -6px rgba(0,0,0,.18), 0 0 0 1px #e4e4e7; font: 400 14px/1 "Inter"; opacity: 0;
+  }
+  .menu div { display: flex; justify-content: space-between; align-items: center; padding: 9px 10px; border-radius: 7px; }
+  .menu div.hov { background: #f4f4f5; }
+  .spot { position: absolute; border-radius: 12px; box-shadow: 0 0 0 3px #3b82f6, 0 0 0 9px rgba(96,165,250,.35); opacity: 0; pointer-events: none; }
+  .pop {
+    position: absolute; width: 320px; padding: 16px 18px 14px; box-sizing: border-box; background: #fff; border-radius: 14px;
+    box-shadow: 0 16px 40px -10px rgba(0,0,0,.22), 0 0 0 1px #e4e4e7; transform-origin: 70% 0; opacity: 0;
+  }
+  .pop .top { display: flex; align-items: center; gap: 10px; font: 400 13px/1 "Inter"; color: #71717a; }
+  .pop .top .chip { height: 22px; font-size: 12px; background: #f4f4f5; color: #3f3f46; }
+  .pop .top .x { margin-left: auto; }
+  .pop h4 { margin: 14px 0 6px; font: 600 16px/1.2 "Inter"; }
+  .pop p { margin: 0; font: 400 14px/1.45 "Inter"; color: #52525b; }
+  .pop .act { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font: 500 14px/1 "Inter"; color: #a1a1aa; }
+  .pop .act b { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 8px; background: #18181b; color: #fff; font-weight: 500; }
+
+  /* ---------- Orbit, the prototype (mirrors the demo app's screens) ---------- */
+  .app { position: absolute; left: 0; top: 0; width: 1280px; height: 680px; background: #f8f8f8; font: 400 15px/1.3 "Inter"; color: #111; overflow: hidden; }
+  .app > * { position: absolute; }
+  .nav { left: 0; right: 0; top: 0; height: 55px; background: #fff; border-bottom: 1px solid #111; display: flex; align-items: center; padding: 0 24px; gap: 8px; }
+  .nav .logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 17px; margin-right: 22px; }
+  .nav .lk { padding: 8px 12px; border-radius: 8px; color: #666; }
+  .nav .lk.on { background: #ececec; color: #111; }
+  .nav .who { margin-left: auto; display: flex; align-items: center; gap: 12px; font-size: 12px; color: #666; }
+  .nav .av { width: 32px; height: 32px; border-radius: 50%; background: #ede4fd; color: #7c3aed; display: grid; place-items: center; font-size: 12px; font-weight: 500; }
+  .h1 { font-size: 26px; font-weight: 600; letter-spacing: -.01em; }
+  .sub { font-size: 15px; color: #666; }
+  .box { border: 1px solid #111; border-radius: 14px; background: #f8f8f8; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 8px; background: #111; color: #fff; font-weight: 500; font-size: 15px; box-sizing: border-box; }
+  .btn.ghost { background: transparent; color: #111; }
+  .st { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 12.5px; font-weight: 500; }
+  .st.sub_ { background: #dbe6fd; color: #1d4ed8; } .st.app_ { background: #d1fae5; color: #047857; }
+  .st.rej { background: #fee2e2; color: #b91c1c; } .st.rei { background: #ede4fd; color: #6d28d9; } .st.rev { background: #fef3c7; color: #b45309; }
+  .tbl { left: 340px; width: 600px; top: 160px; }
+  .tbl .tr { display: grid; grid-template-columns: 150px 100px 90px 100px 1fr; align-items: center; height: 38px; padding: 0 14px; border-top: 1px solid #111; font-size: 14px; }
+  .tbl .tr:first-child { border-top: 0; font-weight: 500; }
+  .tbl .tr .r { text-align: right; padding-right: 14px; }
+  .tbl .tr .g { color: #777; }
+  .tbl.mgr .tr { grid-template-columns: 130px 90px 110px 70px 90px 1fr; height: 31px; }
+  .srch { left: 340px; top: 112px; display: flex; gap: 10px; }
+  .srch div { height: 32px; border: 1px solid #ddd; border-radius: 8px; background: #fff; display: flex; align-items: center; padding: 0 12px; font-size: 13px; color: #888; }
+  .field { display: grid; gap: 6px; font-size: 13px; font-weight: 500; }
+  .field div { height: 34px; border: 1px solid #ddd; border-radius: 8px; background: #fff; display: flex; align-items: center; padding: 0 12px; font-weight: 400; font-size: 14px; }
+  .prog { left: 352px; top: 168px; width: 576px; }
+  .prog .tr2 { height: 7px; background: #c7c7c7; border-radius: 4px; overflow: hidden; }
+  .prog .tr2 i { display: block; height: 100%; background: #111; }
+  .prog .ls { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; color: #888; }
+  .prog .ls .on { color: #111; font-weight: 600; } .prog .ls .ok { color: #059669; }
+
+  /* ---------- cursor ---------- */
+  .cursor { position: absolute; left: 0; top: 0; width: 0; height: 0; opacity: 0; pointer-events: none; }
+  .cursor svg { position: absolute; left: -3px; top: -2px; width: 30px; height: 30px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.3)); transform-origin: 3px 2px; }
+  .ripple { position: absolute; left: -30px; top: -30px; width: 60px; height: 60px; border-radius: 50%; border: 2px solid #3b82f6; opacity: 0; }
+</style>
+</head>
+<body>
+<div class="fit"><div class="frame" id="frame">
+<div class="stage" id="stage">
+  <div class="dots" id="dots"></div>
+  <div class="plane" id="plane"></div>
+
+  <div class="ui" id="mapui">
+    <div class="bar" style="left:16px;top:16px">
+      <span class="it"><svg class="ic"><use href="#i-layers"/></svg><b>Stavy</b></span><span class="dim">/</span>
+      <span class="it"><b>Orbit</b></span><span class="dim">/</span><span class="it"><b>Map</b></span><span class="cnt">8 screens</span>
+    </div>
+    <div class="bar" style="right:16px;top:16px">
+      <span class="it"><svg class="ic"><use href="#i-edit"/></svg>Edit</span><span class="sep"></span>
+      <span class="it"><svg class="ic"><use href="#i-note"/></svg>Notes</span>
+      <span class="it"><svg class="ic"><use href="#i-wire"/></svg>Wireframe</span>
+      <span class="it"><svg class="ic"><use href="#i-target"/></svg>Inspect</span>
+      <span class="it"><svg class="ic"><use href="#i-play"/></svg>Live</span>
+      <span class="it"><svg class="ic"><use href="#i-chat"/></svg>Comments</span><span class="sep"></span>
+      <span class="it"><svg class="ic"><use href="#i-minus"/></svg></span><span class="it" id="zoom" style="min-width:42px;justify-content:center">44%</span><span class="it"><svg class="ic"><use href="#i-plus"/></svg></span>
+    </div>
+    <div class="contents" id="contents">
+      <div class="h"><svg class="ic"><use href="#i-list"/></svg>Contents</div>
+      <div class="r">Site map<span>5</span></div>
+      <div class="g">Scenarios</div>
+      <div class="r" id="c-scen">Employee submits an expense<span>8</span></div>
+      <div class="r">Manager reviews and appro…<span>4</span></div>
+      <div class="r">Finance reimburses<span>3</span></div>
+      <div class="g">Overview</div>
+      <div class="r">Dashboard<span>4</span></div>
+      <div class="g">Expenses</div>
+      <div class="r" id="c-list">Expenses list<span>4</span></div>
+      <div class="r">Expense detail<span>7</span></div>
+      <div class="g">Submitting</div>
+      <div class="r">Submit expense<span>4</span></div>
+    </div>
+    <div class="hint"><span>scroll to pan</span><span>pinch to zoom</span><span>click a screen to open it</span></div>
+  </div>
+
+  <div class="player" id="player">
+    <div class="view" id="views"></div>
+    <div class="spot" id="spot"></div>
+    <div class="pop" id="pop">
+      <div class="top"><span class="chip">Employee submits an expense</span><span id="popN">1 / 8</span><svg class="ic x" style="width:14px;height:14px"><use href="#i-x"/></svg></div>
+      <h4 id="popT">Start a new expense</h4>
+      <p id="popP">The dashboard CTA is the main entry point for employees.</p>
+      <div class="act"><span>← Prev</span><b>Next →</b></div>
+    </div>
+    <div class="menu" id="menu"><div id="m0">Loaded<svg class="ic" style="width:14px;height:14px"><use href="#i-check"/></svg></div><div id="m1">Empty</div><div id="m2">Error</div></div>
+    <div class="pbar" id="pbar">
+      <svg class="ic" id="tomap"><use href="#i-map"/></svg><svg class="ic"><use href="#i-back"/></svg><svg class="ic"><use href="#i-layers"/></svg>
+      <b id="pName" style="margin-left:4px">Expenses list</b><span class="chip m" id="pId" style="height:20px;font-size:11px">list-page</span><span class="sep"></span>
+      <span class="dd"><svg class="ic"><use href="#i-globe"/></svg><span class="k">Locale</span>English (US)</span>
+      <span class="dd" id="ddA"><span class="k" id="ddAk">Role</span><span id="ddAv">Employee</span></span>
+      <span class="dd" id="ddB"><span class="k" id="ddBk">Data state</span><span id="ddBv">Loaded</span><svg class="ic" style="width:12px"><use href="#i-down"/></svg></span>
+      <span class="sep"></span><svg class="ic"><use href="#i-chat"/></svg><svg class="ic"><use href="#i-target"/></svg><svg class="ic"><use href="#i-wire"/></svg>
+      <span class="mock"><i></i>Mock only — not a real product</span>
+    </div>
+  </div>
+
+  <div class="cursor" id="cursor"><div class="ripple" id="ripple"></div>
+    <svg viewBox="0 0 24 24"><path d="M3 2 L3 19.5 L7.6 15.4 L10.6 22 L13.6 20.7 L10.7 14.2 L17 14.2 Z" fill="#fff" stroke="#111" stroke-width="1.3" stroke-linejoin="round"/></svg>
+  </div>
+</div>
+</div></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 17l9 5 9-5"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17z"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></symbol>
+  <symbol id="i-wire" viewBox="0 0 24 24"><path d="M4 20L20 4M8 20l12-12M4 16L16 4M14 20l6-6M4 10l6-6"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-sitemap" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8 7.5l3 8M16 7.5l-3 8"/></symbol>
+</svg>
+
+<script>
+(() => {
+  /* ======================= Orbit, the prototype ======================= */
+  const bolt = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-linejoin="round"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>`;
+  const nav = (on, who = "Employee", av = "KS") => `<div class="nav"><span class="logo">${bolt}Orbit</span>` +
+    ["Dashboard", "Expenses", "New expense"].map((l, i) => `<span class="lk ${i === on ? "on" : ""}">${l}</span>`).join("") +
+    `<span class="who">${who}<span class="av">${av}</span></span></div>`;
+  const ST = { Submitted: "sub_", Approved: "app_", Rejected: "rej", Reimbursed: "rei", "In review": "rev" };
+  const pill = (s) => `<span class="st ${ST[s]}">${s}</span>`;
+  const listHead = (n) => `<div class="h1" style="left:340px;top:76px">Expenses <span class="st" style="background:#e5e5e5;color:#555;font-size:12px;vertical-align:4px">${n}</span></div>` +
+    `<div class="srch"><div style="width:190px">⌕&nbsp; Search merchant…</div><div style="width:110px;color:#111">All statuses ⌄</div></div>`;
+  const ROWS = [["DataConf 2026", "Events", "Aug 18", "$890.00", "Submitted"], ["SkyRail", "Travel", "Aug 15", "$132.50", "Approved"], ["Hotel Verde", "Lodging", "Aug 11", "$412.00", "Rejected"], ["AirBridge", "Travel", "Aug 4", "$511.00", "Reimbursed"]];
+  const MROWS = [["DataConf 2026", "Events", "You", "Aug 18", "$890.00", "Submitted"], ["SkyRail", "Travel", "You", "Aug 15", "$132.50", "Approved"], ["Café Beacon", "Meals", "Alex Rivera", "Aug 14", "$46.20", "In review"], ["Nimbus Cloud", "Software", "Sam Chen", "Aug 12", "$240.00", "Submitted"], ["Hotel Verde", "Lodging", "You", "Aug 11", "$412.00", "Rejected"], ["OfficeMart", "Supplies", "Jordan Blake", "Aug 8", "$63.90", "Reimbursed"], ["RideNow", "Travel", "Alex Rivera", "Aug 6", "$28.40", "Approved"]];
+  const SCREENS = {
+    listLoaded: () => nav(1) + listHead(4) + `<div class="box tbl"><div class="tr"><span>Merchant</span><span>Category</span><span>Date</span><span class="r">Amount</span><span>Status</span></div>` +
+      ROWS.map(r => `<div class="tr"><span>${r[0]}</span><span class="g">${r[1]}</span><span class="g">${r[2]}</span><span class="r">${r[3]}</span><span>${pill(r[4])}</span></div>`).join("") + `</div>`,
+    listEmpty: () => nav(1) + listHead(0) + `<div class="box" style="left:340px;top:160px;width:600px;height:200px;display:grid;place-content:center;justify-items:center;gap:8px;text-align:center">` +
+      `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="1.5"><path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 2h6l1-2h5"/></svg><b style="font-weight:600">No expenses yet</b><span class="sub" style="font-size:13px">When you submit expenses they’ll be listed here.</span><span class="btn" style="height:30px;font-size:13px;margin-top:6px">New expense</span></div>`,
+    listError: () => nav(1) + listHead(0) + `<div style="left:340px;top:160px;width:330px;padding:14px 16px;border:1.5px solid #dc2626;border-radius:10px;color:#dc2626;font-size:13.5px;line-height:1.45;background:#fff">` +
+      `<b style="font-weight:600">ⓘ Couldn’t load expenses</b><br>The expenses service returned a 502. Your data is safe — this is just the list view failing.<br><span style="display:inline-block;margin-top:10px;padding:4px 10px;border:1px solid #dc2626;border-radius:6px">↻ Retry</span></div>`,
+    listMgr: () => nav(1, "Manager", "MN") + listHead(8) + `<div class="box tbl mgr"><div class="tr"><span>Merchant</span><span>Category</span><span>Submitted by</span><span>Date</span><span class="r">Amount</span><span>Status</span></div>` +
+      MROWS.map(r => `<div class="tr"><span>${r[0]}</span><span class="g">${r[1]}</span><span class="g">${r[2]}</span><span class="g">${r[3]}</span><span class="r">${r[4]}</span><span>${pill(r[5])}</span></div>`).join("") + `</div>`,
+    detail: (life, role = "Employee") => nav(1, role, role === "Manager" ? "MN" : "KS") +
+      `<div class="sub" style="left:340px;top:76px;font-size:13px">← Back to expenses</div><div class="h1" style="left:340px;top:100px">DataConf 2026 ${pill(life)}</div><div class="h1" style="left:840px;top:100px">$890.00</div>` +
+      `<div class="box" style="left:340px;top:150px;width:330px;height:170px;padding:16px;box-sizing:border-box;font-size:12px"><b style="font-size:15px;font-weight:600">Details</b>` +
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;margin-top:14px;color:#777">${[["Submitted by", "Morgan Lee"], ["Date", "Aug 18, 2026"], ["Category", "Events"], ["Cost center", "R&D"]].map(([k, v]) => `<div>${k}<br><span style="color:#111;font-size:13px">${v}</span></div>`).join("")}</div></div>` +
+      `<div class="box" style="left:684px;top:150px;width:256px;padding:16px;box-sizing:border-box"><b style="font-weight:600">Actions</b>` +
+      (role === "Manager" ? `<div class="btn" style="width:100%;justify-content:center;margin-top:12px;height:30px;font-size:13px">✓ Approve</div><div class="btn ghost" style="width:100%;justify-content:center;margin-top:8px;height:30px;font-size:13px;border:1px solid #111">✕ Reject</div>`
+        : `<p style="margin:10px 0 0;font-size:13px;color:#666">${life === "Draft" ? "" : "No actions for employee while this expense is " + life.toLowerCase() + "."}</p>` + (life === "Draft" ? `<div class="btn" style="margin-top:12px;height:30px;font-size:13px">Submit for approval</div>` : "")) + `</div>` +
+      `<div class="box" style="left:340px;top:334px;width:330px;padding:16px;box-sizing:border-box;font-size:13px"><b style="font-size:15px;font-weight:600">Timeline</b>` +
+      [["Created as draft", "#bbb"], ...(life !== "Draft" ? [["Submitted for approval", "#bbb"]] : []), ...(life === "Rejected" ? [["Rejected — outside travel policy", "#dc2626"]] : [])].map(([l, c]) => `<div style="margin-top:12px;display:flex;gap:10px;align-items:center"><i style="width:7px;height:7px;border-radius:50%;background:${c}"></i>${l}</div>`).join("") + `</div>`,
+    dash: () => nav(0) + `<div class="h1" style="left:96px;top:86px">Good morning, Morgan</div><div class="sub" style="left:96px;top:122px">Here’s where your expenses stand.</div>` +
+      `<span class="btn" id="t-new" style="left:1045px;top:96px">＋ New expense</span>` +
+      [["This month", "$1,284", "4 expenses"], ["Pending", "2", "$1,130 awaiting"], ["Reimbursed YTD", "$4,913", "18 expenses"], ["Avg approval time", "1.8d", "across your team"]].map(([k, v, s], i) =>
+        `<div class="box" style="left:${96 + i * 276}px;top:164px;width:260px;height:122px;padding:22px 24px;box-sizing:border-box"><div class="sub" style="font-size:14px">${k}</div><div style="font-size:26px;font-weight:600;margin:10px 0 6px">${v}</div><div class="sub" style="font-size:12px">${s}</div></div>`).join("") +
+      `<div class="box" style="left:96px;top:310px;width:646px;height:314px;padding:22px 24px;box-sizing:border-box"><b style="font-weight:600;font-size:17px">Your recent expenses</b><div class="sub" style="font-size:14px">Latest first</div>` +
+      ROWS.map(r => `<div style="display:grid;grid-template-columns:1fr 80px 100px 100px;align-items:center;height:40px;font-size:14px"><span style="font-weight:500">${r[0]}</span><span class="g" style="color:#777">You</span><span style="text-align:right;padding-right:12px">${r[3]}</span><span>${pill(r[4])}</span></div>`).join("") + `</div>` +
+      `<div class="box" style="left:758px;top:310px;width:426px;height:314px;padding:22px 24px;box-sizing:border-box"><b style="font-weight:600;font-size:17px">Activity</b>` +
+      ["DataConf 2026 ticket submitted for approval", "SkyRail travel was approved by M. Novak", "Hotel Verde was rejected — over policy limit", "AirBridge flight reimbursed — $511"].map((a, i) => `<div style="padding:12px 0;border-bottom:${i < 3 ? "1px solid #ddd" : "0"};font-size:14px">${a}<div class="sub" style="font-size:12px;margin-top:3px">${["2d", "3d", "1w", "2w"][i]} ago</div></div>`).join("") + `</div>`,
+    form: (step) => nav(2) + `<div class="h1" style="left:352px;top:86px">New expense</div><div class="sub" style="left:352px;top:122px">Takes about a minute. Drafts save automatically.</div>` +
+      `<div class="prog"><div class="tr2"><i style="width:${[25, 50, 75][step]}%"></i></div><div class="ls">${["Details", "Receipt", "Review", "Done"].map((l, i) => `<span class="${i === step ? "on" : i < step ? "ok" : ""}">${i < step ? "✓ " : ""}${l}</span>`).join("")}</div></div>` +
+      `<div class="box" style="left:352px;top:228px;width:576px;height:${[330, 340, 360][step]}px;padding:22px 24px;box-sizing:border-box">` +
+      [`<b style="font-weight:600;font-size:17px">Expense details</b><div class="sub" style="font-size:14px">What did you pay for?</div>` +
+        `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px">${[["Merchant", "DataConf 2026"], ["Amount", "890.00"], ["Date", "Aug 18, 2026"], ["Category", "Events ⌄"]].map(([k, v]) => `<div class="field">${k}<div>${v}</div></div>`).join("")}</div>` +
+        `<div class="field" style="margin-top:14px">Note (optional)<div>Conference ticket, early-bird rate</div></div><span class="btn" id="t-c0" style="position:absolute;right:24px;bottom:20px">Continue →</span>`,
+       `<b style="font-weight:600;font-size:17px">Attach a receipt</b><div class="sub" style="font-size:14px">Required for anything over $25.</div>` +
+        `<div style="margin-top:22px;height:160px;border:2px dashed #888;border-radius:10px;display:grid;place-content:center;justify-items:center;gap:6px;color:#555"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8"><path d="M16 16l-4-4-4 4M12 12v9"/><path d="M20.4 18.4A5 5 0 0 0 18 9h-1.3A8 8 0 1 0 3 16.3"/></svg>Drop a file or click to browse<span style="font-size:12px;color:#888">PDF, PNG or JPG · mocked in this prototype</span></div>` +
+        `<span class="btn ghost" style="position:absolute;left:24px;bottom:20px">← Back</span><span class="btn" id="t-c1" style="position:absolute;right:24px;bottom:20px">Continue →</span>`,
+       `<b style="font-weight:600;font-size:17px">Review</b><div class="sub" style="font-size:14px">Check everything before submitting.</div>` +
+        [["Merchant", "DataConf 2026"], ["Amount", "$890.00"], ["Date", "Aug 18, 2026"], ["Category", "Events"], ["Receipt", "receipt_dataconf.pdf"], ["Approver", "M. Novak (your manager)"]].map(([k, v]) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #ccc;font-size:13.5px"><span style="color:#777">${k}</span>${v}</div>`).join("") +
+        `<span class="btn ghost" style="position:absolute;left:24px;bottom:18px">← Back</span><span class="btn" id="t-sub" style="position:absolute;right:24px;bottom:18px">Submit expense</span>`][step] + `</div>`,
+  };
+  const screen = (k, ...a) => `<div class="app">${SCREENS[k](...a)}</div>`;
+
+  /* ======================= the canvas ======================= */
+  const plane = document.getElementById("plane");
+  const card = (id, x, y, html, sm) => `<div class="card ${sm ? "sm" : ""}" id="${id}" style="left:${x}px;top:${y}px"><div class="shot">${html.replace(/ id="[^"]*"/g, "")}</div><div class="ring"></div></div>`;
+  const capChips = (x, y, ...c) => `<div class="cap" style="left:${x}px;top:${y}px">${c.map(s => `<span class="chip">${s}</span>`).join("")}</div>`;
+  const sitemapIcon = `<svg class="ic"><use href="#i-sitemap"/></svg>`, layersIcon = `<svg class="ic"><use href="#i-layers"/></svg>`;
+  const LX = 860, DY = 430;
+  plane.innerHTML =
+    // site map
+    `<div class="sec" style="left:0;top:0;width:760px;height:780px"><div class="pill">${sitemapIcon}Site map <span>5 screens</span></div></div>` +
+    `<svg class="wires" width="760" height="780"><g fill="none" stroke="#a1a1aa" stroke-width="2"><path d="M50 170 C 18 230, 18 300, 50 352"/><path d="M50 170 C 6 300, 6 500, 50 582"/><path d="M290 364 H 432" marker-end="url(#ah)"/></g>` +
+    `<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#a1a1aa"/></marker></defs></svg>` +
+    `<div class="lbl" style="left:50px;top:52px">Overview</div>` + card("s-dash", 50, 72, screen("dash"), 1) + `<div class="name" style="left:50px;top:212px">Dashboard</div>` +
+    `<div class="lbl" style="left:50px;top:282px">Expenses</div>` + card("s-list", 50, 302, screen("listLoaded"), 1) + `<div class="name" style="left:50px;top:442px">Expenses list</div>` +
+    card("s-det", 440, 302, screen("detail", "Submitted"), 1) + `<div class="name" style="left:440px;top:442px">Expense detail</div>` +
+    `<div class="lbl" style="left:50px;top:512px">Submitting</div>` + card("s-sub", 50, 532, screen("form", 0), 1) + `<div class="name" style="left:50px;top:672px">Submit expense</div>` +
+    // expenses list: every state of the page
+    `<div class="sec" style="left:${LX}px;top:0;width:1430px;height:370px"><div class="pill">${layersIcon}Expenses list <span>page</span></div></div>` +
+    `<div class="chips" style="left:${LX + 24}px;top:40px"><span class="chip m w">List page</span><span class="chip w"><i></i>navigable</span><span class="chip w">Role <span class="n">3</span></span><span class="chip w">Data state <span class="n">3</span></span></div>` +
+    [["listLoaded", "Employee", "Loaded", ""], ["listEmpty", "Employee", "Empty", ""], ["listError", "Employee", "Error", "API failure fallback with retry"], ["listMgr", "Manager", "Loaded", "Manager sees submitter column + quick actions"]].map(([k, r, s, c], i) =>
+      card("l" + i, LX + 24 + i * 345, 82, screen(k)) + capChips(LX + 24 + i * 345, 264, r, s) + (c ? `<div class="cap-t" style="left:${LX + 24 + i * 345}px;top:298px">${c}</div>` : "")).join("") +
+    // expense detail: one record through its lifecycle
+    `<div class="sec" style="left:${LX}px;top:${DY}px;width:1085px;height:350px"><div class="pill">${layersIcon}Expense detail <span>page</span></div></div>` +
+    `<div class="chips" style="left:${LX + 24}px;top:${DY + 40}px"><span class="chip m w">Detail page</span><span class="chip w o"><i></i>interactive</span><span class="chip w">Expense <span class="n">2</span></span><span class="chip w">Lifecycle <span class="n">6</span></span></div>` +
+    [["Draft", "Employee", "Owner can still edit"], ["Submitted", "Manager", "Approve / reject / request changes"], ["Rejected", "Employee", "Terminal until resubmitted"]].map(([l, r, c], i) =>
+      card("d" + i, LX + 24 + i * 345, DY + 82, screen("detail", l, r)) + capChips(LX + 24 + i * 345, DY + 264, l, r) + `<div class="cap-t" style="left:${LX + 24 + i * 345}px;top:${DY + 298}px">${c}</div>`).join("");
+
+  // the player holds every screen the loop visits; one is shown at a time
+  const VIEWS = { listLoaded: screen("listLoaded"), listEmpty: screen("listEmpty"), listError: screen("listError"), dash: screen("dash"), f0: screen("form", 0), f1: screen("form", 1), f2: screen("form", 2) };
+  const views = document.getElementById("views");
+  for (const [k, h] of Object.entries(VIEWS)) { const d = document.createElement("div"); d.className = "view"; d.dataset.k = k; d.innerHTML = h; views.appendChild(d); }
+
+  /* ======================= timeline helpers (same engine as the slaydy promo) ======================= */
+  const BEAT = 60 / 72, b = (n) => n * BEAT;
+  const T = b(25);
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const io = (x) => x < .5 ? 16 * x ** 5 : 1 - (-2 * x + 2) ** 5 / 2;
+  const io3 = (x) => x < .5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2;
+  const out = (x) => 1 - (1 - x) ** 4;
+  const lerp = (a, c, f) => a + (c - a) * f;
+  const track = (keys, ease = io) => {
+    keys = keys.map(([n, v]) => [b(n), v]);
+    return (t) => {
+      if (t <= keys[0][0]) return keys[0][1];
+      for (let i = 1; i < keys.length; i++) {
+        if (t <= keys[i][0]) {
+          const [t0, v0] = keys[i - 1], [t1, v1] = keys[i];
+          return lerp(v0, v1, ease((t - t0) / (t1 - t0)));
+        }
+      }
+      return keys[keys.length - 1][1];
+    };
+  };
+  const pulse = (t, at, len = .3) => { const x = (t - at) / len; return x < 0 || x > 1 ? 0 : Math.sin(Math.PI * x); };
+
+  /* ======================= the choreography (in beats) ======================= */
+  //  0 the map builds          1.5 glide to the Expenses list states     4 click a state: it opens in the player
+  //  5.3 Data state → Empty    7 Data state → Error                       8.6 back to the map, the Error card is lit
+  // 10.6 click a scenario in Contents: a guided tour, in the real frame
+  // 12–19.6 four tour steps, each advanced by clicking the spotlit element   20.6 back to the map    25 loop
+  const CL = { open: b(4), ddB1: b(5.3), pick1: b(6.1), ddB2: b(7), pick2: b(7.8), map: b(8.6), scen: b(10.6), s1: b(13.6), s2: b(15.6), s3: b(17.6) };
+
+  // map camera: world point (cx, cy) placed at stage point (sx, sy), scale s
+  const cam = {
+    s:  track([[0, .44], [1.5, .44], [3.4, .66], [9.6, .66], [10.4, .5], [20.8, .5], [22.4, .44]]),
+    cx: track([[0, 1145], [1.5, 1145], [3.4, 1575], [9.6, 1575], [10.4, 1250], [20.8, 1250], [22.4, 1145]]),
+    cy: track([[0, 390], [1.5, 390], [3.4, 185], [9.6, 185], [10.4, 390], [20.8, 390], [22.4, 390]]),
+    sx: track([[0, 752], [1.5, 752], [3.4, 690], [9.6, 690], [10.4, 752]]),
+  };
+  const SY = 392;
+  const build = track([[0, 0], [1.2, 1], [23.6, 1], [24.6, 0]], out);
+  const mapUI = track([[0, 0], [.6, 1], [4.2, 1], [4.8, 0], [9, 0], [9.6, 1], [11.2, 1], [11.8, 0], [20.6, 0], [21.4, 1], [23.8, 1], [24.6, 0]], io3);
+
+  // the player: grows out of the clicked card, goes back into the lit one; the tour fades in over the map
+  const grow = track([[0, 0], [CL.open / BEAT + .1, 0], [5, 1], [CL.map / BEAT + .1, 1], [9.5, 0]], io);
+  const tourIn = track([[0, 0], [11, 0], [11.9, 1], [20.4, 1], [21.2, 0]], io3);
+  const viewAt = (t) => t < CL.pick1 ? "listLoaded" : t < CL.pick2 ? "listEmpty" : t < b(10.5) ? "listError" : t < CL.s1 ? "dash" : t < CL.s2 ? "f0" : t < CL.s3 ? "f1" : "f2";
+  const STEPS = [
+    ["1 / 8", "Start a new expense", "The dashboard CTA is the main entry point for employees.", "t-new"],
+    ["2 / 8", "Fill in the details", "Merchant, amount, date, category. All fields are mock-validated only.", "t-c0"],
+    ["3 / 8", "Attach a receipt", "The dropzone is mocked — continue to proceed.", "t-c1"],
+    ["4 / 8", "Review and submit", "Summary of everything entered; submitting advances the lifecycle to Submitted.", "t-sub"],
+  ];
+  const stepAt = (t) => t < CL.s1 ? 0 : t < CL.s2 ? 1 : t < CL.s3 ? 2 : 3;
+  const stepT = (t) => [b(11.9), CL.s1, CL.s2, CL.s3][stepAt(t)];
+
+  // cursor segments: [from beat, to beat, from, to]
+  const C = [
+    [2.4, 3.6, { x: 1120, y: 640 }, { el: "l0", dx: 30, dy: 10 }],
+    [4.4, 5.1, null, { el: "ddB", dx: 6, dy: 4 }],
+    [5.4, 6, null, { el: "m1", dx: -20, dy: 2 }],
+    [6.3, 6.9, null, { el: "ddB", dx: 10, dy: 4 }],
+    [7.1, 7.7, null, { el: "m2", dx: -24, dy: 2 }],
+    [7.9, 8.5, null, { el: "tomap", dx: 0, dy: 2 }],
+    [9.4, 10.5, null, { el: "c-scen", dx: -30, dy: 2 }],
+    [12.2, 13.4, null, { el: "t-new", dx: 10, dy: 6 }],
+    [14.2, 15.4, null, { el: "t-c0", dx: 4, dy: 6 }],
+    [16.2, 17.4, null, { el: "t-c1", dx: 4, dy: 6 }],
+    [18.2, 19.4, null, { el: "t-sub", dx: -6, dy: 6 }],
+    [20.4, 21.6, null, { x: 1180, y: 760 }],
+  ].map(([a, z, f, to]) => [b(a), b(z), f, to]);
+  const co = track([[0, 0], [2.2, 0], [2.6, 1], [21.2, 1], [21.6, 0]], io3);
+  const csz = track([[0, 1.5], [3.6, 1.5], [4.6, 1.25], [8.6, 1.25], [9.6, 1.5], [11.6, 1.5], [12.2, 1.25]]);
+  const pressT = [CL.open, CL.ddB1, CL.pick1, CL.ddB2, CL.pick2, CL.map, CL.scen, CL.s1, CL.s2, CL.s3];
+
+  /* ======================= render ======================= */
+  const $ = (id) => document.getElementById(id);
+  const stage = $("stage"), frame = $("frame"), player = $("player"), dots = $("dots"), mapui = $("mapui");
+  const cursor = $("cursor"), ripple = $("ripple"), arrow = cursor.querySelector("svg");
+  const spot = $("spot"), pop = $("pop"), menu = $("menu");
+  const cards = [...plane.querySelectorAll(".card")];
+  cards.forEach((c, i) => { c.dataset.i = i; });
+  const viewEls = [...views.children];
+  let K = 1;
+  const fit = () => { K = frame.clientWidth / 1280; stage.style.transform = `scale(${K})`; };
+  const set = (el, prop, v) => { if (el.style[prop] !== v) el.style[prop] = v; };
+  const box = (el) => { const rc = el.getBoundingClientRect(), sr = stage.getBoundingClientRect(); return { x: (rc.left - sr.left) / K, y: (rc.top - sr.top) / K, w: rc.width / K, h: rc.height / K }; };
+  // a target on a page that is hidden right now keeps its last known spot, so the cursor never jumps to 0,0
+  const seen = new Map();
+  const resolve = (spec) => {
+    if (!spec.el) return spec;
+    const r = box($(spec.el));
+    if (!(r.w > 0 && r.h > 0)) return seen.get(spec) || { x: 640, y: 360 };
+    const p = { x: r.x + r.w / 2 + (spec.dx || 0), y: r.y + r.h / 2 + (spec.dy || 0) };
+    seen.set(spec, p);
+    return p;
+  };
+  const setText = (id, s) => { const e = $(id); if (e.textContent !== s) e.textContent = s; };
+
+  function render(t) {
+    // the canvas
+    const s = cam.s(t), cx = cam.cx(t), cy = cam.cy(t), sx = cam.sx(t);
+    const ox = sx - cx * s, oy = SY - cy * s;
+    plane.style.transform = `translate(${ox.toFixed(2)}px, ${oy.toFixed(2)}px) scale(${s.toFixed(4)})`;
+    dots.style.backgroundSize = `${(22 * s).toFixed(2)}px ${(22 * s).toFixed(2)}px`;
+    dots.style.backgroundPosition = `${ox.toFixed(1)}px ${oy.toFixed(1)}px`;
+    setText("zoom", Math.round(s * 100) + "%");
+    const bl = build(t);
+    cards.forEach((c, i) => {
+      const v = clamp(bl * 1.6 - i * .05);
+      set(c, "opacity", v.toFixed(3));
+      set(c, "transform", `translateY(${((1 - out(v)) * 14).toFixed(2)}px)`);
+    });
+    // the map knows where the player was: the Error state is lit after coming back
+    const lit = t > CL.map && t < b(21.5) ? clamp((t - b(9.3)) / .4) : 0;
+    $("l2").querySelector(".ring").style.opacity = lit;
+    $("l0").querySelector(".ring").style.opacity = t > CL.open - .1 && t < CL.open + .5 ? 1 : 0;
+    set(mapui, "opacity", mapUI(t).toFixed(3));
+    $("c-scen").classList.toggle("on", t > CL.scen - .05 && t < b(21));
+
+    // the player: from the clicked card to full frame and back into the card for the state it ended on
+    const g = grow(t), tin = tourIn(t);
+    let pv = 0;
+    if (g > 0) {
+      const r = box($(t < CL.map ? "l0" : "l2"));
+      const sc = lerp(r.w / 1280, 1, g), h = lerp(r.h, 720, g) / sc;
+      player.style.transform = `translate(${lerp(r.x, 0, g).toFixed(2)}px, ${lerp(r.y, 0, g).toFixed(2)}px) scale(${sc.toFixed(4)})`;
+      player.style.height = Math.min(720, h).toFixed(1) + "px";
+      player.style.borderRadius = (lerp(10, 0, g) / sc).toFixed(1) + "px";
+      pv = g > .001 ? 1 : 0;
+      $("pbar").style.opacity = clamp((g - .7) / .3);
+    } else if (tin > 0) {
+      player.style.transform = `translate(${lerp(40, 0, tin)}px, ${lerp(22, 0, tin)}px) scale(${lerp(.94, 1, tin).toFixed(4)})`;
+      player.style.height = "720px"; player.style.borderRadius = "0px";
+      pv = tin; $("pbar").style.opacity = 1;
+    }
+    set(player, "opacity", pv.toFixed(3));
+    set(player, "visibility", pv > 0 ? "visible" : "hidden");
+    const vk = viewAt(t);
+    viewEls.forEach(v => set(v, "display", v.dataset.k === vk ? "block" : "none"));
+
+    // player chrome follows the page and dimensions
+    const tour = t > b(10.5);
+    const form = tour && stepAt(t) > 0;
+    setText("pName", !tour ? "Expenses list" : form ? "Submit expense" : "Dashboard");
+    setText("pId", !tour ? "list-page" : form ? "form-flow-page" : "dashboard-page");
+    setText("ddAk", form ? "Flow progress" : "Role");
+    setText("ddAv", form ? ["", "1 · Details", "2 · Receipt", "3 · Review"][stepAt(t)] : "Employee");
+    $("ddA").style.display = "inline-flex";
+    $("ddB").style.display = form ? "none" : "inline-flex";
+    setText("ddBv", vk === "listEmpty" ? "Empty" : vk === "listError" ? "Error" : "Loaded");
+    // the Data state menu, twice
+    const mOpen = (t > CL.ddB1 && t < CL.pick1 + .15) || (t > CL.ddB2 && t < CL.pick2 + .15);
+    const mo = mOpen ? clamp(Math.min((t - (t > CL.ddB2 ? CL.ddB2 : CL.ddB1)) / .15, 1)) : 0;
+    set(menu, "opacity", mo.toFixed(3));
+    $("ddB").classList.toggle("open", mOpen);
+    if (mOpen) {
+      const r = box($("ddB")), pr = box(player);
+      menu.style.left = (r.x - pr.x) + "px";
+      menu.style.transform = `translateY(${((1 - mo) * 6).toFixed(1)}px)`;
+      const cur = t > CL.ddB2 ? 1 : 0;
+      ["m0", "m1", "m2"].forEach((id, i) => $(id).classList.toggle("hov", i === (t > CL.ddB2 ? 2 : 1) && t > (t > CL.ddB2 ? b(7.5) : b(5.8))));
+      $("m0").querySelector("svg").style.visibility = cur ? "hidden" : "visible";
+    }
+
+    // the guided tour: a spotlight on the step's target, the step card beside it
+    const st = stepAt(t), on = tour ? clamp((t - stepT(t) - .12) / .3) : 0;
+    const fade = tour ? clamp((b(20.4) - t) / .3) : 0;
+    if (tour && t > b(11.5)) {
+      const [n, ti, p, target] = STEPS[st];
+      setText("popN", n); setText("popT", ti); setText("popP", p);
+      const r = box($(target));
+      spot.style.left = (r.x - 6) + "px"; spot.style.top = (r.y - 6) + "px"; spot.style.width = (r.w + 12) + "px"; spot.style.height = (r.h + 12) + "px";
+      spot.style.opacity = (on * fade).toFixed(3);
+      const PS = 1.3;
+      const ph = pop.offsetHeight * PS;
+      const px = Math.max(20, Math.min(1280 - 320 * PS - 20, r.x + r.w - 320 * PS + 24));
+      const below = r.y + r.h + 22, py = below + ph < 670 ? below : r.y - ph - 22;
+      pop.style.left = px + "px"; pop.style.top = py + "px";
+      pop.style.transformOrigin = "0 0";
+      pop.style.transform = `translateY(${((1 - out(on)) * 10).toFixed(1)}px) scale(${PS})`;
+      pop.style.opacity = (on * fade).toFixed(3);
+    } else { spot.style.opacity = 0; pop.style.opacity = 0; }
+
+    // cursor
+    let seg = null;
+    for (const c of C) { if (t >= c[0]) seg = c; }
+    let pos;
+    if (seg) {
+      const i = C.indexOf(seg);
+      const from = seg[2] || C[i - 1][3];
+      const f = io3(clamp((t - seg[0]) / (seg[1] - seg[0])));
+      const p0 = resolve(from), p1 = resolve(seg[3]);
+      pos = { x: lerp(p0.x, p1.x, f), y: lerp(p0.y, p1.y, f) };
+    } else pos = resolve(C[0][2]);
+    cursor.style.transform = `translate(${pos.x.toFixed(2)}px, ${pos.y.toFixed(2)}px)`;
+    cursor.style.opacity = co(t);
+    let press = 0, rip = -1;
+    for (const at of pressT) { press = Math.max(press, pulse(t, at - .06, .22)); if (t >= at && t < at + .6) rip = (t - at) / .6; }
+    arrow.style.transform = `scale(${((1 - .14 * press) * csz(t)).toFixed(4)})`;
+    ripple.style.opacity = rip < 0 ? 0 : (.6 * (1 - rip)).toFixed(3);
+    ripple.style.transform = `scale(${rip < 0 ? .3 : lerp(.3, 1.4, out(rip))})`;
+  }
+
+  /* ======================= clock ======================= */
+  const still = matchMedia("(prefers-reduced-motion: reduce)");
+  let playing = true, last = performance.now(), t = 0, visible = true;
+  const tick = (now) => {
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (playing && visible && !document.hidden && !still.matches) t = (t + dt) % T;
+    render(still.matches ? b(3.6) : t);
+    requestAnimationFrame(tick);
+  };
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(frame);
+  // ?t=7.9 freezes a frame (handy for a poster image)
+  const fixed = parseFloat(new URLSearchParams(location.search).get("t"));
+  if (!isNaN(fixed)) { t = fixed; playing = false; }
+  window.promo = { seek: (x) => { t = x; playing = false; }, play: () => { playing = true; }, render };
+
+  const start = () => { fit(); requestAnimationFrame(tick); };
+  addEventListener("resize", fit);
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(start);
+})();
+</script>
+</body>
+</html>
