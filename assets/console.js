@@ -1,6 +1,10 @@
 /* Console easter egg: a "Hi" written on the staff, plus a few commands. */
 (() => {
-  const L = '#DCFF3D', B = '#7D87FF', G = '#6A7078', D = '#9AA0A6';
+  // Devtools follows the system theme by default; lime is unreadable on a light console.
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const [L, B, G, D, R] = dark
+    ? ['#DCFF3D', '#7D87FF', '#6A7078', '#9AA0A6', '#FF6B6B']
+    : ['#2B3BFF', '#0B0B0B', '#B4B9BF', '#6A7078', '#D93025'];
   const mono = 'font-family:ui-monospace,Menlo,Consolas,monospace;';
   const big = mono + 'font-size:13px;line-height:1.15;';
   const txt = mono + 'font-size:12px;line-height:1.5;';
@@ -94,7 +98,7 @@
       const rank = RANKS[Math.min(RANKS.length - 1, Math.floor(streak / 3))];
       pair = null;
       tones([196, 185], 0.25);
-      out([['✗ nope', txt + 'color:#FF6B6B'], ['  streak ' + streak + ': ' + rank + '. ', txt + 'color:' + D],
+      out([['✗ nope', txt + 'color:' + R], ['  streak ' + streak + ': ' + rank + '. ', txt + 'color:' + D],
            ['game()', txt + 'color:' + L], [' to go again.', txt + 'color:' + D]]);
     }
   }
@@ -137,7 +141,7 @@
     } else {
       const why = got.root === ans.root ? 'right root, wrong mood' : got.minor === ans.minor ? 'right mood, wrong root' : 'both off';
       tones([196, 185], 0.25);
-      out([['✗ it was ' + chordName(ans), txt + 'color:#FF6B6B'], ['  ' + why + ', streak ' + cstreak + '. ', txt + 'color:' + D],
+      out([['✗ it was ' + chordName(ans), txt + 'color:' + R], ['  ' + why + ', streak ' + cstreak + '. ', txt + 'color:' + D],
            ['chord()', txt + 'color:' + L], [' to go again.', txt + 'color:' + D]]);
     }
   }
