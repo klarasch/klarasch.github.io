@@ -25,7 +25,7 @@
     S.mobile = S.W < 720;
     S.pad = S.mobile ? 20 : Math.round(Math.min(80, S.W * 0.05));
     root.style.setProperty('--H', S.H + 'px');
-    $('stage').style.height = Math.round(nS * S.H * 0.95 + S.H) + 'px';
+    $('stage').style.height = Math.round(nS * S.H * 0.95 + $('stageInner').offsetHeight) + 'px';
     const top = id => { const el = $(id); return el ? el.getBoundingClientRect().top + scrollY : 0; };
     S.stageTop = top('stage');
     S.tops = { before: top('before'), how: top('how'), hello: top('hello') };
@@ -73,7 +73,18 @@
   const lines = [0, 1, 2, 3, 4].map(i => $('sl' + i));
 
   /* ---------- scene state ---------- */
-  let idx = -1, booted = false, lastBg = -1;
+  let idx = -1, booted = false, lastBg = -1, lastTop = '';
+  // Browser chrome colour: older Safari and Chrome read theme-color; Safari 26 samples
+  // the page background and fixed bars at the top edge, so all three follow the colour under the toolbar.
+  const meta = document.querySelector('meta[name="theme-color"]');
+  function setTopColour(c) {
+    if (c === lastTop) return;
+    lastTop = c;
+    meta.setAttribute('content', c);
+    root.style.backgroundColor = c;
+    document.body.style.backgroundColor = c;
+    $('navbg').style.backgroundColor = c === M ? 'rgba(246, 247, 249, .84)' : c;
+  }
   function setScene(n) {
     if (n === idx) return;
     idx = n;
@@ -134,6 +145,16 @@
     nav.style.color = td < 0.5 && stageScreenTop < 40 ? scenes[idx].fg : K;
     navbg.style.height = (mobile ? navH + 6 + gap * 4 + 26 : navH).toFixed(1) + 'px';
     navbg.style.opacity = td > 0.5 ? 1 : 0;
+    const stageBottom = stageScreenTop + $('stage').offsetHeight;
+    setTopColour(td <= 0.5 && stageScreenTop <= 1 && stageBottom > 0 ? scenes[idx].bg : M);
+
+    // as the first scene slides up, the staff fades out before the edge reaches it and
+    // only returns, in the scene's colours, once the scene has nearly landed
+    const mid = top + gap * 2, span = gap * 2 + 48;
+    const dip = td >= 0.5 ? 1 : stageScreenTop > mid
+      ? cl((stageScreenTop - mid) / span, 0, 1)
+      : cl(1 - stageScreenTop / (H * 0.2), 0, 1);
+    $('staff').style.opacity = (dip * dip * (3 - 2 * dip)).toFixed(3);
     $('navName').textContent = mobile && td > 0.5 && W < 400 ? 'K. S.' : 'Klára Scholleová';
     const links = $('navLinks');
     links.style.opacity = cl(1 - td * 2.2, 0, 1).toFixed(2);
