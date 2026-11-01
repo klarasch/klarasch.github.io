@@ -108,6 +108,7 @@
     const local = y - S.stageTop;
     const sf = cl(local / P_, 0, nS - 0.001);
     setScene(Math.floor(sf));
+    if (idx === 0) scenes[0].el.classList.toggle('on', S.stageTop - y < S.H * 0.3);
     const sub = sf - idx;
     scenes[idx].el.querySelector('.vis').style.setProperty('--par', (cl(sub, 0, 1) * -24).toFixed(1) + 'px');
     const stageScreenTop = S.stageTop - y;
@@ -134,27 +135,27 @@
     }
     const big = td < 0.05;
 
-    const underScene = stageScreenTop < top + gap * 2 && td < 0.5;
-    const pal = underScene ? scenes[idx] : { bg: M, fg: K };
-    const darkBg = pal.bg === B || pal.bg === K;
-    const lineCol = darkBg ? 'rgba(255,255,255,0.38)' : 'rgba(11,11,11,' + lerp(0.16, 0.22, td).toFixed(3) + ')';
+    // The staff takes the colours of whatever sits under each part of it: as the first
+    // scene slides up, its edge wipes across the staff and recolours it line by line.
+    const VH = innerHeight;
+    const eTop = td < 0.5 ? stageScreenTop : VH, eBot = td < 0.5 ? stageScreenTop + $('stage').offsetHeight : VH;
+    const inScene = yy => yy > eTop && yy < eBot;
+    const MIST = { bg: M, fg: K, dark: false, line: 'rgba(11,11,11,' + lerp(0.16, 0.22, td).toFixed(3) + ')', head: B };
+    const sc = scenes[idx], scDark = sc.bg === B || sc.bg === K;
+    const SCENE = { bg: sc.bg, fg: sc.fg, dark: scDark, line: scDark ? 'rgba(255,255,255,0.38)' : MIST.line, head: scDark ? '#FFFFFF' : B };
+    const palAt = yy => (inScene(yy) ? SCENE : MIST);
+    const crossing = td < 0.5 && eTop > -2 && eTop < VH;
 
     // nav + its backdrop (on phones the backdrop also holds the docked staff)
     const nav = $('nav'), navbg = $('navbg');
     nav.style.height = navH.toFixed(1) + 'px';
     nav.style.color = td < 0.5 && stageScreenTop < 40 ? scenes[idx].fg : K;
-    navbg.style.height = (mobile ? navH + 6 + gap * 4 + 26 : navH).toFixed(1) + 'px';
-    navbg.style.opacity = td > 0.5 ? 1 : 0;
-    const stageBottom = stageScreenTop + $('stage').offsetHeight;
-    setTopColour(td <= 0.5 && stageScreenTop <= 1 && stageBottom > 0 ? scenes[idx].bg : M);
+    const pinned = td <= 0.5 && stageScreenTop <= 1 && eBot > 0;
+    navbg.style.opacity = td > 0.5 || pinned ? 1 : 0;
+    navbg.classList.toggle('solid', pinned);
+    navbg.style.height = (mobile && !pinned ? navH + 6 + gap * 4 + 26 : navH).toFixed(1) + 'px';
+    setTopColour(pinned ? sc.bg : M);
 
-    // as the first scene slides up, the staff fades out before the edge reaches it and
-    // only returns, in the scene's colours, once the scene has nearly landed
-    const mid = top + gap * 2, span = gap * 2 + 48;
-    const dip = td >= 0.5 ? 1 : stageScreenTop > mid
-      ? cl((stageScreenTop - mid) / span, 0, 1)
-      : cl(1 - stageScreenTop / (H * 0.2), 0, 1);
-    $('staff').style.opacity = (dip * dip * (3 - 2 * dip)).toFixed(3);
     $('navName').textContent = mobile && td > 0.5 && W < 400 ? 'K. S.' : 'Klára Scholleová';
     const links = $('navLinks');
     links.style.opacity = cl(1 - td * 2.2, 0, 1).toFixed(2);
@@ -175,8 +176,9 @@
 
     // gentle 3D tilt toward the pointer
     let tx = 0, ty = 0;
-    if (big && !mobile && !reduce && ptr.x > -9000) { tx = ((ptr.y / innerHeight) - 0.6) * -5; ty = ((ptr.x / W) - 0.5) * 6; }
-    tilt.x += (tx - tilt.x) * 0.06; tilt.y += (ty - tilt.y) * 0.06;
+    if (big && !mobile && !reduce && ptr.x > -9000 && !(crossing && eTop < top + gap * 4 + 160)) { tx = ((ptr.y / innerHeight) - 0.6) * -5; ty = ((ptr.x / W) - 0.5) * 6; }
+    const tk = crossing ? 0.2 : 0.06;
+    tilt.x += (tx - tilt.x) * tk; tilt.y += (ty - tilt.y) * tk;
     $('staffTilt').style.transform = 'perspective(1400px) rotateX(' + tilt.x.toFixed(2) + 'deg) rotateY(' + tilt.y.toFixed(2) + 'deg)';
 
     // lines
@@ -196,7 +198,7 @@
         if (xx >= lineR) break;
       }
       lines[i].setAttribute('d', d);
-      lines[i].setAttribute('stroke', lineCol);
+      lines[i].setAttribute('stroke', palAt(yb).line);
     }
 
     // notes, placed by where each section sits in the document
@@ -205,11 +207,11 @@
     let active = 0;
     fr.forEach((f, i) => { if (f <= prog + 0.003) active = i; });
     const P = mobile ? lerp(3, 1, td) : lerp(4, 1.2, td);
-    const fix = c => (c === pal.bg ? pal.fg : c);
     NOTES.forEach((n, i) => {
-      const e = noteEls[i], isA = i === active, lime = n[1] === L, c = fix(n[1]);
-      const ringCol = darkBg ? '#FFFFFF' : K;
-      const key = [P.toFixed(2), c, isA && td < 0.5, darkBg].join('|');
+      const np = palAt(top + n[2] * gap), isA = i === active, lime = n[1] === L;
+      const e = noteEls[i], c = n[1] === np.bg ? np.fg : n[1];
+      const ringCol = np.dark ? '#FFFFFF' : K;
+      const key = [P.toFixed(2), c, isA && td < 0.5, np.dark].join('|');
       if (key !== e.key) {
         e.key = key;
         let pts = lime ? sh(RING, ringCol, P).concat(sh(CEN, L, P)) : sh(HEAD, c, P);
@@ -221,14 +223,16 @@
       e.b.style.left = (x - 20).toFixed(1) + 'px';
       e.b.style.top = (top + n[2] * gap - 20).toFixed(1) + 'px';
       if (booted) e.b.style.opacity = 1;
-      e.tip.style.color = pal.fg;
+      e.tip.style.color = np.fg;
       e.tip.style.display = td > 0.5 ? 'none' : 'block';
       e.b.setAttribute('aria-current', isA ? 'true' : 'false');
     });
 
     // playhead + "now" tag
     const ph = $('playhead'), px = lerp(nL, nR, prog);
-    ph.style.background = darkBg ? '#FFFFFF' : B;
+    const phTop = top - 6, phH = gap * 4 + 12, cut = cl(eTop - phTop, 0, phH);
+    ph.style.background = cut <= 0 || cut >= phH ? palAt(phTop + phH / 2).head
+      : 'linear-gradient(180deg,' + MIST.head + ' ' + cut.toFixed(1) + 'px,' + SCENE.head + ' ' + cut.toFixed(1) + 'px)';
     ph.style.top = (top - 6).toFixed(1) + 'px';
     ph.style.height = (gap * 4 + 12).toFixed(1) + 'px';
     ph.style.left = px.toFixed(1) + 'px';
