@@ -159,6 +159,7 @@ main { position: relative; z-index: 1; }
 .sk .cols { display: flex; gap: 8px; align-items: flex-end; height: 55%; }
 .sk .cols > div { flex: 1; }
 .media-note { position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 13px; opacity: .55; }
+.screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; background: #08080a; }
 /* rendered at desktop size, then scaled to fit, so the app shows its desktop layout */
 .screen iframe.scaled { inset: auto; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; transform: scale(var(--fit, .5)); }
@@ -240,7 +241,7 @@ a.card:hover { transform: translateY(-4px); box-shadow: 0 24px 50px -30px rgba(0
 #hello .base { margin-top: 72px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 32px; font-family: var(--pix); font-size: 15px; }
 #hello .base .l { display: flex; gap: 28px; flex-wrap: wrap; }
 #hello .me { display: flex; align-items: flex-end; gap: 14px; color: var(--grey-2); }
-#hello .photo { width: 64px; height: 80px; background: #E6E9EE; border-radius: 4px; }
+#hello .photo { width: 64px; height: 80px; background: #E6E9EE; border-radius: 4px; object-fit: cover; display: block; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

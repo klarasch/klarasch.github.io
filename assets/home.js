@@ -291,4 +291,6 @@
     setTimeout(() => noteEls.forEach(e => { e.b.style.transitionDelay = '0ms'; }), 2500);
   }, 150);
   requestAnimationFrame(frame);
+  // reduced motion: keep the console video on its first frame
+  if (reduce) document.querySelectorAll('.screen video').forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
 })();
