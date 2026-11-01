@@ -240,8 +240,8 @@ a.card:hover { transform: translateY(-4px); box-shadow: 0 24px 50px -30px rgba(0
 #schHint { margin: 20px 0 0; font-family: var(--pix); font-size: 15px; color: var(--grey-2); min-height: 20px; }
 #hello .base { margin-top: 72px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 32px; font-family: var(--pix); font-size: 15px; }
 #hello .base .l { display: flex; gap: 28px; flex-wrap: wrap; }
-#hello .me { display: flex; align-items: flex-end; gap: 14px; color: var(--grey-2); }
-#hello .photo { width: 64px; height: 80px; background: #E6E9EE; border-radius: 4px; object-fit: cover; display: block; }
+#hello .coda { display: flex; align-items: flex-end; gap: 12px; color: var(--grey-2); }
+#hello .coda svg { width: 34px; height: 42px; fill: var(--ink); shape-rendering: crispEdges; flex: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
