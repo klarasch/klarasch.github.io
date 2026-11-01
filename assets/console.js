@@ -52,8 +52,7 @@
       tones([311.13, 261.63, 246.94]);
       out([['♪ E♭ C B', txt + 'color:' + L], ['  S is E♭, C is C, H is B. My name is a melody.', txt + 'color:' + D]]);
     }],
-    game: ['ear game: up or down?', () => { streak = 0; cq = null; round(); }],
-    chord: ['ear game: name that chord', () => { cstreak = 0; pair = null; chordRound(); }],
+    chord: ['ear game: name that chord', () => { cstreak = 0; chordRound(); }],
   };
 
   /* ---------- sound ---------- */
@@ -73,34 +72,6 @@
     } catch (e) { /* no audio */ }
   }
 
-  /* ---------- game: two notes, did it go up or down? ---------- */
-  // The gap starts at a fifth and shrinks to a semitone as the streak grows.
-  let streak = 0, pair = null;
-  const RANKS = ['warming up', 'decent ears', 'nice ears', 'basically a tuner', 'perfect pitch'];
-  function round() {
-    const semis = Math.max(1, 7 - Math.floor(streak / 2));
-    const base = 220 * Math.pow(2, Math.floor(Math.random() * 13) / 12);
-    const dir = Math.random() < 0.5 ? 1 : -1;
-    pair = { a: base, b: base * Math.pow(2, dir * semis / 12), dir };
-    tones([pair.a, pair.b], 0.6);
-    out([['♪ ♪  ', txt + 'color:' + B], ['Round ' + (streak + 1) + '. Did the second note go ', txt],
-         ['up()', txt + 'color:' + L], [' or ', txt], ['down()', txt + 'color:' + L], ['?', txt],
-         ['  again() to replay', txt + 'color:' + D]]);
-  }
-  function answer(dir) {
-    if (!pair) return out([['Type ', txt + 'color:' + D], ['game()', txt + 'color:' + L], [' to start.', txt + 'color:' + D]]);
-    if (dir === pair.dir) {
-      streak++; pair = null;
-      out([['✓ yes', txt + 'color:' + L], ['  streak ' + streak, txt + 'color:' + D]]);
-      setTimeout(round, 700);
-    } else {
-      const rank = RANKS[Math.min(RANKS.length - 1, Math.floor(streak / 3))];
-      pair = null;
-      tones([196, 185], 0.25);
-      out([['✗ nope', txt + 'color:' + R], ['  streak ' + streak + ': ' + rank + '. ', txt + 'color:' + D],
-           ['game()', txt + 'color:' + L], [' to go again.', txt + 'color:' + D]]);
-    }
-  }
   /* ---------- chord game: a reference C, then a chord, pick one of four ---------- */
   // Options are two roots x major/minor. Major vs minor is the easy half; the
   // two roots start a tritone apart and move closer as the streak grows.
@@ -146,9 +117,7 @@
   }
 
   const extra = {
-    up: () => answer(1),
-    down: () => answer(-1),
-    again: () => cq ? playChord() : pair ? tones([pair.a, pair.b], 0.6) : answer(0),
+    again: () => cq ? playChord() : pick(0), // no round yet: pick() says how to start
     a: () => pick(0), b: () => pick(1), c: () => pick(2), d: () => pick(3),
   };
 
