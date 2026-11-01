@@ -112,9 +112,25 @@
     const local = y - S.stageTop;
     const sf = cl(local / P_, 0, nS - 0.001);
     setScene(Math.floor(sf));
-    if (idx === 0) scenes[0].el.classList.toggle('on', S.stageTop - y < S.H * 0.3);
+    // The first scene's content rises in with the scroll itself (not on a timer), so a
+    // fast swipe or scrolling back up never shows an empty panel or a pop.
+    const s0 = scenes[0], arrive = S.stageTop - y;
+    if (!s0.txt) { s0.txt = s0.el.querySelector('.txt'); s0.vis = s0.el.querySelector('.vis'); }
+    if (idx === 0 && arrive > 0) {
+      const k = ease(cl(1 - arrive / (S.H * 0.5), 0, 1));
+      s0.txt.style.cssText = 'transition:none;opacity:' + k.toFixed(3) + ';transform:translateY(' + ((1 - k) * 40).toFixed(1) + 'px)';
+      s0.vis.style.transition = 'none';
+      s0.vis.style.opacity = k.toFixed(3);
+      s0.vis.style.transform = 'translateY(' + ((1 - k) * 70).toFixed(1) + 'px) scale(' + (0.96 + k * 0.04).toFixed(4) + ')';
+      s0.scrubbed = true;
+    } else if (s0.scrubbed) {
+      s0.scrubbed = false;
+      s0.txt.style.cssText = '';
+      s0.vis.style.transition = s0.vis.style.opacity = s0.vis.style.transform = '';
+    }
     const sub = sf - idx;
-    scenes[idx].el.querySelector('.vis').style.setProperty('--par', (cl(sub, 0, 1) * -24).toFixed(1) + 'px');
+    // parallax: the preview drifts as you scroll a scene (down on phones, away from the text)
+    scenes[idx].el.querySelector('.vis').style.setProperty('--par', (cl(sub, 0, 1) * (S.mobile ? 18 : -24)).toFixed(1) + 'px');
     const stageScreenTop = S.stageTop - y;
 
     // td: 0 = big staff across the bottom, 1 = docked (after the scenes).

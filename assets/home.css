@@ -170,8 +170,6 @@ main { position: relative; z-index: 1; }
 @media (max-width: 719px) {
   /* leaving a scene, the preview moves with the text instead of catching up with it */
   .scene.past .vis { transform: translateY(-40px) scale(.96); }
-  /* no scroll drift on phones: it pulls the preview up into the text */
-  .scene.on .vis { transform: none; }
   .scene { display: flex; flex-direction: column; gap: 32px; padding: calc(var(--hdr) + 14px) 20px 24px; }
   .scene .txt, .scene .vis { position: relative; left: auto; right: auto; top: auto; width: auto; }
   .scene .vis, .scene .vis.wide { height: auto; aspect-ratio: 16 / 10; max-height: none; flex: none; }
