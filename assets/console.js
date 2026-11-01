@@ -49,7 +49,8 @@
       tones([311.13, 261.63, 246.94]);
       out([['♪ E♭ C B', txt + 'color:' + L], ['  S is E♭, C is C, H is B. My name is a melody.', txt + 'color:' + D]]);
     }],
-    game: ['a tiny ear game', () => { streak = 0; round(); }],
+    game: ['ear game: up or down?', () => { streak = 0; cq = null; round(); }],
+    chord: ['ear game: name that chord', () => { cstreak = 0; pair = null; chordRound(); }],
   };
 
   /* ---------- sound ---------- */
@@ -97,10 +98,55 @@
            ['game()', txt + 'color:' + L], [' to go again.', txt + 'color:' + D]]);
     }
   }
+  /* ---------- chord game: a reference C, then a chord, pick one of four ---------- */
+  // Options are two roots x major/minor. Major vs minor is the easy half; the
+  // two roots start a tritone apart and move closer as the streak grows.
+  const NAMES = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
+  const DIST = [6, 6, 5, 5, 4, 3, 2];
+  const hz = semi => 261.63 * Math.pow(2, semi / 12);
+  const chordName = o => NAMES[o.root] + (o.minor ? ' minor' : ' major');
+  let cstreak = 0, cq = null;
+  function playChord() {
+    const { root, minor } = cq.answer, n = [root, root + (minor ? 3 : 4), root + 7].map(hz);
+    tones([hz(0)]);                                                    // reference C
+    setTimeout(() => { tones(n, 0.2); setTimeout(() => tones(n, 0), 750); }, 1000); // arpeggio, then together
+  }
+  function chordRound() {
+    const d = DIST[Math.min(DIST.length - 1, cstreak)];
+    let r1, r2;
+    do { // neither root is C itself, so the reference never gives it away
+      r1 = 1 + Math.floor(Math.random() * 11);
+      r2 = (r1 + (Math.random() < 0.5 ? d : -d) + 12) % 12;
+    } while (r2 === 0);
+    const opts = [r1, r2].flatMap(root => [{ root, minor: false }, { root, minor: true }])
+      .sort(() => Math.random() - 0.5);
+    cq = { opts, answer: opts[Math.floor(Math.random() * 4)] };
+    playChord();
+    out([['♪ C … ♫  ', txt + 'color:' + B], ['Round ' + (cstreak + 1) + '. A C for reference, then a chord. Which one?', txt]]);
+    opts.forEach((o, i) => out([['  ' + 'abcd'[i] + '()  ', txt + 'color:' + L], [chordName(o), txt]]));
+    out([['  again() to replay', txt + 'color:' + D]]);
+  }
+  function pick(i) {
+    if (!cq) return out([['Type ', txt + 'color:' + D], ['chord()', txt + 'color:' + L], [' to start.', txt + 'color:' + D]]);
+    const ans = cq.answer, got = cq.opts[i];
+    cq = null;
+    if (got === ans) {
+      cstreak++;
+      out([['✓ ' + chordName(ans), txt + 'color:' + L], ['  streak ' + cstreak, txt + 'color:' + D]]);
+      setTimeout(chordRound, 900);
+    } else {
+      const why = got.root === ans.root ? 'right root, wrong mood' : got.minor === ans.minor ? 'right mood, wrong root' : 'both off';
+      tones([196, 185], 0.25);
+      out([['✗ it was ' + chordName(ans), txt + 'color:#FF6B6B'], ['  ' + why + ', streak ' + cstreak + '. ', txt + 'color:' + D],
+           ['chord()', txt + 'color:' + L], [' to go again.', txt + 'color:' + D]]);
+    }
+  }
+
   const extra = {
     up: () => answer(1),
     down: () => answer(-1),
-    again: () => pair ? tones([pair.a, pair.b], 0.6) : answer(0),
+    again: () => cq ? playChord() : pair ? tones([pair.a, pair.b], 0.6) : answer(0),
+    a: () => pick(0), b: () => pick(1), c: () => pick(2), d: () => pick(3),
   };
 
   Object.entries(cmds).forEach(([k, [, fn]]) => {
