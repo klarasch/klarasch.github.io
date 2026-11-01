@@ -18,11 +18,15 @@
   const nS = scenes.length;
 
   /* ---------- measurements ---------- */
-  const S = { W: 1440, H: 900, docH: 8000, stageTop: 900, tops: {}, mobile: false, pad: 80 };
+  const S = { W: 1440, H: 900, docH: 8000, stageTop: 900, tops: {}, mobile: false, short: false, pad: 80 };
   function measure() {
     S.W = innerWidth;
     S.H = Math.min(innerHeight, 1000);
-    S.mobile = S.W < 720;
+    // short: landscape phones and squat windows. No room for the big staff, so it
+    // stays docked in the top bar and the scenes get a compact side-by-side layout.
+    S.short = innerHeight < 560 && innerWidth > innerHeight;
+    S.mobile = S.W < 720 && !S.short;
+    root.classList.toggle('short', S.short);
     S.pad = S.mobile ? 20 : Math.round(Math.min(80, S.W * 0.05));
     root.style.setProperty('--H', S.H + 'px');
     $('stage').style.height = Math.round(nS * S.H * 0.95 + $('stageInner').offsetHeight) + 'px';
@@ -117,23 +121,24 @@
     // Desktop docks into the nav; phones dock in a strip below the header,
     // because between the name and the key there is no room.
     const td = ease(cl((local - stageLen + H * 0.15) / (H * 0.5), 0, 1));
+    const tg = S.short ? 1 : td;
 
-    const navH = mobile ? lerp(64, 52, td) : lerp(84, 64, td);
+    const navH = mobile ? lerp(64, 52, tg) : lerp(84, 64, tg);
     let top, gap, nL, nR, lineL, lineR;
     if (mobile) {
       const dGap = 4.5, dTop = navH + 6;
       // higher on the hero so all five lines clear the first scene's colour; back down once the scenes take over
       const hero = ease(cl(y / (S.stageTop * 0.8), 0, 1));
-      top = lerp(H * lerp(0.78, 0.84, hero), dTop, td); gap = lerp(H * 0.026, dGap, td);
-      nL = lerp(pad + 6, pad + 10, td); nR = lerp(W - pad - 6, W - pad - 10, td);
-      lineL = lerp(0, pad, td); lineR = lerp(W, W - pad, td);
+      top = lerp(H * lerp(0.78, 0.84, hero), dTop, tg); gap = lerp(H * 0.026, dGap, tg);
+      nL = lerp(pad + 6, pad + 10, tg); nR = lerp(W - pad - 6, W - pad - 10, tg);
+      lineL = lerp(0, pad, tg); lineR = lerp(W, W - pad, tg);
     } else {
       const dGap = 5, dTop = navH / 2 - 2 * dGap, dL = 260, dR = W - pad - 220;
-      top = lerp(H * 0.66, dTop, td); gap = lerp(H * 0.055, dGap, td);
-      nL = lerp(pad, dL, td); nR = lerp(W - pad, dR, td);
-      lineL = lerp(0, dL - 14, td); lineR = lerp(W, dR + 14, td);
+      top = lerp(H * 0.66, dTop, tg); gap = lerp(H * 0.055, dGap, tg);
+      nL = lerp(pad, dL, tg); nR = lerp(W - pad, dR, tg);
+      lineL = lerp(0, dL - 14, tg); lineR = lerp(W, dR + 14, tg);
     }
-    const big = td < 0.05;
+    const big = tg < 0.05;
 
     // The staff takes the colours of whatever sits under each part of it: as the first
     // scene slides up, its edge wipes across the staff and recolours it line by line.
@@ -158,8 +163,8 @@
 
     $('navName').textContent = mobile && td > 0.5 && W < 400 ? 'K. S.' : 'Klára Scholleová';
     const links = $('navLinks');
-    links.style.opacity = cl(1 - td * 2.2, 0, 1).toFixed(2);
-    links.style.pointerEvents = td > 0.4 ? 'none' : 'auto';
+    links.style.opacity = cl(1 - tg * 2.2, 0, 1).toFixed(2);
+    links.style.pointerEvents = tg > 0.4 ? 'none' : 'auto';
     const hc = $('heroCtas').getBoundingClientRect(), fh = $('footHello').getBoundingClientRect();
     $('navHello').classList.toggle('off', hc.bottom > navH || fh.top < innerHeight);
 
@@ -206,16 +211,16 @@
     const fr = NOTES.map((n, i) => i === 0 ? 0 : cl((n[3]() + (i > nS ? S.H * 0.15 - S.H * 0.4 : 0)) / S.docH, 0, 1));
     let active = 0;
     fr.forEach((f, i) => { if (f <= prog + 0.003) active = i; });
-    const P = mobile ? lerp(3, 1, td) : lerp(4, 1.2, td);
+    const P = mobile ? lerp(3, 1, tg) : lerp(4, 1.2, tg);
     NOTES.forEach((n, i) => {
       const np = palAt(top + n[2] * gap), isA = i === active, lime = n[1] === L;
       const e = noteEls[i], c = n[1] === np.bg ? np.fg : n[1];
       const ringCol = np.dark ? '#FFFFFF' : K;
-      const key = [P.toFixed(2), c, isA && td < 0.5, np.dark].join('|');
+      const key = [P.toFixed(2), c, isA && tg < 0.5, np.dark].join('|');
       if (key !== e.key) {
         e.key = key;
         let pts = lime ? sh(RING, ringCol, P).concat(sh(CEN, L, P)) : sh(HEAD, c, P);
-        if (isA && td < 0.5) pts = pts.concat(sh(STEM, lime ? ringCol : c, P));
+        if (isA && tg < 0.5) pts = pts.concat(sh(STEM, lime ? ringCol : c, P));
         e.hd.style.cssText = 'width:' + P.toFixed(2) + 'px;height:' + P.toFixed(2) + 'px;margin-left:' + (-3 * P).toFixed(2) + 'px;margin-top:' + (-2 * P).toFixed(2) + 'px;box-shadow:' + pts.join(',');
       }
       e.hd.style.transform = 'scale(' + (isA ? 1.3 : 1) + ')';
@@ -224,7 +229,7 @@
       e.b.style.top = (top + n[2] * gap - 20).toFixed(1) + 'px';
       if (booted) e.b.style.opacity = 1;
       e.tip.style.color = np.fg;
-      e.tip.style.display = td > 0.5 ? 'none' : 'block';
+      e.tip.style.display = tg > 0.5 ? 'none' : 'block';
       e.b.setAttribute('aria-current', isA ? 'true' : 'false');
     });
 
@@ -236,12 +241,12 @@
     ph.style.top = (top - 6).toFixed(1) + 'px';
     ph.style.height = (gap * 4 + 12).toFixed(1) + 'px';
     ph.style.left = px.toFixed(1) + 'px';
-    ph.style.opacity = local > -H * 0.3 || (mobile && td > 0.5) ? 0.9 : 0;
+    ph.style.opacity = local > -H * 0.3 || ((mobile || S.short) && tg > 0.5) ? 0.9 : 0;
     const tag = $('nowTag');
     tag.textContent = NOTES[active][0];
     tag.style.left = cl(px + 8, 0, W - pad - tag.offsetWidth).toFixed(1) + 'px';
     tag.style.top = (top + gap * 4 + 4).toFixed(1) + 'px';
-    tag.style.opacity = td > 0.6 ? 1 : 0;
+    tag.style.opacity = tg > 0.6 ? 1 : 0;
 
     // hero drift
     const hi = $('heroInner');

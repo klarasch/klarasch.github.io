@@ -168,7 +168,9 @@ main { position: relative; z-index: 1; }
 .screen iframe.scaled { inset: auto; left: 0; top: 0; width: 1280px; height: 800px; transform-origin: 0 0; transform: scale(var(--fit, .5)); }
 
 @media (max-width: 719px) {
-  .scene { display: flex; flex-direction: column; gap: 22px; padding: calc(var(--hdr) + 14px) 20px 24px; }
+  /* leaving a scene, the preview moves with the text instead of catching up with it */
+  .scene.past .vis { transform: translateY(-40px) scale(.96); }
+  .scene { display: flex; flex-direction: column; gap: 32px; padding: calc(var(--hdr) + 14px) 20px 24px; }
   .scene .txt, .scene .vis { position: relative; left: auto; right: auto; top: auto; width: auto; }
   .scene .vis, .scene .vis.wide { height: auto; aspect-ratio: 16 / 10; max-height: none; flex: none; }
   .scene .vis.wide { aspect-ratio: 16 / 9; }
@@ -181,7 +183,7 @@ main { position: relative; z-index: 1; }
 }
 @media (max-width: 719px) {
   /* keep the bottom fifth free for the big staff */
-  .scene { gap: 18px; padding-bottom: calc(var(--H) * .2); }
+  .scene { gap: 28px; padding-bottom: calc(var(--H) * .2); }
 }
 @media (max-width: 719px) and (max-height: 760px) {
   .scene .tags { display: none; }
@@ -245,6 +247,23 @@ a.card:hover { transform: translateY(-4px); box-shadow: 0 24px 50px -30px rgba(0
 #hello .base .l { display: flex; gap: 28px; flex-wrap: wrap; }
 #hello .coda { display: flex; align-items: flex-end; gap: 12px; color: var(--grey-2); }
 #hello .coda svg { width: 34px; height: 42px; fill: var(--ink); shape-rendering: crispEdges; flex: none; }
+
+/* ---------- short (landscape phones, squat windows): staff lives in the top bar ---------- */
+.short #top { height: auto; min-height: calc(var(--H) * .93); }
+.short #heroInner { position: relative; left: auto; right: auto; top: auto; padding: 88px var(--pad) 48px; }
+.short #top h1 { font-size: clamp(28px, 4.2vw, 44px); max-width: 17em; }
+.short #top .lede { margin-top: 14px; font-size: 15.5px; }
+.short #top .ctas { margin-top: 20px; }
+.short .scene { display: block; padding: 0; }
+.short .scene .txt, .short .scene .vis { position: absolute; top: 80px; }
+.short .scene .txt { left: var(--pad); right: auto; width: 46%; }
+.short .scene .vis, .short .scene .vis.wide { right: var(--pad); left: auto; width: 44%; height: auto; aspect-ratio: 16 / 10; max-height: calc(var(--H) - 104px); flex: none; }
+.short .scene h2 { margin-top: 8px; font-size: clamp(20px, 2.9vw, 30px); }
+.short .scene p { margin-top: 10px; font-size: 14px; line-height: 1.45; }
+.short .scene .eyebrow { font-size: 13px; }
+.short .scene .tags { display: none; }
+.short .scene .go { margin-top: 10px; font-size: 14px; }
+.short .scene.past .vis { transform: translateY(-40px) scale(.96); }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
