@@ -1,10 +1,9 @@
 /* Console easter egg: a "Hi" written on the staff, plus a few commands. */
 (() => {
-  // Devtools follows the system theme by default; lime is unreadable on a light console.
-  const dark = matchMedia('(prefers-color-scheme: dark)').matches;
-  const [L, B, G, D, R] = dark
-    ? ['#DCFF3D', '#7D87FF', '#6A7078', '#9AA0A6', '#FF6B6B']
-    : ['#2B3BFF', '#0B0B0B', '#B4B9BF', '#6A7078', '#D93025'];
+  // One palette for light and dark consoles: mid-tones that keep ~4:1 contrast on
+  // both white and dark grey. Body text and the "Hi" set no colour, so they follow
+  // the console's own text colour.
+  const L = '#4C6FFF', B = '#4C6FFF', G = '#8A8F96', D = '#7C8189', R = '#E5484D';
   const mono = 'font-family:ui-monospace,Menlo,Consolas,monospace;';
   const big = mono + 'font-size:13px;line-height:1.15;';
   const txt = mono + 'font-size:12px;line-height:1.5;';
@@ -20,7 +19,7 @@
     if (i) segs.push(['\n', big]);
     segs.push(['──', big + 'color:' + G]);
     // letters sit on the staff: gaps inside them are staff line, not blank
-    for (const ch of row) segs.push(ch === '█' ? ['█', big + 'color:' + L] : ['─', big + 'color:' + G]);
+    for (const ch of row) segs.push(ch === '█' ? ['█', big] : ['─', big + 'color:' + G]);
     segs.push([notes[i] ? '─'.repeat(15) + ' ' : '─'.repeat(22), big + 'color:' + G]);
     if (notes[i]) segs.push([notes[i], big + 'color:' + B]);
   });
