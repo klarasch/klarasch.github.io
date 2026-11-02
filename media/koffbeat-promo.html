@@ -483,23 +483,28 @@
 
   /* ======================= clock ======================= */
   const still = matchMedia("(prefers-reduced-motion: reduce)");
-  let playing = true, last = performance.now(), t = 0, visible = true;
+  // On the homepage the film is told when its scene is on screen ({promo: "show" | "hide"});
+  // until then, and whenever nothing moves, a frame costs nothing.
+  let playing = true, last = performance.now(), t = 0, visible = true, shown = window.parent === window, drawn = NaN;
+  addEventListener("message", (e) => { if (e.origin === location.origin && e.data && e.data.promo) shown = e.data.promo === "show"; });
   const settle = (to, secs = 3) => { for (let s = Math.max(0, to - secs); s < to; s += 1 / 60) step(s, 1 / 60); };
   const tick = (now) => {
-    const dt = Math.min(.05, (now - last) / 1000); last = now;
-    if (playing && visible && !document.hidden && !still.matches) { t = (t + dt) % T; step(t, dt); }
-    render(t);
     requestAnimationFrame(tick);
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (playing && shown && visible && !document.hidden && !still.matches) { t = (t + dt) % T; step(t, dt); }
+    if (t === drawn) return;
+    drawn = t;
+    render(t);
   };
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(document.getElementById("frame"));
   // ?t=7.9 freezes a frame (handy for a poster image)
   const fixed = parseFloat(new URLSearchParams(location.search).get("t"));
   if (!isNaN(fixed)) { t = fixed; playing = false; }
   if (still.matches) { t = b(17.2); playing = false; }
-  window.promo = { seek: (x) => { t = x; settle(x); playing = false; }, play: () => { playing = true; }, render };
+  window.promo = { seek: (x) => { t = x; settle(x); playing = false; drawn = NaN; }, play: () => { playing = true; }, render };
 
   const start = () => { fit(); settle(t, playing ? 2 : 4); requestAnimationFrame(tick); };
-  addEventListener("resize", fit);
+  addEventListener("resize", () => { fit(); drawn = NaN; });
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(start);
 })();
 </script>
