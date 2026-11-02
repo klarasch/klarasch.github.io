@@ -104,6 +104,8 @@
   .tb-btn.primary { background: var(--tb-accent); color: var(--tb-accent-fg); }
   .tb-count { font: 500 13px/1 "JetBrains Mono", ui-monospace, monospace; min-width: 66px; justify-content: center; color: rgba(246, 245, 243, .7); }
   .tb-sep { width: 1px; height: 20px; background: rgba(255, 255, 255, .12); margin: 0 5px; }
+  /* iOS: no live blur behind the bar (it has to re-blur the moving 3D deck every frame) */
+  .ios .toolbar { background: rgba(16, 16, 20, .94); backdrop-filter: none; -webkit-backdrop-filter: none; }
   .icon { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
   /* ---------- cursor ---------- */
@@ -150,6 +152,9 @@
 
 <script>
 (() => {
+  // iPhone and iPad (iPadOS reports itself as a Mac with touch)
+  const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (IOS) document.documentElement.classList.add("ios");
   /* ======================= themes (themes/*.css) ======================= */
   const THEMES = [
     { f: "sl",   app: "#e9e6df", bg: "#fbfaf7", fg: "#131318", muted: "rgba(19,19,24,.6)",     faint: "rgba(19,19,24,.14)",    surface: "#f2efe8", accent: "#3a2fd6", accent2: "#d93a1f", accentFg: "#fbfaf7", em: "#d93a1f" }, // slaydy (the site)
@@ -324,7 +329,7 @@
   const editMix = track([[0, 0], [14, 0], [14.75, 1]], io3);
   let FX = {};                  // bar-local x of each focus target, measured after layout
   const fxKeys = [[0, "c"], [5.5, "c"], [6.75, "btn-ov"], [9, "btn-ov"], [9.75, "btn-theme"], [12, "btn-theme"], [12.75, "btn-edit"], [13.5, "btn-edit"], [14.75, "c"]];
-  const fx = (t) => track(fxKeys.map(([k, v]) => [k, FX[v]]))(t);
+  let fx = () => 0;             // rebuilt once the bar is measured, not every frame
 
   // cursor: segments [from beat, to beat, from, to] between live-resolved targets
   const C = [
@@ -364,6 +369,7 @@
     const w = barView.offsetWidth;
     FX = { c: 0 };
     for (const id of ["btn-ov", "btn-theme", "btn-edit"]) { const el = $(id); FX[id] = el.offsetLeft + el.offsetWidth / 2 - w / 2; }
+    fx = track(fxKeys.map(([k, v]) => [k, FX[v]]));
   };
   const resolve = (spec) => {
     if (!spec.el) return spec;
@@ -373,27 +379,52 @@
   };
   const set = (el, prop, v) => { if (el.style[prop] !== v) el.style[prop] = v; };
 
+  const lastP = slides.map(() => NaN);
+  let lastG = NaN, gTh = mixTheme(0);
+
   function render(t) {
-    // deck camera; the blur filter only exists while the deck is out of focus
-    plane.style.transform = `translate(640px, ${360 + cam.ty(t)}px) rotateX(${cam.rx(t)}deg) scale(${cam.s(t)}) translate(${-cam.cx(t)}px, ${-cam.cy(t)}px)`;
-    const bl = cam.blur(t);
+    // cursor targets are read first, from the last frame's layout, so reading never forces a reflow
+    let seg = null;
+    for (const c of C) { if (t >= c[0]) seg = c; }
+    let pos;
+    if (seg) {
+      const i = C.indexOf(seg);
+      const from = seg[2] || C[i - 1][3];
+      const f = io3(clamp((t - seg[0]) / (seg[1] - seg[0])));
+      const p0 = resolve(from), p1 = resolve(seg[3]);
+      pos = { x: lerp(p0.x, p1.x, f), y: lerp(p0.y, p1.y, f) };
+    } else pos = resolve(C[0][2]);
+
+    // deck camera; the blur filter only exists while the deck is out of focus.
+    // iOS skips the blur: re-blurring the whole 3D deck each frame is what runs Safari out of memory.
+    set(plane, "transform", `translate(640px, ${(360 + cam.ty(t)).toFixed(2)}px) rotateX(${cam.rx(t).toFixed(3)}deg) scale(${cam.s(t).toFixed(5)}) translate(${(-cam.cx(t)).toFixed(2)}px, ${(-cam.cy(t)).toFixed(2)}px)`);
+    const bl = IOS ? 0 : cam.blur(t);
     set(deckwrap, "filter", bl > .02 ? `blur(${bl.toFixed(2)}px)` : "none");
     set(dimmer, "opacity", cam.dim(t).toFixed(3));
 
     // themes, slide by slide (colour only: no per-slide transforms while the wave runs)
     const sib = siblings(t);
     slides.forEach((el, i) => {
-      const p = themeAt(t, +el.dataset.d);
-      applyTheme(el, mixTheme(p));
-      const f = FONT[Math.round(p) % FONT.length];
-      if (el.dataset.f !== f) el.dataset.f = f;
+      // nine custom properties restyle the whole slide, so only when its colour moved
+      const p = +themeAt(t, +el.dataset.d).toFixed(4);
+      if (p !== lastP[i]) {
+        lastP[i] = p;
+        applyTheme(el, mixTheme(p));
+        const f = FONT[Math.round(p) % FONT.length];
+        if (el.dataset.f !== f) el.dataset.f = f;
+      }
       if (i === HERO) return;
       set(el, "opacity", sib.toFixed(3));
       set(el, "transform", `scale(${lerp(.9, 1, sib).toFixed(4)})`);
     });
-    const gTh = mixTheme(themeAt(t, 2.5));
-    stage.style.background = gTh.app;
-    document.body.style.background = gTh.app;
+    const g = +themeAt(t, 2.5).toFixed(4);
+    if (g !== lastG) {
+      lastG = g; gTh = mixTheme(g);
+      stage.style.background = gTh.app;
+      document.body.style.background = gTh.app;
+      barcam.style.setProperty("--tb-accent", gTh.accent);
+      barcam.style.setProperty("--tb-accent-fg", gTh.accentFg);
+    }
     // overview marks the current slide with an accent outline (outside the slide's clip)
     set(hero, "outline", `12px solid color-mix(in srgb, var(--accent) ${(ring(t) * 100).toFixed(1)}%, transparent)`);
 
@@ -407,20 +438,19 @@
     // the rewrite
     const wt = wordAt(t);
     if (word.textContent !== wt) word.textContent = wt;
-    word.style.setProperty("--sel", selPct(t).toFixed(1) + "%");
+    const sp = selPct(t).toFixed(1) + "%";
+    if (word._sel !== sp) { word._sel = sp; word.style.setProperty("--sel", sp); }
     set($("sel"), "opacity", boxO(t).toFixed(3));
     set($("caret"), "opacity", caretOn(t) ? "1" : "0");
 
     // toolbar
     const bscale = bs(t);
-    barcam.style.transform = `translate(${-fx(t) * bscale}px, ${by(t)}px) scale(${bscale})`;
-    barcam.style.opacity = bo(t);
+    set(barcam, "transform", `translate(${(-fx(t) * bscale).toFixed(2)}px, ${by(t).toFixed(2)}px) scale(${bscale.toFixed(4)})`);
+    set(barcam, "opacity", bo(t).toFixed(3));
     const em = editMix(t);
-    barView.style.opacity = 1 - em; barEdit.style.opacity = em;
-    barView.style.transform = `translate(-50%,-50%) scale(${1 - em * .04})`;
-    barEdit.style.transform = `translate(-50%,-50%) scale(${.96 + em * .04})`;
-    barcam.style.setProperty("--tb-accent", gTh.accent);
-    barcam.style.setProperty("--tb-accent-fg", gTh.accentFg);
+    set(barView, "opacity", (1 - em).toFixed(3)); set(barEdit, "opacity", em.toFixed(3));
+    set(barView, "transform", `translate(-50%, -50%) scale(${(1 - em * .04).toFixed(4)})`);
+    set(barEdit, "transform", `translate(-50%, -50%) scale(${(.96 + em * .04).toFixed(4)})`);
     $("btn-ov").classList.toggle("is-on", t > CLICK.ov && t < b(13.5));
     $("btn-theme").classList.toggle("is-on", (t > CLICK.th1 && t < CLICK.th1 + BEAT / 2) || (t > CLICK.th2 && t < CLICK.th2 + BEAT / 2));
     $("btn-edit").classList.toggle("primary", t > CLICK.edit);
@@ -430,36 +460,32 @@
       set($(id), "transform", `scale(${(1 - .07 * pr).toFixed(4)})`);
     }
 
-    // cursor
-    let seg = null;
-    for (const c of C) { if (t >= c[0]) seg = c; }
-    let pos;
-    if (seg) {
-      const i = C.indexOf(seg);
-      const from = seg[2] || C[i - 1][3];
-      const f = io3(clamp((t - seg[0]) / (seg[1] - seg[0])));
-      const p0 = resolve(from), p1 = resolve(seg[3]);
-      pos = { x: lerp(p0.x, p1.x, f), y: lerp(p0.y, p1.y, f) };
-    } else pos = resolve(C[0][2]);
-    cursor.style.transform = `translate(${pos.x.toFixed(2)}px, ${pos.y.toFixed(2)}px)`;
-    cursor.style.opacity = co(t);
+    // cursor (position resolved at the top)
+    set(cursor, "transform", `translate(${pos.x.toFixed(2)}px, ${pos.y.toFixed(2)}px)`);
+    set(cursor, "opacity", co(t).toFixed(3));
     let press = 0, rip = -1;
     for (const at of pressT) { press = Math.max(press, pulse(t, at - .06, .22)); if (t >= at && t < at + .6) rip = (t - at) / .6; }
     const ib = ibeam(t), sz = (1 - .14 * press) * csz(t);
     set(arrow, "display", ib ? "none" : "block"); set(beam, "display", ib ? "block" : "none");
-    (ib ? beam : arrow).style.transform = `scale(${sz.toFixed(4)})`;
-    ripple.style.opacity = rip < 0 ? 0 : (.55 * (1 - rip)).toFixed(3);
-    ripple.style.transform = `scale(${rip < 0 ? .3 : lerp(.3, 1.4, out(rip))})`;
+    set(ib ? beam : arrow, "transform", `scale(${sz.toFixed(4)})`);
+    set(ripple, "opacity", rip < 0 ? "0" : (.55 * (1 - rip)).toFixed(3));
+    set(ripple, "transform", `scale(${(rip < 0 ? .3 : lerp(.3, 1.4, out(rip))).toFixed(4)})`);
   }
 
   /* ======================= clock ======================= */
   const still = matchMedia("(prefers-reduced-motion: reduce)");
-  let playing = true, last = performance.now(), t = 0, visible = true;
+  // On the homepage the film is told when its scene is on screen ({promo: "show" | "hide"});
+  // until then, and whenever nothing moves, a frame costs nothing.
+  let playing = true, last = performance.now(), t = 0, visible = true, shown = window.parent === window, drawn = NaN;
+  addEventListener("message", (e) => { if (e.origin === location.origin && e.data && e.data.promo) shown = e.data.promo === "show"; });
   const tick = (now) => {
-    const dt = Math.min(.05, (now - last) / 1000); last = now;
-    if (playing && visible && !document.hidden && !still.matches) t = (t + dt) % T;
-    render(still.matches ? b(3.5) : t);
     requestAnimationFrame(tick);
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (playing && shown && visible && !document.hidden && !still.matches) t = (t + dt) % T;
+    const at = still.matches ? b(3.5) : t;
+    if (at === drawn) return;
+    drawn = at;
+    render(at);
   };
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(frame);
   // ?t=7.9 freezes a frame (handy for a poster image)
@@ -468,7 +494,7 @@
   window.promo = { seek: (x) => { t = x; playing = false; }, play: () => { playing = true; }, render };
 
   const start = () => { fit(); measure(); requestAnimationFrame(tick); };
-  addEventListener("resize", fit);
+  addEventListener("resize", () => { fit(); drawn = NaN; });
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(start);
 })();
 </script>

@@ -518,12 +518,18 @@
 
   /* ======================= clock ======================= */
   const still = matchMedia("(prefers-reduced-motion: reduce)");
-  let playing = true, last = performance.now(), t = 0, visible = true;
+  // On the homepage the film is told when its scene is on screen ({promo: "show" | "hide"});
+  // until then, and whenever nothing moves, a frame costs nothing.
+  let playing = true, last = performance.now(), t = 0, visible = true, shown = window.parent === window, drawn = NaN;
+  addEventListener("message", (e) => { if (e.origin === location.origin && e.data && e.data.promo) shown = e.data.promo === "show"; });
   const tick = (now) => {
-    const dt = Math.min(.05, (now - last) / 1000); last = now;
-    if (playing && visible && !document.hidden && !still.matches) t = (t + dt) % T;
-    render(still.matches ? b(3.6) : t);
     requestAnimationFrame(tick);
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (playing && shown && visible && !document.hidden && !still.matches) t = (t + dt) % T;
+    const at = still.matches ? b(3.6) : t;
+    if (at === drawn) return;
+    drawn = at;
+    render(at);
   };
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(frame);
   // ?t=7.9 freezes a frame (handy for a poster image)
@@ -532,7 +538,7 @@
   window.promo = { seek: (x) => { t = x; playing = false; }, play: () => { playing = true; }, render };
 
   const start = () => { fit(); requestAnimationFrame(tick); };
-  addEventListener("resize", fit);
+  addEventListener("resize", () => { fit(); drawn = NaN; });
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(start);
 })();
 </script>

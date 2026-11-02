@@ -94,9 +94,9 @@ a { color: inherit; text-decoration: none; }
 #staffTilt { position: absolute; inset: 0; transform-origin: 50% 70%; }
 #staff svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 #staff path { fill: none; stroke-width: 1.2; }
-#playhead { position: absolute; width: 1.5px; transition: opacity .4s; }
-#nowTag { position: absolute; font-family: var(--pix); font-size: 12px; white-space: nowrap; color: var(--blue); transition: opacity .3s; }
-.nt { position: absolute; padding: 0; border: 0; background: transparent; cursor: pointer; width: 40px; height: 40px; pointer-events: auto; opacity: 0; transition: opacity .5s ease; -webkit-tap-highlight-color: transparent; }
+#playhead { position: absolute; left: 0; top: 0; width: 1.5px; transition: opacity .4s; }
+#nowTag { position: absolute; left: 0; top: 0; font-family: var(--pix); font-size: 12px; white-space: nowrap; color: var(--blue); transition: opacity .3s; }
+.nt { position: absolute; left: 0; top: 0; padding: 0; border: 0; background: transparent; cursor: pointer; width: 40px; height: 40px; pointer-events: auto; opacity: 0; transition: opacity .5s ease; -webkit-tap-highlight-color: transparent; }
 .nt .hd { position: absolute; left: 50%; top: 50%; transition: transform .3s cubic-bezier(.3, 1.7, .5, 1); }
 .nt:hover .hd, .nt:focus-visible .hd { transform: scale(1.35) !important; }
 .nt .tip { position: absolute; left: 34px; top: 50%; transform: translateY(-50%); white-space: nowrap; font-family: var(--pix); font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; }
@@ -109,7 +109,7 @@ main { position: relative; z-index: 1; }
 
 /* ---------- hero ---------- */
 #top { position: relative; height: calc(var(--H) * .93); }
-#heroInner { position: absolute; left: var(--pad); right: var(--pad); top: calc(84px + var(--H) * .05); }
+#heroInner { position: absolute; left: var(--pad); right: var(--pad); top: calc(84px + var(--H) * .05); will-change: transform, opacity; }
 #top h1 { margin: 0; font-size: clamp(34px, min(5vw, calc(var(--H) * .08)), 76px); line-height: 1.02; letter-spacing: -.04em; font-weight: 600; max-width: 13em; }
 .hl { font-family: var(--pix); font-weight: 400; font-size: .9em; letter-spacing: -.04em; -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 .14em; margin: 0 .04em; }
 .hl.b { background: var(--blue); color: #fff; }
