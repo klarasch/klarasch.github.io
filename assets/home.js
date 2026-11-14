@@ -93,7 +93,15 @@
     meta.setAttribute('content', c);
     root.style.backgroundColor = c;
     document.body.style.backgroundColor = c;
-    $('navbg').style.backgroundColor = c === M ? 'rgba(246, 247, 249, .84)' : c;
+    const nb = $('navbg');
+    nb.style.backgroundColor = c === M ? 'rgba(246, 247, 249, .84)' : c;
+    // pinning or unpinning snaps the colour: fading from the frosted white to the scene's colour
+    // left a pale band under Safari's toolbar. Scene to scene changes still fade with the stage.
+    if (nb._solidAt !== nb._solid) {
+      nb._solidAt = nb._solid;
+      nb.style.transition = 'none';
+      requestAnimationFrame(() => { nb.style.transition = ''; });
+    }
   }
   // The films share the page's main thread and memory (iOS Safari kills the tab when it runs out),
   // so a film only plays while its scene is on, and is unloaded once its scene is two away.
@@ -270,6 +278,8 @@
         e.key = key;
         let pts = lime ? sh(RING, ringCol, P).concat(sh(CEN, L, P)) : sh(HEAD, c, P);
         if (isA && tg < 0.5) pts = pts.concat(sh(STEM, lime ? ringCol : c, P));
+        // the label clears the head even at its hover size (scale 1.35)
+        e.gap = (3 * P * 1.4 + 8).toFixed(1);
         e.hd.style.cssText = 'width:' + P.toFixed(2) + 'px;height:' + P.toFixed(2) + 'px;margin-left:' + (-3 * P).toFixed(2) + 'px;margin-top:' + (-2 * P).toFixed(2) + 'px;box-shadow:' + pts.join(',');
       }
       put(e.hd, 'transform', isA ? 'scale(1.3)' : 'scale(1)');
@@ -278,6 +288,10 @@
       put(e.b, 'transform', 'translate(' + (x - 20).toFixed(1) + 'px,' + (top + n[2] * gap - 20).toFixed(1) + 'px)');
       if (booted) put(e.b, 'opacity', '1');
       put(e.tip, 'color', np.fg);
+      // near the right edge the label sits to the left of the note instead of running off screen
+      const flip = x > W - 130;
+      put(e.tip, 'left', flip ? 'auto' : (20 + +e.gap) + 'px');
+      put(e.tip, 'right', flip ? (20 + +e.gap) + 'px' : 'auto');
       put(e.tip, 'display', tg > 0.5 ? 'none' : 'block');
       att(e.b, 'aria-current', isA ? 'true' : 'false');
     });
