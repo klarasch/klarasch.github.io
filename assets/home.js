@@ -410,3 +410,6 @@
   // reduced motion: keep the console video on its first frame
   if (reduce) document.querySelectorAll('.screen video').forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
 })();
+
+// copy-edit mode: only when the address ends in ?edit
+if (/[?&]edit\b/.test(location.search)) { const s = document.createElement('script'); s.src = 'assets/edit.js'; document.body.appendChild(s); }
