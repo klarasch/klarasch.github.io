@@ -34,8 +34,21 @@
   <div class="right">
     <div class="links" id="navLinks"><a class="lnk" href="#stage">Work</a><a class="lnk" href="#before">Before</a><a class="lnk" href="#how">How I work</a></div>
     <a class="key sm off" id="navHello" data-sent href="https://www.linkedin.com/in/klara-scholleova/" target="_blank" rel="noopener">Say hello ↵</a>
+    <button class="key ic" id="navMenu" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
+
+<!-- phones: the links live behind a keycap -->
+<div id="menu" aria-label="Menu" hidden>
+  <nav class="list" aria-label="Sections">
+    <a href="#stage"><span class="num">01</span>Work</a>
+    <a href="#before"><span class="num">02</span>Before</a>
+    <a href="#how"><span class="num">03</span>How I work</a>
+    <a href="#elsewhere"><span class="num">04</span>Elsewhere</a>
+  </nav>
+  <a class="key lg" data-sent href="https://www.linkedin.com/in/klara-scholleova/" target="_blank" rel="noopener">Say hello ↵</a>
+  <div class="base"><a class="lnk" href="mailto:klara@ksch.cz">klara@ksch.cz</a><a class="lnk" href="https://github.com/klarasch" target="_blank" rel="noopener">GitHub</a></div>
+</div>
 
 <!-- The page as a score: five lines, one note per section, a playhead for scroll. -->
 <div id="staff" role="navigation" aria-label="Page score">

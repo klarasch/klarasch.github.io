@@ -215,7 +215,7 @@
     put(navbg, 'opacity', td > 0.5 || pinned ? '1' : '0');
     if (navbg._solid !== pinned) { navbg._solid = pinned; navbg.classList.toggle('solid', pinned); }
     put(navbg, 'height', (mobile && !pinned ? navH + 6 + gap * 4 + 26 : navH).toFixed(1) + 'px');
-    setTopColour(pinned ? sc.bg : M);
+    setTopColour(pinned && !menuOpen ? sc.bg : M);
 
     const nm = mobile && td > 0.5 && W < 400 ? 'K. S.' : 'Klára Scholleová';
     if (el.navName._t !== nm) { el.navName._t = nm; el.navName.textContent = nm; }
@@ -323,6 +323,31 @@
       el.bg.style.background = 'radial-gradient(120% 90% at ' + (25 + prog * 50).toFixed(1) + '% ' + (10 + prog * 80).toFixed(1) + '%, #FFFFFF 0%, rgba(255,255,255,0.6) 35%, rgba(246,247,249,0) 70%), linear-gradient(180deg, #F6F7F9 0%, #EEF1F5 100%)';
     }
   }
+
+  /* ---------- phone menu ---------- */
+  let menuOpen = false;
+  const menu = $('menu'), menuBtn = $('navMenu');
+  function setMenu(open) {
+    if (open === menuOpen) return;
+    menuOpen = open;
+    root.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', open);
+    menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Menu');
+    clearTimeout(menu._t);
+    if (open) {
+      menu.hidden = false;
+      requestAnimationFrame(() => requestAnimationFrame(() => menu.classList.add('in')));
+      menu.querySelector('a').focus({ preventScroll: true });
+    } else {
+      menu.classList.remove('in');
+      menu._t = setTimeout(() => { menu.hidden = true; }, 300);
+    }
+  }
+  menuBtn.addEventListener('click', () => setMenu(!menuOpen));
+  // a section link closes the sheet first, so the page can scroll again
+  menu.querySelectorAll('.list a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen) { setMenu(false); menuBtn.focus(); } });
+  matchMedia('(max-width: 719px)').addEventListener('change', e => { if (!e.matches) setMenu(false); });
 
   /* ---------- reveal on scroll ---------- */
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('seen'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -15% 0px' });

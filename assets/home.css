@@ -89,6 +89,39 @@ a { color: inherit; text-decoration: none; }
 #navHello { transition: opacity .3s, transform .3s, visibility 0s; }
 #navHello.off { opacity: 0; visibility: hidden; transform: translateY(-8px); pointer-events: none; transition: opacity .25s, transform .25s, visibility 0s .25s; }
 
+/* ---------- phone menu: a keycap that opens a sheet ---------- */
+#navMenu { display: none; }
+@media (max-width: 719px) {
+  #nav .right { gap: 10px; }
+  #navMenu { display: inline-flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; width: 44px; height: 40px; padding: 0; font-size: 0; }
+  #navMenu span { display: block; width: 18px; height: 2px; background: var(--ink); transition: transform .3s var(--ease), opacity .2s; }
+  .menu-open #navMenu span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .menu-open #navMenu span:nth-child(2) { opacity: 0; }
+  .menu-open #navMenu span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+}
+#menu {
+  position: fixed; inset: 0; z-index: 10; background: var(--mist);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 36px;
+  padding: calc(var(--hdr) + 28px) var(--pad) calc(28px + env(safe-area-inset-bottom));
+  overflow-y: auto; overscroll-behavior: contain;
+  opacity: 0; transform: translateY(-12px); transition: opacity .25s var(--ease), transform .35s var(--ease);
+}
+#menu[hidden] { display: none; }
+#menu.in { opacity: 1; transform: none; }
+#menu .list { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+#menu .list a { display: flex; align-items: center; gap: 14px; padding: 8px 0; border-bottom: 1px solid rgba(11, 11, 11, .1); font-size: clamp(32px, 10vw, 44px); font-weight: 600; letter-spacing: -.03em; line-height: 1.1; opacity: 0; transform: translateY(16px); transition: opacity .4s var(--ease), transform .5s var(--ease); }
+#menu .list .num { margin: 0; font-size: 14px; vertical-align: 0; }
+#menu .list a:nth-child(2) { transition-delay: 40ms; }
+#menu .list a:nth-child(3) { transition-delay: 80ms; }
+#menu .list a:nth-child(4) { transition-delay: 120ms; }
+#menu.in .list a { opacity: 1; transform: none; }
+#menu .key.lg { font-size: 28px; }
+#menu .base { margin-top: auto; display: flex; gap: 24px; font-family: var(--pix); font-size: 15px; color: var(--grey-2); }
+.menu-open, .menu-open body { overflow: hidden; }
+.menu-open #nav { z-index: 11; color: var(--ink) !important; }
+.menu-open #navHello { visibility: hidden; }
+.menu-open #staff { visibility: hidden; }
+
 /* ---------- staff ---------- */
 #staff { position: fixed; inset: 0; z-index: 9; pointer-events: none; }
 #staffTilt { position: absolute; inset: 0; transform-origin: 50% 70%; }
@@ -267,5 +300,5 @@ a.card:hover { transform: translateY(-4px); box-shadow: 0 24px 50px -30px rgba(0
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .rv, .scene .txt, .scene .vis { transition-duration: .01s !important; }
+  .rv, .scene .txt, .scene .vis, #menu, #menu .list a { transition-duration: .01s !important; }
 }
